@@ -33,9 +33,7 @@ export default function App() {
           <div className="relative flex flex-col items-center gap-4 order-1 md:order-2">
             <div className="w-48 h-48 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 p-1 shadow-[0_0_40px_rgba(168,85,247,0.6)] hover:shadow-[0_0_60px_rgba(168,85,247,0.9)] transition-shadow duration-300">
               <div className="w-full h-full rounded-full bg-purple-900 flex items-center justify-center overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-6xl text-white">
-                  👤
-                </div>
+                <img src="/cartoon_profile_photo.png" alt="Profile" className="w-full h-full object-cover" />
               </div>
             </div>
             <div className="absolute -inset-4 bg-purple-500/20 rounded-full blur-2xl -z-10 animate-pulse"></div>
@@ -47,7 +45,7 @@ export default function App() {
 
           <div className="flex-1 text-center md:text-left order-2 md:order-1">
             <h1 className="text-4xl md:text-6xl mb-3 bg-gradient-to-r from-purple-200 via-purple-300 to-purple-400 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(168,85,247,0.8)]">
-              Your Name
+              Marcel Mulders
             </h1>
             <p className="text-xl md:text-2xl text-purple-300/80">Senior Software Developer</p>
 

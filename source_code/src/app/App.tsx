@@ -10,7 +10,7 @@ export default function App() {
   const [isContactModalOpen, setIsContactModalOpen] = React.useState(false);
 
   const calculateExperience = () => {
-    const startDate = new Date(2017, 0, 1); // January 2017
+    const startDate = new Date(2016, 0, 1); // January 2016
     const currentDate = new Date();
 
     const years = currentDate.getFullYear() - startDate.getFullYear();
@@ -33,7 +33,7 @@ export default function App() {
           <div className="relative flex flex-col items-center gap-4 order-1 md:order-2">
             <div className="w-48 h-48 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 p-1 shadow-[0_0_40px_rgba(168,85,247,0.6)] hover:shadow-[0_0_60px_rgba(168,85,247,0.9)] transition-shadow duration-300">
               <div className="w-full h-full rounded-full bg-purple-900 flex items-center justify-center overflow-hidden">
-                <img src="/cartoon_profile_photo.png" alt="Profile" className="w-full h-full object-cover" />
+                <img src={`${import.meta.env.BASE_URL}cartoon_profile_photo.png`} alt="Profile" className="w-full h-full object-cover" />
               </div>
             </div>
             <div className="absolute -inset-4 bg-purple-500/20 rounded-full blur-2xl -z-10 animate-pulse"></div>
@@ -51,10 +51,10 @@ export default function App() {
 
             {/* Mobile: Show email, Desktop: Show Contact Me pill */}
             <a
-              href="mailto:your.email@example.com"
+              href="mailto:marcelm4242@gmail.com"
               className="inline-block md:hidden mt-2 text-purple-400 hover:text-purple-300 transition-colors duration-300 hover:drop-shadow-[0_0_10px_rgba(168,85,247,0.8)]"
             >
-              your.email@example.com
+              marcelm4242@gmail.com
             </a>
             <button
               onClick={() => setIsContactModalOpen(true)}
@@ -68,9 +68,9 @@ export default function App() {
         {/* Profile Bio */}
         <TypewriterProfile
           texts={[
-            "Passionate software developer with 9+ years of experience building scalable web applications and cloud infrastructure. Specialized in React, Node.js, and AWS.",
-            "I love solving complex problems and creating elegant solutions that make a difference. Always exploring new technologies and best practices.",
-            "Experienced in leading development teams, architecting microservices, and delivering enterprise solutions. Let's build something amazing together!"
+            "Seasoned Senior Software Engineer delivering secure, fault-tolerant solutions across mobile, web, backend, and infrastructure.",
+            "I work closely with clients on requirements and solution architecture, then lead testing, documentation, and handover to ensure reliable delivery.",
+            "I mentor engineers, run React Native knowledge-sharing, and champion continuous learning and security-focused engineering practices."
           ]}
         />
 
@@ -144,20 +144,28 @@ export default function App() {
                   <div className="absolute -left-8 top-1 w-4 h-4 rounded-full bg-purple-500 border-2 border-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.8)]"></div>
 
                   <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-3 mb-2">
-                    <span className="text-purple-300/70 text-sm whitespace-nowrap">2020 - 2024</span>
-                    <h3 className="text-purple-200">Senior Developer at Tech Corp</h3>
+                    <span className="text-purple-300/70 text-sm whitespace-nowrap">Feb 2023 - Present</span>
+                    <h3 className="text-purple-200">Senior Software Engineer at CreateFuture</h3>
                   </div>
                   <div className="flex flex-wrap gap-1 mb-2">
                     <img src="https://skillicons.dev/icons?i=react" alt="React" className="w-6 h-6" />
                     <img src="https://skillicons.dev/icons?i=nodejs" alt="Node.js" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=aws" alt="AWS" className="w-6 h-6" />
                     <img src="https://skillicons.dev/icons?i=terraform" alt="Terraform" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=jest" alt="Jest" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=cypress" alt="Cypress" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=github" alt="GitHub" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=jenkins" alt="Jenkins" className="w-6 h-6" />
+                    <img src="https://skillicons.dev/icons?i=aws" alt="AWS" className="w-6 h-6" />
+                    <img src="https://skillicons.dev/icons?i=python" alt="Python" className="w-6 h-6" />
+                    <img src="https://skillicons.dev/icons?i=azure" alt="Azure" className="w-6 h-6" />
                   </div>
-                  <p className="text-purple-200/80 mt-2">Led development of multiple cloud-based enterprise applications using React, Node.js, and AWS infrastructure. Managed and mentored a cross-functional team of 5 developers, conducting code reviews, sprint planning, and technical architecture decisions. Successfully delivered 8 major product releases on time and under budget, serving over 100,000 active users. Architected and implemented a microservices migration strategy that improved system scalability by 300% and reduced infrastructure costs by 35%. Spearheaded the adoption of DevOps practices including automated testing with Jest and Cypress, CI/CD pipelines using GitHub Actions and Jenkins, and infrastructure-as-code with Terraform. Collaborated with product managers and stakeholders to define technical requirements and translate business needs into scalable solutions. Implemented comprehensive monitoring and logging solutions using ELK stack and CloudWatch, reducing mean time to resolution for production issues by 60%. Championed best practices including code documentation, unit testing with 85% coverage requirement, and security standards compliance.</p>
+                  <ul className="text-purple-200/80 mt-2 space-y-1 list-disc list-inside">
+                    <li>Liaise with clients on requirements, architect solutions, and lead testing, documentation &amp; handover.</li>
+                    <li>Line-manage and mentor engineers across all seniority levels; run the React Native community of practice.</li>
+                    <li>Security champion — ensuring delivery of fault-tolerant and secure systems.</li>
+                    <li>Fanduel: casino &amp; racing reward system (React, React Native) and address verification service (Kafka, Node.js).</li>
+                    <li>Sky Betting &amp; Gaming: draw-in card game (Node.js, Terraform, AWS).</li>
+                    <li>MoneySavingExpert: Savings Hub micro-frontend (Vue.js, Node.js Lambdas on AWS).</li>
+                    <li>Baillie Gifford Sidekick+: safe mode for AI chat platform (React, Python).</li>
+                    <li>Greenfield AI search platform for local government &amp; social care ombudsman (Python, React, OpenAI on Azure).</li>
+                    <li>Delivered React Native enterprise training to ~70 engineers across seniority and tech backgrounds.</li>
+                  </ul>
                 </div>
 
                 <div className="relative">
@@ -165,19 +173,29 @@ export default function App() {
                   <div className="absolute -left-8 top-1 w-4 h-4 rounded-full bg-purple-500 border-2 border-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.8)]"></div>
 
                   <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-3 mb-2">
-                    <span className="text-purple-300/70 text-sm whitespace-nowrap">2017 - 2020</span>
-                    <h3 className="text-purple-200">Full Stack Developer at StartupXYZ</h3>
+                    <span className="text-purple-300/70 text-sm whitespace-nowrap">Jun 2021 - Feb 2023</span>
+                    <h3 className="text-purple-200">Software Engineer at Dotfive</h3>
                   </div>
                   <div className="flex flex-wrap gap-1 mb-2">
                     <img src="https://skillicons.dev/icons?i=react" alt="React" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=redux" alt="Redux" className="w-6 h-6" />
                     <img src="https://skillicons.dev/icons?i=nodejs" alt="Node.js" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=express" alt="Express" className="w-6 h-6" />
+                    <img src="https://skillicons.dev/icons?i=python" alt="Python" className="w-6 h-6" />
                     <img src="https://skillicons.dev/icons?i=postgres" alt="PostgreSQL" className="w-6 h-6" />
+                    <img src="https://skillicons.dev/icons?i=elasticsearch" alt="Elasticsearch" className="w-6 h-6" />
+                    <img src="https://skillicons.dev/icons?i=kafka" alt="Kafka" className="w-6 h-6" />
+                    <img src="https://skillicons.dev/icons?i=kubernetes" alt="Kubernetes" className="w-6 h-6" />
                     <img src="https://skillicons.dev/icons?i=docker" alt="Docker" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=git" alt="Git" className="w-6 h-6" />
+                    <img src="https://skillicons.dev/icons?i=aws" alt="AWS" className="w-6 h-6" />
                   </div>
-                  <p className="text-purple-200/80 mt-2">Built multiple scalable web applications from scratch as one of the first engineering hires at a fast-growing startup. Developed the core product using React, Redux, Node.js, Express, and PostgreSQL, which grew to serve 50,000+ users and process $5M in annual transactions. Implemented comprehensive CI/CD pipelines using CircleCI and Docker, enabling the team to deploy features multiple times per day with zero downtime. Designed and built RESTful APIs that integrated with third-party services including Stripe for payments, SendGrid for email notifications, and Twilio for SMS communications. Created responsive and accessible user interfaces following WCAG 2.1 guidelines, improving user engagement by 45%. Established modern development workflows including Git flow branching strategy, pull request reviews, and automated linting with ESLint and Prettier. Participated in on-call rotations and incident response, maintaining 99.9% uptime. Contributed to technical hiring by conducting over 30 technical interviews and developing coding challenges that improved candidate assessment quality.</p>
+                  <ul className="text-purple-200/80 mt-2 space-y-1 list-disc list-inside">
+                    <li>Architected and delivered client solutions across analytics and platform engineering.</li>
+                    <li>Built Elasticsearch &amp; Kibana infrastructure on AWS; redeployed Node.js web-scraper &amp; ETL pipeline with Airflow &amp; Docker.</li>
+                    <li>Implemented Python Airflow DAGs processing Kafka financial data into PostgreSQL; Scala data transforms with S3.</li>
+                    <li>Custom Airflow UI extensions orchestrating 300+ jobs; FastAPI microservices deployed to ECS.</li>
+                    <li>Bespoke CI/CD build manager in Bash, Python, and Ruby (Chef); Pritunl VPN deployment.</li>
+                    <li>Greenfield React trading platform with Python-scripted data automation and ORM backend.</li>
+                    <li>Kubernetes restructuring for two platforms — focusing on HA, scalability, and health monitoring.</li>
+                  </ul>
                 </div>
 
                 <div className="relative">
@@ -185,86 +203,50 @@ export default function App() {
                   <div className="absolute -left-8 top-1 w-4 h-4 rounded-full bg-purple-500 border-2 border-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.8)]"></div>
 
                   <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-3 mb-2">
-                    <span className="text-purple-300/70 text-sm whitespace-nowrap">2015 - 2017</span>
-                    <h3 className="text-purple-200">Software Developer at Digital Solutions Inc</h3>
+                    <span className="text-purple-300/70 text-sm whitespace-nowrap">Oct 2020 - Jun 2021</span>
+                    <h3 className="text-purple-200">Software Developer at Cerberus Technologies</h3>
                   </div>
                   <div className="flex flex-wrap gap-1 mb-2">
-                    <img src="https://skillicons.dev/icons?i=angular" alt="Angular" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=php" alt="PHP" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=laravel" alt="Laravel" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=mysql" alt="MySQL" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=bootstrap" alt="Bootstrap" className="w-6 h-6" />
-                  </div>
-                  <p className="text-purple-200/80 mt-2">Developed custom web solutions for enterprise clients in healthcare, finance, and retail sectors, working on 12+ client projects simultaneously. Specialized in database optimization and API development, implementing complex SQL queries and stored procedures that improved query performance by up to 200%. Built integrations between legacy systems and modern web applications using SOAP and REST APIs. Created data migration tools that successfully transferred millions of records from on-premise databases to cloud-based solutions with zero data loss. Worked extensively with MySQL, SQL Server, and Oracle databases, implementing indexing strategies, query optimization, and database normalization best practices. Developed internal tools and admin panels using Angular, PHP Laravel, and Bootstrap that reduced manual data entry time by 70%. Collaborated with UX designers and project managers in agile sprints to deliver features that met client specifications and exceeded quality standards. Provided technical support and training to clients, creating comprehensive documentation and video tutorials that reduced support tickets by 40%.</p>
-                </div>
-
-                <div className="relative">
-                  {/* Timeline Dot */}
-                  <div className="absolute -left-8 top-1 w-4 h-4 rounded-full bg-purple-500 border-2 border-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.8)]"></div>
-
-                  <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-3 mb-2">
-                    <span className="text-purple-300/70 text-sm whitespace-nowrap">2013 - 2015</span>
-                    <h3 className="text-purple-200">Junior Developer at WebWorks Agency</h3>
-                  </div>
-                  <div className="flex flex-wrap gap-1 mb-2">
+                    <img src="https://skillicons.dev/icons?i=python" alt="Python" className="w-6 h-6" />
+                    <img src="https://skillicons.dev/icons?i=aws" alt="AWS" className="w-6 h-6" />
+                    <img src="https://skillicons.dev/icons?i=selenium" alt="Selenium" className="w-6 h-6" />
                     <img src="https://skillicons.dev/icons?i=html" alt="HTML" className="w-6 h-6" />
                     <img src="https://skillicons.dev/icons?i=css" alt="CSS" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=js" alt="JavaScript" className="w-6 h-6" />
                     <img src="https://skillicons.dev/icons?i=jquery" alt="jQuery" className="w-6 h-6" />
+                  </div>
+                  <ul className="text-purple-200/80 mt-2 space-y-1 list-disc list-inside">
+                    <li>Python backend operations and infrastructure automation.</li>
+                    <li>Automated VM provisioning &amp; software installation via SQS, EC2, and Secrets Manager.</li>
+                    <li>Live billing-stat monitoring, automated failover, and error correction systems.</li>
+                    <li>Selenium-based automated deployment testing.</li>
+                    <li>Internal management UI for products and pricing (HTML, CSS, jQuery).</li>
+                  </ul>
+                </div>
+
+                <div className="relative">
+                  {/* Timeline Dot */}
+                  <div className="absolute -left-8 top-1 w-4 h-4 rounded-full bg-purple-500 border-2 border-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.8)]"></div>
+
+                  <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-3 mb-2">
+                    <span className="text-purple-300/70 text-sm whitespace-nowrap">Oct 2018 - Oct 2020</span>
+                    <h3 className="text-purple-200">IT Manager at Lazy Susan</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    <img src="https://skillicons.dev/icons?i=flask" alt="Flask" className="w-6 h-6" />
                     <img src="https://skillicons.dev/icons?i=php" alt="PHP" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=wordpress" alt="WordPress" className="w-6 h-6" />
-                  </div>
-                  <p className="text-purple-200/80 mt-2">Created responsive websites and web applications for small to medium businesses across various industries, completing over 25 projects during tenure. Developed pixel-perfect implementations of design mockups using HTML5, CSS3, JavaScript, jQuery, and PHP with WordPress and custom CMS solutions. Ensured cross-browser compatibility and mobile responsiveness, testing on multiple devices and browsers including IE8+, Chrome, Firefox, and Safari. Implemented SEO best practices including semantic HTML, meta tags optimization, schema markup, and page speed optimization achieving 90+ Google PageSpeed scores. Worked with clients to gather requirements, provide technical recommendations, and explain complex technical concepts in accessible language. Built custom WordPress themes and plugins, extending functionality with custom post types, meta boxes, and shortcodes. Integrated third-party APIs including Google Maps, social media platforms, payment gateways, and email marketing services. Maintained and updated existing client websites, fixing bugs and implementing new features while maintaining backwards compatibility.</p>
-                </div>
-
-                <div className="relative">
-                  {/* Timeline Dot */}
-                  <div className="absolute -left-8 top-1 w-4 h-4 rounded-full bg-purple-500 border-2 border-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.8)]"></div>
-
-                  <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-3 mb-2">
-                    <span className="text-purple-300/70 text-sm whitespace-nowrap">2012 - 2013</span>
-                    <h3 className="text-purple-200">Intern Developer at CodeCraft Studios</h3>
-                  </div>
-                  <div className="flex flex-wrap gap-1 mb-2">
+                    <img src="https://skillicons.dev/icons?i=js" alt="JavaScript" className="w-6 h-6" />
                     <img src="https://skillicons.dev/icons?i=html" alt="HTML" className="w-6 h-6" />
                     <img src="https://skillicons.dev/icons?i=css" alt="CSS" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=js" alt="JavaScript" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=angular" alt="Angular" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=git" alt="Git" className="w-6 h-6" />
-                  </div>
-                  <p className="text-purple-200/80 mt-2">Assisted in front-end development projects for web and mobile applications, working closely with senior developers to learn industry best practices in agile software development. Contributed to various client projects by implementing UI components using HTML, CSS, and JavaScript frameworks including Backbone.js and early versions of Angular. Participated in daily stand-ups, sprint planning, and retrospective meetings following Scrum methodology. Wrote unit tests using Jasmine and maintained test coverage above 75% for new features. Fixed bugs and implemented small features under supervision, gaining experience with version control using Git and collaborative development workflows. Created wireframes and prototypes using tools like Balsamiq and Adobe XD to communicate design ideas. Learned responsive design principles and mobile-first development approach. Documented code and created wiki pages for internal knowledge sharing. Shadowed senior developers during code reviews and client meetings to understand professional software development lifecycle from requirements gathering to deployment and maintenance.</p>
-                </div>
-
-                <div className="relative">
-                  {/* Timeline Dot */}
-                  <div className="absolute -left-8 top-1 w-4 h-4 rounded-full bg-purple-500 border-2 border-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.8)]"></div>
-
-                  <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-3 mb-2">
-                    <span className="text-purple-300/70 text-sm whitespace-nowrap">2011 - 2012</span>
-                    <h3 className="text-purple-200">Freelance Web Developer</h3>
-                  </div>
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    <img src="https://skillicons.dev/icons?i=html" alt="HTML" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=css" alt="CSS" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=js" alt="JavaScript" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=wordpress" alt="WordPress" className="w-6 h-6" />
-                  </div>
-                  <p className="text-purple-200/80 mt-2">Built custom websites for local businesses and individuals, completing 15+ projects ranging from simple landing pages to e-commerce stores. Gained valuable experience in client communication, requirement gathering, project scoping, and managing expectations. Developed websites using HTML, CSS, JavaScript, and popular CMS platforms including WordPress, Joomla, and Drupal. Provided end-to-end services including domain registration, hosting setup, website development, content migration, and post-launch support. Learned crucial project management skills including time estimation, milestone tracking, invoice generation, and maintaining professional relationships with repeat clients. Created portfolio pieces that demonstrated versatility across different industries including restaurants, real estate, photography, and professional services. Handled all aspects of the business including marketing, client acquisition, proposal writing, contract negotiation, and accounting. Developed problem-solving skills by troubleshooting various technical issues independently and researching solutions through online communities and documentation.</p>
-                </div>
-
-                <div className="relative">
-                  {/* Timeline Dot */}
-                  <div className="absolute -left-8 top-1 w-4 h-4 rounded-full bg-purple-500 border-2 border-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.8)]"></div>
-
-                  <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-3 mb-2">
-                    <span className="text-purple-300/70 text-sm whitespace-nowrap">2010 - 2011</span>
-                    <h3 className="text-purple-200">Technical Support Specialist at TechHelp Co</h3>
-                  </div>
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    <img src="https://skillicons.dev/icons?i=windows" alt="Windows" className="w-6 h-6" />
                     <img src="https://skillicons.dev/icons?i=linux" alt="Linux" className="w-6 h-6" />
                   </div>
-                  <p className="text-purple-200/80 mt-2">Provided comprehensive technical support for software applications, handling an average of 30+ support tickets per day via phone, email, and live chat. Helped troubleshoot and resolve system issues for end users ranging from basic software navigation to complex technical problems. Developed deep product knowledge across multiple software platforms and maintained 95% customer satisfaction rating. Created and maintained knowledge base articles and video tutorials that reduced common support inquiries by 30%. Escalated complex issues to development team with detailed reproduction steps and log files, improving bug resolution time. Assisted with user onboarding and training, conducting webinars for groups of 20+ new users. Identified patterns in support tickets and provided feedback to product team for feature improvements. Used ticketing systems like Zendesk and collaboration tools like Slack to coordinate with team members. Built strong communication skills by explaining technical concepts to non-technical users in clear, patient manner. This role provided valuable perspective on user experience and the importance of writing user-friendly, well-documented software.</p>
+                  <ul className="text-purple-200/80 mt-2 space-y-1 list-disc list-inside">
+                    <li>Line-managed 7 employees; managed third-party suppliers for advertising, digital, and accounting.</li>
+                    <li>Administered 5 servers; built bespoke ETL pipeline consolidating ecommerce &amp; accounting data into a data warehouse.</li>
+                    <li>Led development of custom Flask ERP integrating Shopware, Amazon, and eBay order management.</li>
+                    <li>Built a Digital Asset Management platform (JavaScript, HTML, CSS).</li>
+                    <li>Managed Google Search &amp; Shopping, Facebook, and Amazon advertising channels.</li>
+                    <li>Delivered custom tooling to improve productivity across operations, finance, and customer services.</li>
+                  </ul>
                 </div>
 
                 <div className="relative">
@@ -272,16 +254,63 @@ export default function App() {
                   <div className="absolute -left-8 top-1 w-4 h-4 rounded-full bg-purple-500 border-2 border-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.8)]"></div>
 
                   <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-3 mb-2">
-                    <span className="text-purple-300/70 text-sm whitespace-nowrap">2009 - 2010</span>
-                    <h3 className="text-purple-200">IT Assistant at University Tech Lab</h3>
+                    <span className="text-purple-300/70 text-sm whitespace-nowrap">May 2017 - Sep 2018</span>
+                    <h3 className="text-purple-200">Senior Robotics Engineer &amp; Operations MI at Utilita Energy</h3>
                   </div>
                   <div className="flex flex-wrap gap-1 mb-2">
-                    <img src="https://skillicons.dev/icons?i=java" alt="Java" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=cpp" alt="C++" className="w-6 h-6" />
                     <img src="https://skillicons.dev/icons?i=python" alt="Python" className="w-6 h-6" />
-                    <img src="https://skillicons.dev/icons?i=windows" alt="Windows" className="w-6 h-6" />
+                    <img src="https://skillicons.dev/icons?i=postgres" alt="SQL" className="w-6 h-6" />
+                    <img src="https://skillicons.dev/icons?i=linux" alt="Linux" className="w-6 h-6" />
+                    <img src="https://skillicons.dev/icons?i=git" alt="Git" className="w-6 h-6" />
                   </div>
-                  <p className="text-purple-200/80 mt-2">Maintained computer lab equipment consisting of 100+ workstations and assisted students with software and hardware issues while completing computer science degree. Performed routine maintenance tasks including software updates, hardware upgrades, system imaging, and network troubleshooting. Provided one-on-one technical assistance to students learning programming languages including Java, C++, and Python, as well as software tools like Eclipse, Visual Studio, and MATLAB. Set up and configured new equipment for special projects and semester courses. Managed printer stations, ensuring adequate paper and toner supplies and resolving printing issues. Monitored lab security and enforced computer lab policies. Created simple batch scripts to automate repetitive system administration tasks. Worked evening and weekend shifts, developing time management skills while balancing work responsibilities with academic coursework. This position sparked interest in pursuing software development as a career by exposure to various programming concepts and interactions with computer science professors and students working on interesting projects.</p>
+                  <ul className="text-purple-200/80 mt-2 space-y-1 list-disc list-inside">
+                    <li>Line-managed 3 engineers; recruited junior developers and developed team robotics capability.</li>
+                    <li>Led development &amp; project management of the BluePrism RPA platform stack.</li>
+                    <li>Built SQL &amp; Python server-side systems to dynamically adjust customer debt collection rates.</li>
+                    <li>Performed data manipulation on a CRM of ~500,000 customers to report on debt levels.</li>
+                  </ul>
+                </div>
+
+                <div className="relative">
+                  {/* Timeline Dot */}
+                  <div className="absolute -left-8 top-1 w-4 h-4 rounded-full bg-purple-500 border-2 border-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.8)]"></div>
+
+                  <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-3 mb-2">
+                    <span className="text-purple-300/70 text-sm whitespace-nowrap">Feb 2017 - May 2017</span>
+                    <h3 className="text-purple-200">Forecast Analyst at Utilita Energy</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    <img src="https://skillicons.dev/icons?i=python" alt="Python" className="w-6 h-6" />
+                    <img src="https://skillicons.dev/icons?i=postgres" alt="SQL" className="w-6 h-6" />
+                  </div>
+                  <ul className="text-purple-200/80 mt-2 space-y-1 list-disc list-inside">
+                    <li>Collected and analysed weekly call-volume data for each customer services team.</li>
+                    <li>Produced weekly, monthly, and annual call-volume forecasts.</li>
+                    <li>Optimised staff distribution across shifts to hit SLAs within a 4-week planning window.</li>
+                    <li>Assumed staff resourcing role, allocating shifts for 550 employees.</li>
+                  </ul>
+                </div>
+
+                <div className="relative">
+                  {/* Timeline Dot */}
+                  <div className="absolute -left-8 top-1 w-4 h-4 rounded-full bg-purple-500 border-2 border-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.8)]"></div>
+
+                  <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-3 mb-2">
+                    <span className="text-purple-300/70 text-sm whitespace-nowrap">Jan 2016 - Present</span>
+                    <h3 className="text-purple-200">Software Mentor / Private Tutor at 123 Help Me Study</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    <img src="https://skillicons.dev/icons?i=html" alt="HTML" className="w-6 h-6" />
+                    <img src="https://skillicons.dev/icons?i=css" alt="CSS" className="w-6 h-6" />
+                    <img src="https://skillicons.dev/icons?i=js" alt="JavaScript" className="w-6 h-6" />
+                    <img src="https://skillicons.dev/icons?i=python" alt="Python" className="w-6 h-6" />
+                    <img src="https://skillicons.dev/icons?i=react" alt="React" className="w-6 h-6" />
+                  </div>
+                  <ul className="text-purple-200/80 mt-2 space-y-1 list-disc list-inside">
+                    <li>Provide 1-to-1 online lessons for students learning to code.</li>
+                    <li>Built and manage a personal website to attract new students.</li>
+                    <li>Partner with Code Institute to mentor students through HTML, CSS, JavaScript, and Python projects.</li>
+                  </ul>
                 </div>
               </div>
             </div>

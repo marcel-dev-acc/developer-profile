@@ -67,6 +67,8 @@ export function TypewriterProfile({
     return null;
   }
 
+  const longestText = texts.reduce((a, b) => (b.length > a.length ? b : a), '');
+
   return (
     <div className="relative bg-black/60 backdrop-blur-sm border border-purple-500/40 rounded-lg p-6 shadow-[0_0_20px_rgba(168,85,247,0.3)] mb-8">
       {/* Scanline Effect */}
@@ -77,12 +79,13 @@ export function TypewriterProfile({
       {/* Terminal Prompt */}
       <div className="flex items-start gap-2 font-mono">
         <span className="text-green-400 select-none">{'>'}</span>
-        <div className="flex-1">
+        <div className="flex-1 min-h-[4.5rem]">
+          {/* Hidden element to reserve height for the longest text */}
+          <span className="invisible absolute pointer-events-none" aria-hidden="true">{longestText}</span>
           <span className="text-purple-300">{displayedText}</span>
           <span
-            className={`text-green-400 transition-opacity duration-100 ${
-              cursorVisible ? 'opacity-100' : 'opacity-0'
-            }`}
+            className={`text-green-400 transition-opacity duration-100 ${cursorVisible ? 'opacity-100' : 'opacity-0'
+              }`}
           >
             ▊
           </span>

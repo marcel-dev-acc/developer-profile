@@ -80,16 +80,16 @@ export default function App() {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <span className="w-2 h-2 bg-green-400 rounded-full shadow-[0_0_8px_rgba(74,222,128,0.8)]"></span>
-                <a href="#" className="text-purple-200 hover:text-purple-100 transition-colors">portfolio.example.com</a>
+                <a href="https://www.123helpmestudy.com" target="_blank" rel="noopener noreferrer" className="text-purple-200 hover:text-purple-100 transition-colors">www.123helpmestudy.com</a>
               </div>
-              <div className="flex items-center gap-3">
+              {/* <div className="flex items-center gap-3">
                 <span className="w-2 h-2 bg-green-400 rounded-full shadow-[0_0_8px_rgba(74,222,128,0.8)]"></span>
                 <a href="#" className="text-purple-200 hover:text-purple-100 transition-colors">blog.example.com</a>
               </div>
               <div className="flex items-center gap-3">
                 <span className="w-2 h-2 bg-green-400 rounded-full shadow-[0_0_8px_rgba(74,222,128,0.8)]"></span>
                 <a href="#" className="text-purple-200 hover:text-purple-100 transition-colors">api.service.example.com</a>
-              </div>
+              </div> */}
             </div>
           </Accordion>
 
@@ -323,20 +323,12 @@ export default function App() {
         {/* Social Media Links */}
         <div className="flex justify-center gap-6 mt-16">
           <a
-            href="https://github.com/yourusername"
+            href="https://github.com/marcel-dev-acc"
             target="_blank"
             rel="noopener noreferrer"
             className="w-14 h-14 rounded-full bg-purple-900/50 border border-purple-500/40 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.8)] hover:border-purple-400/60 transition-all duration-300 group"
           >
             <Github className="w-6 h-6 text-purple-300 group-hover:text-purple-100 transition-colors" />
-          </a>
-          <a
-            href="https://instagram.com/yourusername"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-14 h-14 rounded-full bg-purple-900/50 border border-purple-500/40 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.8)] hover:border-purple-400/60 transition-all duration-300 group"
-          >
-            <Instagram className="w-6 h-6 text-purple-300 group-hover:text-purple-100 transition-colors" />
           </a>
         </div>
       </div>

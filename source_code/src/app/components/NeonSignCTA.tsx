@@ -157,7 +157,7 @@ function PriceEstimateModal({ onClose, onOpenContact }: PriceEstimateModalProps)
   const [estimatedPrice, setEstimatedPrice] = useState<number | null>(null);
 
   const projectTypes = [
-    { value: 'info', label: 'Personal Website', basePrice: 300 },
+    { value: 'info', label: 'Info Website', basePrice: 300 },
     { value: 'business', label: 'Business Website', basePrice: 1500 },
     { value: 'ecommerce', label: 'E-Commerce', basePrice: 3000 },
     { value: 'webapp', label: 'Web Application (SPA)', basePrice: 10000 },

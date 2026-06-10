@@ -4,7 +4,8 @@ import { AnimatedBackground } from './components/AnimatedBackground';
 import { TerminalContact } from './components/TerminalContact';
 import { TypewriterProfile } from './components/TypewriterProfile';
 import { NeonSignCTA } from './components/NeonSignCTA';
-import { Globe, Code, Briefcase, Github, Lock } from 'lucide-react';
+import { Globe, Code, Briefcase, Github, Lock, Smartphone, ShoppingCart } from 'lucide-react';
+import profileImage from '../assets/cartoon_profile_photo.png';
 
 export default function App() {
   const [isContactModalOpen, setIsContactModalOpen] = React.useState(false);
@@ -33,7 +34,7 @@ export default function App() {
           <div className="relative flex flex-col items-center gap-4 order-1 md:order-2">
             <div className="w-48 h-48 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 p-1 shadow-[0_0_40px_rgba(168,85,247,0.6)] hover:shadow-[0_0_60px_rgba(168,85,247,0.9)] transition-shadow duration-300">
               <div className="w-full h-full rounded-full bg-purple-900 flex items-center justify-center overflow-hidden">
-                <img src={`${import.meta.env.BASE_URL}cartoon_profile_photo.png`} alt="Profile" className="w-full h-full object-cover" />
+                <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
               </div>
             </div>
             <div className="absolute -inset-4 bg-purple-500/20 rounded-full blur-2xl -z-10 animate-pulse"></div>
@@ -70,19 +71,38 @@ export default function App() {
         {/* Accordions Section */}
         <div className="space-y-6">
           <Accordion title="Active Websites I Maintain" defaultOpen={true} icon={Globe}>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <span className="w-2 h-2 bg-green-400 rounded-full shadow-[0_0_8px_rgba(74,222,128,0.8)]"></span>
-                <a href="https://www.123helpmestudy.com" target="_blank" rel="noopener noreferrer" className="text-purple-200 hover:text-purple-100 transition-colors">www.123helpmestudy.com</a>
+            <div className="space-y-6">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="flex-shrink-0 w-2 h-2 bg-green-400 rounded-full shadow-[0_0_8px_rgba(74,222,128,0.8)]"></span>
+                  <a href="https://www.123helpmestudy.com" target="_blank" rel="noopener noreferrer" className="text-purple-200 hover:text-purple-100 transition-colors break-all font-medium">www.123helpmestudy.com</a>
+                </div>
+                <p className="text-purple-200/70 text-sm pl-5">A revolutionary online tutor marketplace platform designed to empower educators with complete flexibility. Work anywhere, anytime, and keep 100% of your hourly rate—no platform fees, no middlemen, just pure earning potential. Connecting students with passionate tutors while giving educators the freedom they deserve.</p>
               </div>
-              {/* <div className="flex items-center gap-3">
-                <span className="w-2 h-2 bg-green-400 rounded-full shadow-[0_0_8px_rgba(74,222,128,0.8)]"></span>
-                <a href="#" className="text-purple-200 hover:text-purple-100 transition-colors">blog.example.com</a>
+              
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="flex-shrink-0 w-2 h-2 bg-green-400 rounded-full shadow-[0_0_8px_rgba(74,222,128,0.8)]"></span>
+                  <a href="https://isras-bracelets.onrender.com" target="_blank" rel="noopener noreferrer" className="text-purple-200 hover:text-purple-100 transition-colors break-all font-medium">isras-bracelets.onrender.com</a>
+                </div>
+                <p className="text-purple-200/70 text-sm pl-5">A beautifully crafted custom eCommerce platform showcasing handmade bracelets designed and created by my talented niece. Built from the ground up on Render, this bespoke platform combines elegant design with robust functionality, enabling a seamless shopping experience for unique, artisan jewelry pieces.</p>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="w-2 h-2 bg-green-400 rounded-full shadow-[0_0_8px_rgba(74,222,128,0.8)]"></span>
-                <a href="#" className="text-purple-200 hover:text-purple-100 transition-colors">api.service.example.com</a>
-              </div> */}
+              
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="flex-shrink-0 w-2 h-2 bg-gray-400 rounded-full shadow-[0_0_8px_rgba(156,163,175,0.8)]"></span>
+                  <a href="https://www.moneysavingexpert.com/savings-hub" target="_blank" rel="noopener noreferrer" className="text-purple-200 hover:text-purple-100 transition-colors break-all font-medium">www.moneysavingexpert.com/savings-hub</a>
+                </div>
+                <p className="text-purple-200/70 text-sm pl-5">An innovative interactive savings recommendation hub built while leading a development team for a previous employer. Though no longer actively maintained, I architected and implemented the groundbreaking foundation—leveraging Cloudflare edge computing for lightning-fast performance and building the dynamic, user-centric features that power intelligent savings insights. A testament to modern web architecture at scale.</p>
+              </div>
+              
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="flex-shrink-0 w-2 h-2 bg-green-400 rounded-full shadow-[0_0_8px_rgba(74,222,128,0.8)]"></span>
+                  <a href="https://www.hantsiowrosecroix.org.uk" target="_blank" rel="noopener noreferrer" className="text-purple-200 hover:text-purple-100 transition-colors break-all font-medium">www.hantsiowrosecroix.org.uk</a>
+                </div>
+                <p className="text-purple-200/70 text-sm pl-5">The official digital hub for the Rose Croix in the province of Hampshire and Isle of Wight. This comprehensive informational website keeps members and visitors connected with real-time event calendars, announcements, and organizational updates—bridging tradition with modern digital accessibility.</p>
+              </div>
             </div>
           </Accordion>
 
@@ -90,38 +110,17 @@ export default function App() {
             <div className="space-y-4">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <Github className="w-5 h-5 text-purple-400" />
-                  <h3 className="text-purple-200">AI-Powered Analytics Platform</h3>
+                  <Smartphone className="w-5 h-5 text-purple-400" />
+                  <h3 className="text-purple-200">FeeNix Mobile Phone</h3>
                 </div>
-                <p className="text-purple-200/80">Building a comprehensive real-time analytics dashboard with advanced machine learning integration using TypeScript, React, and Python. The platform processes over 10 million data points daily and provides predictive insights using custom-trained neural networks. Key features include real-time data visualization with D3.js, automated anomaly detection using scikit-learn, and a microservices architecture deployed on AWS ECS. The system integrates with multiple data sources including PostgreSQL, MongoDB, and Apache Kafka for stream processing. Currently implementing advanced caching strategies with Redis to optimize query performance and reduce database load by 60%. The project also includes a comprehensive testing suite with Jest and Pytest, achieving over 90% code coverage.</p>
+                <p className="text-purple-200/80">Pioneering a revolutionary open-source mobile phone that breaks free from traditional smartphone constraints. Built on a custom Linux-based architecture specifically optimized to run on the Raspberry Pi Zero 2W with integrated mobile SIM capabilities, FeeNix represents the convergence of open-source philosophy and practical mobile computing. The device features a meticulously crafted custom user interface that seamlessly bridges the Linux and Android ecosystems, enabling users to install and run Android applications while maintaining full control over their device at the kernel level. This isn't just another Linux phone—it's a complete reimagining of what a mobile device can be when you combine the flexibility of ARM-based computing, the power of open-source software, and the practicality of Android app compatibility. The project encompasses custom PCB design for optimal component integration, low-level driver development for hardware interfacing, and an intuitive UI framework that makes advanced features accessible to everyday users. FeeNix is designed for privacy-conscious individuals, developers who want full device control, and anyone who believes in the right to truly own their technology. Currently in active development with working prototypes demonstrating voice calls, data connectivity, and seamless Android app execution on pure Linux infrastructure.</p>
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <Github className="w-5 h-5 text-purple-400" />
-                  <h3 className="text-purple-200">Open Source Contribution: DevTools Pro</h3>
+                  <ShoppingCart className="w-5 h-5 text-purple-400" />
+                  <h3 className="text-purple-200">Open eCommerce</h3>
                 </div>
-                <p className="text-purple-200/80">Contributing to one of the most popular developer productivity tools on GitHub with over 50,000 stars. Focused on automation and workflow optimization features that help developers save hours of repetitive work. Recent contributions include implementing a plugin system using TypeScript that allows third-party extensions, refactoring the core CLI architecture to support concurrent task execution, and adding comprehensive documentation with interactive examples. Working closely with the maintainer team to review pull requests from the community and mentor new contributors. Successfully merged 15 PRs in the last quarter, including a major feature that enables custom scripting with JavaScript/TypeScript for advanced automation scenarios. The tool is used by thousands of developers worldwide and has been featured in several tech conferences.</p>
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Github className="w-5 h-5 text-purple-400" />
-                  <h3 className="text-purple-200">E-Commerce Microservices Architecture</h3>
-                </div>
-                <p className="text-purple-200/80">Designing and implementing a highly scalable microservices-based e-commerce platform capable of handling millions of transactions per day. The architecture consists of 12 independent services including user management, product catalog, inventory tracking, order processing, payment gateway integration, and recommendation engine. Using Docker for containerization and Kubernetes for orchestration across multi-cloud environments (AWS and GCP). Implemented GraphQL API gateway with Apollo Server to provide a unified interface for all microservices, reducing API calls by 40%. Services communicate via event-driven architecture using RabbitMQ message queues to ensure eventual consistency. Database strategy includes PostgreSQL for transactional data, Elasticsearch for product search with fuzzy matching, and Redis for session management and caching. The system is designed for 99.99% uptime with automatic failover, circuit breakers using Hystrix, and comprehensive monitoring with Prometheus and Grafana dashboards.</p>
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Lock className="w-5 h-5 text-purple-400" />
-                  <h3 className="text-purple-200">Mobile App: Fitness Tracker</h3>
-                </div>
-                <p className="text-purple-200/80">Developing a comprehensive cross-platform fitness tracking application using React Native that works seamlessly on both iOS and Android devices. The app features real-time health data synchronization with wearable devices including Apple Watch, Fitbit, and Garmin. Core functionality includes workout tracking with GPS route mapping, calorie counting with a database of over 500,000 foods, personalized workout plans generated by machine learning algorithms, and social features allowing users to challenge friends and share achievements. Backend built with Node.js and Express, using MongoDB for user data and workout history. Implemented real-time notifications using Firebase Cloud Messaging and WebSocket connections for live workout tracking. The app includes offline mode with local SQLite database that syncs when connectivity is restored. Advanced features include AR-powered form checker for exercises using TensorFlow Lite, integration with Apple HealthKit and Google Fit, and customizable dashboard widgets. Currently in beta testing with 500 active users providing valuable feedback for improvements.</p>
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Lock className="w-5 h-5 text-purple-400" />
-                  <h3 className="text-purple-200">Cloud Infrastructure Automation Tool</h3>
-                </div>
-                <p className="text-purple-200/80">Creating a powerful infrastructure-as-code tool for automated cloud deployment, configuration management, and real-time monitoring across multiple cloud providers including AWS, Azure, and Google Cloud Platform. The tool is built with Go for performance and uses a declarative YAML-based configuration system similar to Terraform but with enhanced features for multi-cloud orchestration. Key capabilities include automated resource provisioning with dependency resolution, rolling deployments with automatic rollback on failure, cost optimization recommendations based on usage patterns, and security compliance checking against industry standards like CIS benchmarks. The monitoring component integrates with native cloud services and third-party tools like Datadog and New Relic, providing unified dashboards for infrastructure health across all environments. Implemented a plugin architecture allowing custom providers and integrations. The CLI tool includes interactive wizards for common tasks, reducing configuration time by 70%. Currently being used internally to manage infrastructure for 20+ production applications with over 500 cloud resources, resulting in 40% reduction in operational costs and 90% faster deployment cycles.</p>
+                <p className="text-purple-200/80">Democratizing online commerce through a groundbreaking serverless architecture that delivers enterprise-grade eCommerce capabilities at virtually no cost. Open eCommerce leverages the edge computing power of Cloudflare Workers as an intelligent proxy layer combined with Google Apps Script to expose a suite of flexible, production-ready API endpoints. This innovative approach transforms traditional eCommerce infrastructure—what typically costs thousands in monthly hosting, database management, and scaling becomes accessible to anyone with an internet connection. The system operates as a unified, massive-scale eCommerce platform while maintaining complete data segregation per entity, allowing thousands of independent businesses to share the same robust infrastructure without compromising security or privacy. Each business gets their own isolated data namespace, custom configurations, and complete control over their storefront logic—all while benefiting from shared optimizations and zero infrastructure management. The platform is interface-agnostic, meaning developers can build custom storefronts using any framework (React, Vue, mobile apps) while leveraging battle-tested backend logic for product management, inventory tracking, order processing, and payment integration. By utilizing serverless technologies and smart caching strategies, the system automatically scales from zero to millions of requests without manual intervention or cost spikes. Perfect for startups, small businesses, and developers who want powerful eCommerce capabilities without the complexity and expense of traditional platforms.</p>
               </div>
             </div>
           </Accordion>

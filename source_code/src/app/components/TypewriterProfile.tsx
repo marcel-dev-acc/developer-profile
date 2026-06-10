@@ -79,7 +79,7 @@ export function TypewriterProfile({
       {/* Terminal Prompt */}
       <div className="flex items-start gap-2 font-mono">
         <span className="text-green-400 select-none">{'>'}</span>
-        <div className="flex-1 min-h-[4.5rem]">
+        <div className="flex-1 min-h-[12rem] sm:min-h-[6rem] md:min-h-[4.5rem]">
           {/* Hidden element to reserve height for the longest text */}
           <span className="invisible absolute pointer-events-none" aria-hidden="true">{longestText}</span>
           <span className="text-purple-300">{displayedText}</span>

@@ -250,11 +250,11 @@ export function TerminalContact({ isModal = false, onClose }: TerminalContactPro
           ></div>
           <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
           <div className="w-3 h-3 rounded-full bg-green-500"></div>
-          <span className="ml-2 text-purple-300 text-sm font-mono">contact@terminal</span>
+          <span className="ml-2 text-purple-300 text-xs sm:text-sm font-mono">contact@terminal</span>
         </div>
 
         {/* Terminal Content */}
-        <div className="p-6 h-[500px] overflow-y-auto font-mono text-sm">
+        <div className="p-3 sm:p-6 h-[40vh] sm:h-[500px] max-h-[600px] overflow-y-auto font-mono text-xs sm:text-sm">
           {messages.map((msg, index) => (
             <div key={index} className={`mb-1 ${getMessageColor(msg.type)}`}>
               {msg.text}
@@ -265,7 +265,7 @@ export function TerminalContact({ isModal = false, onClose }: TerminalContactPro
 
         {/* Autocomplete Suggestions */}
         {suggestions.length > 0 && (
-          <div className="px-6 pb-2">
+          <div className="px-3 sm:px-6 pb-2">
             <div className="bg-purple-900/40 border border-purple-500/30 rounded p-2">
               <div className="text-purple-400 text-xs font-mono mb-1">Suggestions:</div>
               <div className="flex flex-wrap gap-2">
@@ -284,7 +284,7 @@ export function TerminalContact({ isModal = false, onClose }: TerminalContactPro
         )}
 
         {/* Input Area */}
-        <form onSubmit={handleSubmit} className="border-t border-purple-500/30 bg-purple-900/20 px-6 py-3">
+        <form onSubmit={handleSubmit} className="border-t border-purple-500/30 bg-purple-900/20 px-3 sm:px-6 py-3">
           <div className="flex items-center gap-2">
             <span className="text-green-400 font-mono">{'>'}</span>
             <div className="flex-1 relative">

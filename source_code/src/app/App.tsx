@@ -4,7 +4,7 @@ import { AnimatedBackground } from './components/AnimatedBackground';
 import { TerminalContact } from './components/TerminalContact';
 import { TypewriterProfile } from './components/TypewriterProfile';
 import { NeonSignCTA } from './components/NeonSignCTA';
-import { Globe, Code, Briefcase, Github, Instagram, Lock } from 'lucide-react';
+import { Globe, Code, Briefcase, Github, Lock } from 'lucide-react';
 
 export default function App() {
   const [isContactModalOpen, setIsContactModalOpen] = React.useState(false);
@@ -49,16 +49,9 @@ export default function App() {
             </h1>
             <p className="text-xl md:text-2xl text-purple-300/80">Senior Software Developer</p>
 
-            {/* Mobile: Show email, Desktop: Show Contact Me pill */}
-            <a
-              href="mailto:marcelm4242@gmail.com"
-              className="inline-block md:hidden mt-2 text-purple-400 hover:text-purple-300 transition-colors duration-300 hover:drop-shadow-[0_0_10px_rgba(168,85,247,0.8)]"
-            >
-              marcelm4242@gmail.com
-            </a>
             <button
               onClick={() => setIsContactModalOpen(true)}
-              className="hidden md:inline-block mt-3 px-6 py-2 rounded-full bg-purple-600/30 border border-purple-500/40 text-purple-200 hover:bg-purple-600/50 hover:border-purple-400/60 shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_25px_rgba(168,85,247,0.6)] transition-all duration-300"
+              className="mt-3 px-6 py-2 rounded-full bg-purple-600/30 border border-purple-500/40 text-purple-200 hover:bg-purple-600/50 hover:border-purple-400/60 shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_25px_rgba(168,85,247,0.6)] transition-all duration-300"
             >
               Contact Me
             </button>

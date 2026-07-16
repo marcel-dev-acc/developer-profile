@@ -204,74 +204,74 @@ function PriceEstimateModal({ onClose, onOpenContact }: PriceEstimateModalProps)
     <div className="fixed inset-0 z-50 flex items-center justify-center md:p-4">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={onClose} />
 
-      <div className="relative z-10 w-full h-full md:h-auto md:max-w-2xl bg-black/90 border-0 md:border border-purple-500/40 md:rounded-lg p-6 md:p-8 shadow-[0_0_50px_rgba(168,85,247,0.5)] animate-[fadeIn_0.3s_ease-out] overflow-y-auto">
-        <h3 className="text-2xl md:text-3xl mb-3 bg-gradient-to-r from-purple-200 to-purple-400 bg-clip-text text-transparent pt-2 md:pt-0">
+      <div className="relative z-10 w-full h-full md:h-auto md:max-h-[90vh] lg:max-h-none md:max-w-2xl bg-black/90 border-0 md:border border-purple-500/40 md:rounded-lg p-6 md:px-6 md:py-5 lg:p-8 shadow-[0_0_50px_rgba(168,85,247,0.5)] animate-[fadeIn_0.3s_ease-out] overflow-y-auto">
+        <h3 className="text-2xl md:text-[1.55rem] lg:text-3xl md:leading-tight lg:leading-normal mb-3 md:mb-2 lg:mb-3 bg-gradient-to-r from-purple-200 to-purple-400 bg-clip-text text-transparent pt-2 md:pt-0">
           Project Price Estimator
         </h3>
 
-        <p className="text-purple-300/80 text-sm mb-6 leading-relaxed">
+        <p className="text-purple-300/80 text-sm md:text-[0.78rem] lg:text-sm md:leading-relaxed mb-6 md:mb-4 lg:mb-6 max-w-[60rem]">
           A formal quote will be generated before work commences and invoiced on completion. Annual invoices will be issued for maintenance or product service costs.
         </p>
 
         {/* Project Type */}
-        <div className="mb-6">
-          <label className="block text-purple-300 mb-3 text-sm md:text-base">Project Type</label>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="mb-6 md:mb-4 lg:mb-6">
+          <label className="block text-purple-300 mb-3 md:mb-2 lg:mb-3 text-sm md:text-[0.88rem] lg:text-base">Project Type</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-2.5 lg:gap-3">
             {projectTypes.map(type => (
               <button
                 key={type.value}
                 onClick={() => setProjectType(type.value)}
-                className={`p-3 rounded border transition-all ${
+                className={`p-3 md:px-3 md:py-2.5 lg:p-3 rounded border transition-all ${
                   projectType === type.value
                     ? 'border-purple-500 bg-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.5)]'
                     : 'border-purple-500/30 bg-purple-900/20 hover:bg-purple-900/30'
                 }`}
               >
-                <div className="text-purple-100">{type.label}</div>
-                <div className="text-sm text-purple-400">From £{type.basePrice.toLocaleString()}</div>
+                <div className="text-purple-100 md:text-[0.84rem] lg:text-base md:leading-snug lg:leading-normal">{type.label}</div>
+                <div className="text-sm md:text-[0.76rem] lg:text-sm text-purple-400">From £{type.basePrice.toLocaleString()}</div>
               </button>
             ))}
           </div>
         </div>
 
         {/* Features */}
-        <div className="mb-6">
-          <label className="block text-purple-300 mb-3 text-sm md:text-base">Additional Features</label>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div className="mb-6 md:mb-4 lg:mb-6">
+          <label className="block text-purple-300 mb-3 md:mb-2 lg:mb-3 text-sm md:text-[0.88rem] lg:text-base">Additional Features</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-2">
             {availableFeatures.map(feature => (
               <button
                 key={feature.value}
                 onClick={() => toggleFeature(feature.value)}
-                className={`p-2 text-sm rounded border transition-all ${
+                className={`p-2 md:px-3 md:py-2 lg:p-2 text-sm md:text-[0.76rem] lg:text-sm rounded border transition-all ${
                   features.includes(feature.value)
                     ? 'border-purple-500 bg-purple-500/20'
                     : 'border-purple-500/30 bg-purple-900/20 hover:bg-purple-900/30'
                 }`}
               >
-                <div className="text-purple-100">{feature.label}</div>
-                <div className="text-xs text-purple-400">+£{feature.price}</div>
+                <div className="text-purple-100 md:text-[0.84rem] lg:text-base md:leading-snug lg:leading-normal">{feature.label}</div>
+                <div className="text-xs md:text-[0.68rem] lg:text-xs text-purple-400">+£{feature.price}</div>
               </button>
             ))}
           </div>
         </div>
 
         {/* Timeline */}
-        <div className="mb-6">
-          <label className="block text-purple-300 mb-3 text-sm md:text-base">Timeline</label>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="mb-6 md:mb-4 lg:mb-6">
+          <label className="block text-purple-300 mb-3 md:mb-2 lg:mb-3 text-sm md:text-[0.88rem] lg:text-base">Timeline</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-2.5 lg:gap-3">
             {timelines.map(time => (
               <button
                 key={time.value}
                 onClick={() => setTimeline(time.value)}
-                className={`p-3 text-sm rounded border transition-all ${
+                className={`p-3 md:px-3 md:py-2.5 lg:p-3 text-sm md:text-[0.76rem] lg:text-sm rounded border transition-all ${
                   timeline === time.value
                     ? 'border-purple-500 bg-purple-500/20'
                     : 'border-purple-500/30 bg-purple-900/20 hover:bg-purple-900/30'
                 }`}
               >
-                <div className="text-purple-100">{time.label}</div>
+                <div className="text-purple-100 md:text-[0.84rem] lg:text-base md:leading-snug lg:leading-normal">{time.label}</div>
                 {time.extraCharge > 0 && (
-                  <div className="text-xs text-purple-400">+£{time.extraCharge}</div>
+                  <div className="text-xs md:text-[0.68rem] lg:text-xs text-purple-400">+£{time.extraCharge}</div>
                 )}
               </button>
             ))}
@@ -282,19 +282,19 @@ function PriceEstimateModal({ onClose, onOpenContact }: PriceEstimateModalProps)
         <button
           onClick={calculatePrice}
           disabled={!projectType || !timeline}
-          className="w-full py-3 bg-purple-600 hover:bg-purple-500 disabled:bg-purple-900/50 disabled:cursor-not-allowed text-white rounded-lg shadow-[0_0_20px_rgba(168,85,247,0.5)] transition-all duration-300 mb-4"
+          className="w-full py-3 md:py-2.5 lg:py-3 bg-purple-600 hover:bg-purple-500 disabled:bg-purple-900/50 disabled:cursor-not-allowed text-white md:text-[0.88rem] lg:text-base rounded-lg shadow-[0_0_20px_rgba(168,85,247,0.5)] transition-all duration-300 mb-3 lg:mb-4"
         >
           Calculate Estimate
         </button>
 
         {/* Estimated Price */}
         {estimatedPrice !== null && (
-          <div className="text-center p-6 bg-purple-500/10 border border-purple-500/30 rounded-lg mb-4">
-            <div className="text-purple-400 text-sm mb-2">Estimated Price Range</div>
-            <div className="text-4xl font-bold text-purple-100" style={{ textShadow: '0 0 20px #a855f7' }}>
+          <div className="text-center p-6 md:p-4 lg:p-6 bg-purple-500/10 border border-purple-500/30 rounded-lg mb-3 lg:mb-4">
+            <div className="text-purple-400 text-sm md:text-[0.78rem] lg:text-sm mb-1.5 lg:mb-2">Estimated Price Range</div>
+            <div className="text-4xl md:text-[1.8rem] lg:text-4xl font-bold text-purple-100" style={{ textShadow: '0 0 20px #a855f7' }}>
               £{estimatedPrice.toLocaleString()}
             </div>
-            <div className="text-purple-400 text-sm mt-2">*Final price may vary based on specific requirements</div>
+            <div className="text-purple-400 text-sm md:text-[0.76rem] lg:text-sm mt-1.5 lg:mt-2">*Final price may vary based on specific requirements</div>
           </div>
         )}
 
@@ -304,7 +304,7 @@ function PriceEstimateModal({ onClose, onOpenContact }: PriceEstimateModalProps)
             onClose();
             onOpenContact?.();
           }}
-          className="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-lg shadow-[0_0_20px_rgba(168,85,247,0.5)] hover:shadow-[0_0_30px_rgba(168,85,247,0.7)] transition-all duration-300 flex items-center justify-center gap-2"
+          className="w-full py-3 md:py-2.5 lg:py-3 bg-purple-600 hover:bg-purple-500 text-white md:text-[0.88rem] lg:text-base rounded-lg shadow-[0_0_20px_rgba(168,85,247,0.5)] hover:shadow-[0_0_30px_rgba(168,85,247,0.7)] transition-all duration-300 flex items-center justify-center gap-2"
         >
           <Send className="w-4 h-4" />
           <span>Contact Me</span>
@@ -313,7 +313,7 @@ function PriceEstimateModal({ onClose, onOpenContact }: PriceEstimateModalProps)
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-10 h-10 md:w-8 md:h-8 flex items-center justify-center rounded-full bg-purple-900/50 hover:bg-purple-800/50 text-purple-300 hover:text-purple-100 transition-colors z-20"
+          className="absolute top-4 right-4 w-10 h-10 md:top-3 md:right-3 md:w-7 md:h-7 lg:top-4 lg:right-4 lg:w-8 lg:h-8 flex items-center justify-center rounded-full bg-purple-900/50 hover:bg-purple-800/50 text-purple-300 hover:text-purple-100 transition-colors z-20"
         >
           ✕
         </button>

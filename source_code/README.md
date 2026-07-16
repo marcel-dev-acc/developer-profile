@@ -7,5 +7,7 @@
 
   Run `npm i` to install the dependencies.
 
+  Copy `.env.example` to `.env` and update values as needed.
+
   Run `npm run dev` to start the development server.
   

@@ -10,14 +10,41 @@ interface TerminalContactProps {
   onClose?: () => void;
 }
 
+interface ContactFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  message: string;
+}
+
+interface ContactApiResponse {
+  ok?: boolean;
+  message?: string;
+}
+
+const CONTACT_API_BASE_URL = import.meta.env.VITE_CONTACT_API_BASE_URL ?? '';
+const CONTACT_ENDPOINT = `${CONTACT_API_BASE_URL.replace(/\/$/, '')}/contact`;
+
+const initialMessages: Message[] = [
+  { type: 'system', text: 'CONTACT TERMINAL v2.1.0' },
+  { type: 'system', text: 'Type /help for available commands' },
+  { type: 'system', text: '> Ready for input...' },
+];
+
+const initialFormData: ContactFormData = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  message: '',
+};
+
 export function TerminalContact({ isModal = false, onClose }: TerminalContactProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    { type: 'system', text: 'CONTACT TERMINAL v2.0.1' },
-    { type: 'system', text: 'Type /help for available commands' },
-    { type: 'system', text: '> Ready for input...' },
-  ]);
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState('');
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [formData, setFormData] = useState<ContactFormData>(initialFormData);
+  const [isSending, setIsSending] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [cursorVisible, setCursorVisible] = useState(true);
   const [isMatrixMode, setIsMatrixMode] = useState(false);
@@ -25,7 +52,16 @@ export function TerminalContact({ isModal = false, onClose }: TerminalContactPro
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const commands = ['/name', '/email', '/message', '/send', '/clear', '/help'];
+  const commands = [
+    '/name',
+    '/email',
+    '/phone',
+    '/message',
+    '/send',
+    '/clear',
+    '/help',
+    '/matrix',
+  ];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -102,9 +138,78 @@ export function TerminalContact({ isModal = false, onClose }: TerminalContactPro
     }
   }, [input]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const sendContactMessage = async () => {
+    const missingFields = [
+      ['First name', formData.firstName],
+      ['Last name', formData.lastName],
+      ['Email', formData.email],
+      ['Message', formData.message],
+    ].filter(([, value]) => !value.trim());
+
+    if (missingFields.length > 0) {
+      setMessages(prev => [
+        ...prev,
+        { type: 'error', text: 'Error: Missing required fields' },
+        ...missingFields.map(([label]) => ({ type: 'system' as const, text: `${label}: NOT SET` })),
+      ]);
+      return;
+    }
+
+    setIsSending(true);
+    setMessages(prev => [...prev, { type: 'system', text: `Sending message to ${CONTACT_ENDPOINT}...` }]);
+
+    try {
+      const payload: Record<string, string> = {
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        organisation_id: '2c4d46bb-611b-463a-9cd4-1486a755850a',
+        email: formData.email,
+        enquiry_type: 'general',
+        message: formData.message,
+      };
+
+      if (formData.phone.trim()) {
+        payload.phone = formData.phone;
+      }
+
+      const response = await fetch(CONTACT_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      let responseBody: ContactApiResponse = {};
+      try {
+        responseBody = (await response.json()) as ContactApiResponse;
+      } catch {
+        // Ignore JSON parse errors and fall back to status-based messages.
+      }
+
+      if (!response.ok || !responseBody.ok) {
+        const errorMessage = responseBody.message || `Request failed with status ${response.status}`;
+        setMessages(prev => [...prev, { type: 'error', text: `Error: ${errorMessage}` }]);
+        return;
+      }
+
+      setMessages(prev => [
+        ...prev,
+        { type: 'success', text: '✓ Message sent successfully!' },
+        { type: 'system', text: responseBody.message || 'Contact form submitted successfully.' },
+      ]);
+      setFormData(initialFormData);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unexpected network error';
+      setMessages(prev => [...prev, { type: 'error', text: `Error: ${errorMessage}` }]);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || isSending) return;
 
     // Add user input to messages
     setMessages(prev => [...prev, { type: 'user', text: `> ${input}` }]);
@@ -119,12 +224,14 @@ export function TerminalContact({ isModal = false, onClose }: TerminalContactPro
         setMessages(prev => [
           ...prev,
           { type: 'system', text: 'Available commands:' },
-          { type: 'system', text: '  /name <your name> - Set your name' },
+          { type: 'system', text: '  /name <full name> - Set first and last name' },
           { type: 'system', text: '  /email <your email> - Set your email' },
+          { type: 'system', text: '  /phone <phone number> - Set your phone number' },
           { type: 'system', text: '  /message <your message> - Set your message' },
-          { type: 'system', text: '  /send - Send the message' },
+          { type: 'system', text: '  /send - Send message' },
           { type: 'system', text: '  /clear - Clear the terminal' },
           { type: 'system', text: '  /help - Show this help' },
+          { type: 'system', text: '  /matrix - Enter the Matrix' },
         ]);
         break;
 
@@ -132,8 +239,16 @@ export function TerminalContact({ isModal = false, onClose }: TerminalContactPro
         if (!value) {
           setMessages(prev => [...prev, { type: 'error', text: 'Error: Please provide a name' }]);
         } else {
-          setFormData(prev => ({ ...prev, name: value }));
-          setMessages(prev => [...prev, { type: 'success', text: `✓ Name set to: ${value}` }]);
+          const nameParts = value.trim().split(/\s+/);
+          const firstName = nameParts[0] || '';
+          const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : 'not given';
+
+          if (!firstName) {
+            setMessages(prev => [...prev, { type: 'error', text: 'Error: Please provide at least a first name' }]);
+          } else {
+            setFormData(prev => ({ ...prev, firstName, lastName }));
+            setMessages(prev => [...prev, { type: 'success', text: `✓ Name set to: ${firstName} ${lastName}` }]);
+          }
         }
         break;
 
@@ -148,6 +263,15 @@ export function TerminalContact({ isModal = false, onClose }: TerminalContactPro
         }
         break;
 
+      case '/phone':
+        if (!value) {
+          setMessages(prev => [...prev, { type: 'error', text: 'Error: Please provide a phone number' }]);
+        } else {
+          setFormData(prev => ({ ...prev, phone: value }));
+          setMessages(prev => [...prev, { type: 'success', text: `✓ Phone set to: ${value}` }]);
+        }
+        break;
+
       case '/message':
         if (!value) {
           setMessages(prev => [...prev, { type: 'error', text: 'Error: Please provide a message' }]);
@@ -158,32 +282,16 @@ export function TerminalContact({ isModal = false, onClose }: TerminalContactPro
         break;
 
       case '/send':
-        if (!formData.name || !formData.email || !formData.message) {
-          setMessages(prev => [
-            ...prev,
-            { type: 'error', text: 'Error: Missing required fields' },
-            { type: 'system', text: `Name: ${formData.name || 'NOT SET'}` },
-            { type: 'system', text: `Email: ${formData.email || 'NOT SET'}` },
-            { type: 'system', text: `Message: ${formData.message || 'NOT SET'}` },
-          ]);
+        if (isSending) {
+          setMessages(prev => [...prev, { type: 'system', text: 'Request already in progress...' }]);
         } else {
-          setMessages(prev => [
-            ...prev,
-            { type: 'system', text: 'Sending message...' },
-            { type: 'success', text: '✓ Message sent successfully!' },
-            { type: 'system', text: 'Thank you for reaching out. I\'ll get back to you soon.' },
-          ]);
-          setFormData({ name: '', email: '', message: '' });
+          await sendContactMessage();
         }
         break;
 
       case '/clear':
-        setMessages([
-          { type: 'system', text: 'CONTACT TERMINAL v2.0.1' },
-          { type: 'system', text: 'Type /help for available commands' },
-          { type: 'system', text: '> Ready for input...' },
-        ]);
-        setFormData({ name: '', email: '', message: '' });
+        setMessages(initialMessages);
+        setFormData(initialFormData);
         break;
 
       case '/matrix':
@@ -294,8 +402,9 @@ export function TerminalContact({ isModal = false, onClose }: TerminalContactPro
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 className="w-full bg-transparent text-green-400 font-mono outline-none placeholder-green-600/50 caret-transparent"
-                placeholder="Type a command..."
+                placeholder={isSending ? 'Sending...' : 'Type a command...'}
                 autoFocus
+                disabled={isSending}
                 style={{ caretColor: 'transparent' }}
               />
               <span

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact | Marcel Mulders</title>
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/contact.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <div class="animated-bg"></div>
+    <div class="terminal-window">
+      <canvas class="matrix-canvas" data-matrix-canvas hidden></canvas>
+      <div class="scanline-overlay"></div>
+
+      <div class="terminal-titlebar">
+        <div class="terminal-dot red" data-terminal-red-dot></div>
+        <div class="terminal-dot yellow" data-terminal-yellow-dot></div>
+        <div class="terminal-dot green"></div>
+        <span class="terminal-label">contact@terminal</span>
+      </div>
+
+      <div class="terminal-log" data-terminal-log></div>
+
+      <div class="terminal-suggestions" data-terminal-suggestions hidden></div>
+
+      <form class="terminal-input-row" data-terminal-form>
+        <div class="row">
+          <span class="prompt">&gt;</span>
+          <div class="terminal-input-wrap">
+            <input type="text" data-terminal-input placeholder="Type a command..." autofocus autocomplete="off" />
+            <span class="fake-cursor" data-terminal-cursor>▊</span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../assets/js/animated-background.js"></script>
+  <script src="../assets/js/contact.js"></script>
+</body>
+</html>

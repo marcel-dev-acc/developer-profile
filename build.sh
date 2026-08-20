@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# Build script for GitHub Pages deployment
-# This script builds the project and copies output to the repo root
+# Build script for the OLD React SPA in source_code/ (kept for comparison only).
+# WARNING: the repo root is now the real static site (index.html, contact.html,
+# website-cost-estimator.html, css/, js/, assets/) — running this will DELETE it
+# and overwrite it with a React rebuild. Do not run this unless that's what you want.
 
 set -e  # Exit on error
 

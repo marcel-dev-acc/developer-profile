@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Website Cost Estimator | Marcel Mulders</title>
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/estimator.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <div class="animated-bg"></div>
+    <div class="page-container">
+      <a href="../" class="back-link">&larr; Back to Home</a>
+
+      <div class="estimator-card">
+        <h1>Project Price Estimator</h1>
+        <p class="estimator-intro">A formal quote will be generated before work commences and invoiced on completion. Annual invoices will be issued for maintenance or product service costs.</p>
+
+        <div class="estimator-field">
+          <label class="field-label">Project Type</label>
+          <div class="option-grid" data-project-type-grid></div>
+        </div>
+
+        <div class="estimator-field">
+          <label class="field-label">Additional Features</label>
+          <div class="option-grid features" data-features-grid></div>
+        </div>
+
+        <div class="estimator-field">
+          <label class="field-label">Timeline</label>
+          <div class="option-grid" data-timeline-grid></div>
+        </div>
+
+        <button type="button" class="btn-glow" data-calculate-btn disabled>Calculate Estimate</button>
+
+        <div class="estimate-result" data-result-box hidden>
+          <div class="result-label">Estimated Price Range</div>
+          <div class="result-value" data-result-value></div>
+          <div class="result-note">*Final price may vary based on specific requirements</div>
+        </div>
+
+        <div class="estimator-actions">
+          <a href="../contact/" class="btn-glow" style="text-decoration: none;">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            <span>Contact Me</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/animated-background.js"></script>
+  <script src="../assets/js/estimator.js"></script>
+</body>
+</html>

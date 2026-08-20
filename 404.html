@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 | Marcel Mulders</title>
+  <!--
+    GitHub Pages serves this file for any unmatched path under the project
+    site without changing the browser URL, so plain relative links/assets
+    would resolve against the *mistyped* path's depth, not this file's
+    location. <base> pins every relative href/src below to the site root.
+  -->
+  <base href="/developer-profile/" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <style>
+    .not-found {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 4rem);
+      text-align: center;
+    }
+
+    .not-found .code {
+      font-size: 6rem;
+      font-weight: 700;
+      margin: 0;
+      color: var(--purple-200);
+      text-shadow: 0 0 10px #a855f7, 0 0 20px #a855f7, 0 0 40px #a855f7, 0 0 80px #a855f7;
+    }
+
+    @media (min-width: 768px) {
+      .not-found .code { font-size: 9rem; }
+    }
+
+    .not-found p {
+      color: rgba(216, 180, 254, 0.8);
+      font-size: 1.1rem;
+      margin: 0.5rem 0 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <div class="animated-bg"></div>
+    <div class="page-container not-found">
+      <h1 class="code">404</h1>
+      <p>This page doesn't exist.</p>
+      <a href="index.html" class="btn-pill">&larr; Back to Home</a>
+    </div>
+  </div>
+
+  <script src="assets/js/animated-background.js"></script>
+</body>
+</html>

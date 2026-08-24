@@ -1,9 +1,17 @@
+/* Normal in-flow block (not position: fixed) so the page scrolls like any
+   other document — on mobile this lets the browser scroll the focused
+   input above the on-screen keyboard instead of it being clipped by a
+   viewport-height box pinned to the (unshrinking) layout viewport. */
+.terminal-page {
+  padding: 0;
+  overflow: visible;
+}
+
 .terminal-window {
-  position: fixed;
-  inset: 0;
-  z-index: 30;
-  display: flex;
-  flex-direction: column;
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   background: rgba(0, 0, 0, 0.9);
   backdrop-filter: blur(4px);
 }
@@ -35,10 +43,7 @@
 }
 
 .terminal-log {
-  position: relative;
   padding: 1rem 1.5rem;
-  flex: 1 1 auto;
-  overflow-y: auto;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   font-size: 0.85rem;
 }
@@ -94,7 +99,6 @@
 }
 
 .terminal-input-row {
-  flex: 0 0 auto;
   border-top: 1px solid rgba(168, 85, 247, 0.3);
   background: rgba(88, 28, 135, 0.2);
   padding: 0.75rem 1.5rem;
@@ -104,6 +108,19 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.turnstile-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 1.5rem 1.5rem;
+  border-top: 1px solid rgba(168, 85, 247, 0.3);
+  background: rgba(88, 28, 135, 0.2);
+}
+
+.turnstile-wrap .cf-turnstile {
+  width: 100%;
+  max-width: 300px;
 }
 
 .terminal-input-row .prompt {
@@ -118,6 +135,7 @@
 
 .terminal-input-wrap input {
   width: 100%;
+  padding: 0;
   background: transparent;
   border: none;
   outline: none;
@@ -136,7 +154,8 @@
   top: 0;
   left: 0;
   color: var(--green-400);
-  font-family: monospace;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 1rem;
   pointer-events: none;
   transition: opacity 0.1s;
 }

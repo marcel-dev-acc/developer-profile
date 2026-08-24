@@ -46,7 +46,9 @@
         line.textContent = msg.text;
         logEl.appendChild(line);
       });
-      logEl.scrollTop = logEl.scrollHeight;
+      // The log grows the page rather than scrolling in its own box, so keep
+      // the input row (and whatever was just printed above it) in view.
+      formEl.scrollIntoView({ block: 'end' });
     }
 
     function pushMessages(newOnes) {
@@ -89,7 +91,7 @@
     }
 
     function updateCursorPosition() {
-      cursorEl.style.transform = 'translateX(' + (inputEl.value.length * 0.6) + 'em)';
+      cursorEl.style.transform = 'translateX(' + inputEl.value.length + 'ch)';
     }
 
     inputEl.addEventListener('input', function () {
@@ -130,8 +132,17 @@
         return Promise.resolve();
       }
 
+      var turnstileToken = window.turnstile && typeof window.turnstile.getResponse === 'function'
+        ? window.turnstile.getResponse()
+        : '';
+
+      if (!turnstileToken) {
+        pushMessages([{ type: 'error', text: 'Error: Please complete the verification challenge' }]);
+        return Promise.resolve();
+      }
+
       setSending(true);
-      pushMessages([{ type: 'system', text: 'Sending message to ' + CONTACT_ENDPOINT + '...' }]);
+      pushMessages([{ type: 'system', text: 'Sending message...' }]);
 
       var payload = {
         first_name: formData.firstName,
@@ -139,7 +150,8 @@
         organisation_id: ORGANISATION_ID,
         email: formData.email,
         enquiry_type: 'general',
-        message: formData.message
+        message: formData.message,
+        turnstile_token: turnstileToken
       };
 
       if (formData.phone.trim()) {
@@ -178,6 +190,9 @@
         })
         .finally(function () {
           setSending(false);
+          if (window.turnstile && typeof window.turnstile.reset === 'function') {
+            window.turnstile.reset();
+          }
         });
     }
 

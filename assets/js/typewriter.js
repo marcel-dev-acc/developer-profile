@@ -1,6 +1,6 @@
 (function () {
   var TEXTS = [
-    "Seasoned Senior Software Developer delivering secure, fault-tolerant solutions across mobile, web, backend, and infrastructure.",
+    "I am a seasoned Senior Software Developer delivering secure, fault-tolerant solutions across mobile, web, backend, and infrastructure.",
     "I work closely with clients on requirements and solution architecture, then lead testing, documentation, and handover to ensure reliable delivery.",
     "I mentor engineers, run React Native knowledge-sharing, and champion continuous learning and security-focused engineering practices."
   ];

@@ -4,11 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contact | Marcel Mulders</title>
+  <link rel="icon" type="image/png" href="../assets/cartoon_profile_photo.png" />
   <link rel="stylesheet" href="../assets/css/base.css" />
   <link rel="stylesheet" href="../assets/css/contact.css" />
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
-  <div class="page-shell">
+  <div class="page-shell terminal-page">
     <div class="animated-bg"></div>
     <div class="terminal-window">
       <canvas class="matrix-canvas" data-matrix-canvas hidden></canvas>
@@ -34,6 +36,10 @@
           </div>
         </div>
       </form>
+
+      <div class="turnstile-wrap">
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAAEOzS56m0M5xjAFe" data-theme="dark" data-size="flexible"></div>
+      </div>
     </div>
   </div>
 

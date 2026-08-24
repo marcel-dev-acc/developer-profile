@@ -11,46 +11,65 @@
     location. <base> pins every relative href/src below to the site root.
   -->
   <base href="/developer-profile/" />
+  <link rel="icon" type="image/png" href="assets/cartoon_profile_photo.png" />
   <link rel="stylesheet" href="assets/css/base.css" />
-  <style>
-    .not-found {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: calc(100vh - 4rem);
-      text-align: center;
-    }
-
-    .not-found .code {
-      font-size: 6rem;
-      font-weight: 700;
-      margin: 0;
-      color: var(--purple-200);
-      text-shadow: 0 0 10px #a855f7, 0 0 20px #a855f7, 0 0 40px #a855f7, 0 0 80px #a855f7;
-    }
-
-    @media (min-width: 768px) {
-      .not-found .code { font-size: 9rem; }
-    }
-
-    .not-found p {
-      color: rgba(216, 180, 254, 0.8);
-      font-size: 1.1rem;
-      margin: 0.5rem 0 1.5rem;
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/404.css" />
 </head>
 <body>
   <div class="page-shell">
     <div class="animated-bg"></div>
     <div class="page-container not-found">
-      <h1 class="code">404</h1>
-      <p>This page doesn't exist.</p>
-      <a href="index.html" class="btn-pill">&larr; Back to Home</a>
+      <div class="hud-badge">
+        <span class="dot"></span>
+        <span class="hud-label">Status:</span>
+        <span class="hud-value">Signal Lost</span>
+      </div>
+
+      <div class="orbit-scene" aria-hidden="true">
+        <div class="radar-sweep"></div>
+        <div class="orbit-ring ring-1"></div>
+        <div class="orbit-ring ring-2"></div>
+        <div class="orbit-ring ring-3"></div>
+        <div class="planet-core"></div>
+        <span class="blip blip-1"></span>
+        <span class="blip blip-2"></span>
+        <div class="orbit-track">
+          <div class="satellite-wrap">
+            <svg class="satellite" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="17" y="17" width="14" height="14" rx="2"></rect>
+              <line x1="6" y1="6" x2="17" y2="17"></line>
+              <line x1="42" y1="6" x2="31" y2="17"></line>
+              <rect x="1" y="1" width="9" height="14" rx="1" transform="rotate(-45 5.5 8)"></rect>
+              <rect x="38" y="1" width="9" height="14" rx="1" transform="rotate(45 42.5 8)"></rect>
+              <line x1="24" y1="17" x2="24" y2="8"></line>
+              <circle class="beacon" cx="24" cy="6" r="2" stroke="none"></circle>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <h1 class="glitch-heading">
+        <span class="code">404</span>
+      </h1>
+      <p class="error-subtitle">Transmission Interrupted</p>
+
+      <div class="boot-terminal">
+        <div class="scanline-overlay"></div>
+        <div class="boot-lines" data-boot-lines></div>
+      </div>
+
+      <p class="hint">The page you're looking for drifted out of orbit, or never existed in this timeline.</p>
+
+      <div class="action-row">
+        <a href="index.html" class="btn-pill">&larr; Back to Home</a>
+        <a href="contact/" class="btn-pill btn-pill--alt">Report Anomaly</a>
+      </div>
+
+      <div class="telemetry" data-telemetry aria-hidden="true"></div>
     </div>
   </div>
 
   <script src="assets/js/animated-background.js"></script>
+  <script src="assets/js/404.js"></script>
 </body>
 </html>

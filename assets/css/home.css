@@ -308,6 +308,34 @@
   margin: 0;
 }
 
+.site-screenshot {
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  margin: 1.25rem auto;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(168, 85, 247, 0.6);
+  box-shadow:
+    0 0 10px rgba(168, 85, 247, 0.6),
+    0 0 25px rgba(168, 85, 247, 0.4),
+    0 0 45px rgba(168, 85, 247, 0.2);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.site-screenshot:hover {
+  box-shadow:
+    0 0 15px rgba(168, 85, 247, 0.9),
+    0 0 40px rgba(168, 85, 247, 0.6),
+    0 0 70px rgba(168, 85, 247, 0.35);
+  transform: scale(1.01);
+}
+
+@media (max-width: 640px) {
+  .site-screenshot {
+    width: calc(100% - 1.25rem);
+  }
+}
+
 /* Current projects */
 .project-list {
   display: flex;
@@ -429,7 +457,6 @@
 .neon-cta {
   position: relative;
   margin: 4rem 0;
-  padding: 3rem 0;
   display: flex;
   flex-direction: column;
   align-items: center;

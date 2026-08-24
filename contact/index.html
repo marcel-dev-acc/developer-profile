@@ -16,29 +16,75 @@
       <canvas class="matrix-canvas" data-matrix-canvas hidden></canvas>
       <div class="scanline-overlay"></div>
 
-      <div class="terminal-titlebar">
-        <div class="terminal-dot red" data-terminal-red-dot></div>
-        <div class="terminal-dot yellow" data-terminal-yellow-dot></div>
-        <div class="terminal-dot green"></div>
-        <span class="terminal-label">contact@terminal</span>
+      <div data-terminal-mode>
+        <div class="terminal-titlebar">
+          <div class="terminal-dot red" data-terminal-red-dot></div>
+          <div class="terminal-dot yellow" data-terminal-yellow-dot></div>
+          <div class="terminal-dot green"></div>
+          <span class="terminal-label">contact@terminal</span>
+        </div>
+
+        <div class="terminal-log" data-terminal-log></div>
+
+        <div class="terminal-suggestions" data-terminal-suggestions hidden></div>
+
+        <form class="terminal-input-row" data-terminal-form>
+          <div class="row">
+            <span class="prompt">&gt;</span>
+            <div class="terminal-input-wrap">
+              <input type="text" data-terminal-input placeholder="Type a command..." autofocus autocomplete="off" />
+              <span class="fake-cursor" data-terminal-cursor>▊</span>
+            </div>
+          </div>
+        </form>
       </div>
 
-      <div class="terminal-log" data-terminal-log></div>
+      <div data-simple-mode hidden>
+        <a href="../" class="back-link">&larr; Back to Home</a>
 
-      <div class="terminal-suggestions" data-terminal-suggestions hidden></div>
+        <div class="simple-contact">
+          <h2 class="simple-contact-title">Send a Message</h2>
+          <p class="simple-contact-intro">Prefer a normal form? Fill in your details below and I'll get back to you.</p>
 
-      <form class="terminal-input-row" data-terminal-form>
-        <div class="row">
-          <span class="prompt">&gt;</span>
-          <div class="terminal-input-wrap">
-            <input type="text" data-terminal-input placeholder="Type a command..." autofocus autocomplete="off" />
-            <span class="fake-cursor" data-terminal-cursor>▊</span>
-          </div>
+          <form data-simple-form novalidate>
+            <div class="simple-field">
+              <label for="simple-first-name">First name</label>
+              <input type="text" id="simple-first-name" data-simple-first-name autocomplete="given-name" />
+            </div>
+
+            <div class="simple-field">
+              <label for="simple-last-name">Last name</label>
+              <input type="text" id="simple-last-name" data-simple-last-name autocomplete="family-name" />
+            </div>
+
+            <div class="simple-field">
+              <label for="simple-email">Email</label>
+              <input type="email" id="simple-email" data-simple-email autocomplete="email" />
+            </div>
+
+            <div class="simple-field">
+              <label for="simple-phone">Phone (optional)</label>
+              <input type="tel" id="simple-phone" data-simple-phone autocomplete="tel" />
+            </div>
+
+            <div class="simple-field">
+              <label for="simple-message">Message</label>
+              <textarea id="simple-message" data-simple-message rows="5"></textarea>
+            </div>
+
+            <div class="simple-status" data-simple-status hidden role="status" aria-live="polite"></div>
+
+            <button type="submit" class="btn-glow" style="max-width: 300px;" data-simple-submit>Send Message</button>
+          </form>
         </div>
-      </form>
+      </div>
 
       <div class="turnstile-wrap">
         <div class="cf-turnstile" data-sitekey="0x4AAAAAAEOzS56m0M5xjAFe" data-theme="dark" data-size="flexible"></div>
+      </div>
+
+      <div class="mode-toggle-wrap">
+        <button type="button" class="mode-toggle-btn" data-mode-toggle>Switch to simpler contact form</button>
       </div>
     </div>
   </div>

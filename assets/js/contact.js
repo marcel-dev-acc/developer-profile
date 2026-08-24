@@ -15,6 +15,82 @@
     return { firstName: '', lastName: '', email: '', phone: '', message: '' };
   }
 
+  // Shared by both the terminal and the plain form: validates, checks the
+  // Turnstile token, POSTs to the worker, and reports outcomes via callbacks
+  // so each UI can render feedback its own way (terminal log lines vs a
+  // status banner).
+  function submitLead(fields, handlers) {
+    var missingFields = [
+      ['First name', fields.firstName],
+      ['Last name', fields.lastName],
+      ['Email', fields.email],
+      ['Message', fields.message]
+    ].filter(function (pair) { return !pair[1] || !pair[1].trim(); });
+
+    if (missingFields.length > 0) {
+      handlers.onValidationError(missingFields.map(function (pair) { return pair[0]; }));
+      return Promise.resolve();
+    }
+
+    var turnstileToken = window.turnstile && typeof window.turnstile.getResponse === 'function'
+      ? window.turnstile.getResponse()
+      : '';
+
+    if (!turnstileToken) {
+      handlers.onMissingVerification();
+      return Promise.resolve();
+    }
+
+    handlers.onSending();
+
+    var payload = {
+      first_name: fields.firstName,
+      last_name: fields.lastName,
+      organisation_id: ORGANISATION_ID,
+      email: fields.email,
+      enquiry_type: 'general',
+      message: fields.message,
+      turnstile_token: turnstileToken
+    };
+
+    if (fields.phone && fields.phone.trim()) {
+      payload.phone = fields.phone;
+    }
+
+    return fetch(CONTACT_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(function (response) {
+        return response.json().catch(function () { return {}; }).then(function (body) {
+          return { response: response, body: body };
+        });
+      })
+      .then(function (result) {
+        var response = result.response;
+        var body = result.body || {};
+
+        if (!response.ok || !body.ok) {
+          var errorMessage = body.message || ('Request failed with status ' + response.status);
+          handlers.onError(errorMessage);
+          return;
+        }
+
+        handlers.onSuccess(body.message || 'Contact form submitted successfully.');
+      })
+      .catch(function (error) {
+        var errorMessage = (error && error.message) || 'Unexpected network error';
+        handlers.onError(errorMessage);
+      })
+      .finally(function () {
+        handlers.onSettled();
+        if (window.turnstile && typeof window.turnstile.reset === 'function') {
+          window.turnstile.reset();
+        }
+      });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     var logEl = document.querySelector('[data-terminal-log]');
     var suggestionsEl = document.querySelector('[data-terminal-suggestions]');
@@ -25,6 +101,18 @@
     var redDotEl = document.querySelector('[data-terminal-red-dot]');
     var yellowDotEl = document.querySelector('[data-terminal-yellow-dot]');
 
+    var terminalModeEl = document.querySelector('[data-terminal-mode]');
+    var simpleModeEl = document.querySelector('[data-simple-mode]');
+    var modeToggleBtn = document.querySelector('[data-mode-toggle]');
+    var simpleFormEl = document.querySelector('[data-simple-form]');
+    var simpleFirstNameEl = document.querySelector('[data-simple-first-name]');
+    var simpleLastNameEl = document.querySelector('[data-simple-last-name]');
+    var simpleEmailEl = document.querySelector('[data-simple-email]');
+    var simplePhoneEl = document.querySelector('[data-simple-phone]');
+    var simpleMessageEl = document.querySelector('[data-simple-message]');
+    var simpleStatusEl = document.querySelector('[data-simple-status]');
+    var simpleSubmitBtn = document.querySelector('[data-simple-submit]');
+
     if (!formEl) return;
 
     function goHome() {
@@ -34,6 +122,8 @@
     var messages = INITIAL_MESSAGES.slice();
     var formData = initialFormData();
     var isSending = false;
+    var isSimpleSending = false;
+    var currentMode = 'terminal';
     var matrixAnimationFrame = null;
     var matrixTimeout = null;
     var matrixKeyHandler = null;
@@ -116,84 +206,111 @@
     }
 
     function sendContactMessage() {
-      var missingFields = [
-        ['First name', formData.firstName],
-        ['Last name', formData.lastName],
-        ['Email', formData.email],
-        ['Message', formData.message]
-      ].filter(function (pair) { return !pair[1].trim(); });
-
-      if (missingFields.length > 0) {
-        pushMessages(
-          [{ type: 'error', text: 'Error: Missing required fields' }].concat(
-            missingFields.map(function (pair) { return { type: 'system', text: pair[0] + ': NOT SET' }; })
-          )
-        );
-        return Promise.resolve();
-      }
-
-      var turnstileToken = window.turnstile && typeof window.turnstile.getResponse === 'function'
-        ? window.turnstile.getResponse()
-        : '';
-
-      if (!turnstileToken) {
-        pushMessages([{ type: 'error', text: 'Error: Please complete the verification challenge' }]);
-        return Promise.resolve();
-      }
-
-      setSending(true);
-      pushMessages([{ type: 'system', text: 'Sending message...' }]);
-
-      var payload = {
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        organisation_id: ORGANISATION_ID,
-        email: formData.email,
-        enquiry_type: 'general',
-        message: formData.message,
-        turnstile_token: turnstileToken
-      };
-
-      if (formData.phone.trim()) {
-        payload.phone = formData.phone;
-      }
-
-      return fetch(CONTACT_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-        .then(function (response) {
-          return response.json().catch(function () { return {}; }).then(function (body) {
-            return { response: response, body: body };
-          });
-        })
-        .then(function (result) {
-          var response = result.response;
-          var body = result.body || {};
-
-          if (!response.ok || !body.ok) {
-            var errorMessage = body.message || ('Request failed with status ' + response.status);
-            pushMessages([{ type: 'error', text: 'Error: ' + errorMessage }]);
-            return;
-          }
-
+      return submitLead(formData, {
+        onValidationError: function (missing) {
+          pushMessages(
+            [{ type: 'error', text: 'Error: Missing required fields' }].concat(
+              missing.map(function (name) { return { type: 'system', text: name + ': NOT SET' }; })
+            )
+          );
+        },
+        onMissingVerification: function () {
+          pushMessages([{ type: 'error', text: 'Error: Please complete the verification challenge' }]);
+        },
+        onSending: function () {
+          setSending(true);
+          pushMessages([{ type: 'system', text: 'Sending message...' }]);
+        },
+        onSuccess: function (message) {
           pushMessages([
             { type: 'success', text: '✓ Message sent successfully!' },
-            { type: 'system', text: body.message || 'Contact form submitted successfully.' }
+            { type: 'system', text: message }
           ]);
           formData = initialFormData();
-        })
-        .catch(function (error) {
-          var errorMessage = (error && error.message) || 'Unexpected network error';
-          pushMessages([{ type: 'error', text: 'Error: ' + errorMessage }]);
-        })
-        .finally(function () {
+        },
+        onError: function (message) {
+          pushMessages([{ type: 'error', text: 'Error: ' + message }]);
+        },
+        onSettled: function () {
           setSending(false);
-          if (window.turnstile && typeof window.turnstile.reset === 'function') {
-            window.turnstile.reset();
+        }
+      });
+    }
+
+    function setSimpleStatus(type, text) {
+      if (!simpleStatusEl) return;
+      simpleStatusEl.hidden = !text;
+      simpleStatusEl.textContent = text || '';
+      simpleStatusEl.className = 'simple-status' + (type ? ' ' + type : '');
+    }
+
+    function setSimpleSending(value) {
+      isSimpleSending = value;
+      if (simpleSubmitBtn) {
+        simpleSubmitBtn.disabled = value;
+        simpleSubmitBtn.textContent = value ? 'Sending...' : 'Send Message';
+      }
+    }
+
+    if (simpleFormEl) {
+      simpleFormEl.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (isSimpleSending) return;
+
+        var fields = {
+          firstName: simpleFirstNameEl.value.trim(),
+          lastName: simpleLastNameEl.value.trim(),
+          email: simpleEmailEl.value.trim(),
+          phone: simplePhoneEl.value.trim(),
+          message: simpleMessageEl.value.trim()
+        };
+
+        submitLead(fields, {
+          onValidationError: function (missing) {
+            setSimpleStatus('error', 'Please fill in: ' + missing.join(', '));
+          },
+          onMissingVerification: function () {
+            setSimpleStatus('error', 'Please complete the verification challenge above.');
+          },
+          onSending: function () {
+            setSimpleSending(true);
+            setSimpleStatus('system', 'Sending message...');
+          },
+          onSuccess: function (message) {
+            setSimpleStatus('success', message);
+            simpleFormEl.reset();
+          },
+          onError: function (message) {
+            setSimpleStatus('error', message);
+          },
+          onSettled: function () {
+            setSimpleSending(false);
           }
         });
+      });
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      var isSimple = mode === 'simple';
+
+      if (terminalModeEl) terminalModeEl.hidden = isSimple;
+      if (simpleModeEl) simpleModeEl.hidden = !isSimple;
+      if (modeToggleBtn) {
+        modeToggleBtn.textContent = isSimple ? 'Switch to terminal contact form' : 'Switch to simpler contact form';
+      }
+
+      if (isSimple) {
+        if (simpleFirstNameEl) simpleFirstNameEl.focus();
+      } else {
+        inputEl.focus();
+      }
+    }
+
+    if (modeToggleBtn) {
+      modeToggleBtn.addEventListener('click', function () {
+        setMode(currentMode === 'terminal' ? 'simple' : 'terminal');
+      });
     }
 
     function stopMatrix() {
@@ -376,7 +493,7 @@
       renderSuggestions([]);
     });
 
+    setMode('terminal');
     renderMessages();
-    inputEl.focus();
   });
 })();

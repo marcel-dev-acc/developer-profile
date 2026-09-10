@@ -7,51 +7,107 @@
   <link rel="icon" type="image/png" href="../assets/cartoon_profile_photo.png" />
   <link rel="stylesheet" href="../assets/css/base.css" />
   <link rel="stylesheet" href="../assets/css/estimator.css" />
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
-  <div class="page-shell" style="padding: 2rem 0.5rem;">
+  <div class="estimate-bar" data-estimate-bar>
+    <div class="estimate-bar-inner">
+      <div class="estimate-stat">
+        <span class="estimate-stat-label">Estimated price</span>
+        <span class="estimate-stat-value" data-total-price>Select a project type</span>
+      </div>
+      <div class="estimate-stat">
+        <span class="estimate-stat-label">Build timeframe</span>
+        <span class="estimate-stat-value" data-total-timeframe>&mdash;</span>
+      </div>
+      <button type="button" class="breakdown-toggle" data-breakdown-toggle disabled>
+        <span data-breakdown-toggle-text>View breakdown</span>
+        <svg class="icon breakdown-chevron" data-breakdown-chevron viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+    </div>
+    <div class="estimate-breakdown" data-estimate-breakdown hidden>
+      <div class="estimate-breakdown-inner" data-breakdown-list></div>
+    </div>
+  </div>
+
+  <div class="page-shell estimator-shell">
     <div class="animated-bg"></div>
-    <div class="page-container">
+
+    <div class="page-container estimator-container">
       <a href="../" class="back-link">&larr; Back to Home</a>
 
-      <div class="estimator-card">
-        <h1>Project Price Estimator</h1>
-        <p class="estimator-intro">A formal quote will be generated before work commences and invoiced on completion. Annual invoices will be issued for maintenance or product service costs.</p>
+      <header class="estimator-header">
+        <div class="estimator-header-row">
+          <h1>Project Price Estimator</h1>
+          <button type="button" class="reset-link" data-reset-estimate hidden>&#8634; Start over</button>
+        </div>
+        <p class="estimator-intro">A formal quote will be generated before work commences. Payment is split 25% upfront to begin work and 75% on completion &mdash; annual invoices are issued separately for any ongoing maintenance or product service costs.</p>
+        <p class="estimator-intro">Build your project below &mdash; the price and timeframe above update instantly as you go. Come back any time &mdash; your in-progress estimate is saved on this device.</p>
+      </header>
 
-        <div class="estimator-field">
-          <label class="field-label">Project Type</label>
-          <div class="option-grid" data-project-type-grid></div>
+      <section class="estimator-section">
+        <div class="section-heading">
+          <h2 class="section-title">Project Type</h2>
+          <p class="section-subtitle">Pick the option that best matches what you need.</p>
+        </div>
+        <div class="option-grid" data-project-type-grid></div>
+      </section>
+
+      <section class="estimator-section">
+        <div class="section-heading">
+          <h2 class="section-title">Additional Features</h2>
+          <p class="section-subtitle">Select as many extras as you'd like &mdash; each one is added to your total.</p>
+        </div>
+        <div class="option-grid features" data-features-grid></div>
+      </section>
+
+      <section class="estimator-section">
+        <div class="section-heading">
+          <h2 class="section-title">Timeline</h2>
+          <p class="section-subtitle">When would you like work to begin?</p>
+        </div>
+        <div class="option-grid" data-timeline-grid></div>
+      </section>
+
+      <section class="estimator-section contact-section">
+        <div class="section-heading">
+          <h2 class="section-title">Get Your Personalised Quote</h2>
+          <p class="section-subtitle">Happy with your selections? Share your details below and I'll follow up with a formal quote.</p>
         </div>
 
-        <div class="estimator-field">
-          <label class="field-label">Additional Features</label>
-          <div class="option-grid features" data-features-grid></div>
-        </div>
+        <form data-lead-form novalidate>
+          <div class="lead-grid">
+            <div class="simple-field">
+              <label for="lead-name">Full name</label>
+              <input type="text" id="lead-name" data-lead-name autocomplete="name" />
+            </div>
 
-        <div class="estimator-field">
-          <label class="field-label">Timeline</label>
-          <div class="option-grid" data-timeline-grid></div>
-        </div>
+            <div class="simple-field">
+              <label for="lead-email">Email</label>
+              <input type="email" id="lead-email" data-lead-email autocomplete="email" />
+            </div>
 
-        <button type="button" class="btn-glow" data-calculate-btn disabled>Calculate Estimate</button>
+            <div class="simple-field">
+              <label for="lead-phone">Phone</label>
+              <input type="tel" id="lead-phone" data-lead-phone autocomplete="tel" />
+            </div>
+          </div>
 
-        <div class="estimate-result" data-result-box hidden>
-          <div class="result-label">Estimated Price Range</div>
-          <div class="result-value" data-result-value></div>
-          <div class="result-note">*Final price may vary based on specific requirements</div>
-        </div>
+          <div class="turnstile-wrap">
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAAEOzS56m0M5xjAFe" data-theme="dark" data-size="flexible"></div>
+          </div>
 
-        <div class="estimator-actions">
-          <a href="../contact/" class="btn-glow" style="text-decoration: none;">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-            <span>Contact Me</span>
-          </a>
-        </div>
-      </div>
+          <div class="simple-status" data-lead-status hidden role="status" aria-live="polite"></div>
+
+          <button type="submit" class="btn-glow" data-lead-submit disabled>Submit Request</button>
+        </form>
+      </section>
     </div>
   </div>
 
   <script src="../assets/js/animated-background.js"></script>
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/lead-submit.js"></script>
   <script src="../assets/js/estimator.js"></script>
 </body>
 </html>

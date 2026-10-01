@@ -48,6 +48,8 @@
       label: 'SEO',
       price: 100,
       weeks: 0.5,
+      marketMin: 170,
+      marketMax: 300,
       description: 'On-page search engine optimisation, meta tags, and a sitemap to help your site rank and get found on Google.'
     },
     {
@@ -55,6 +57,8 @@
       label: 'Content Management',
       price: 1000,
       weeks: 2,
+      marketMin: 1700,
+      marketMax: 3000,
       description: 'A content management system so you can update text, images, and pages yourself without needing a developer.'
     },
     {
@@ -62,6 +66,8 @@
       label: 'Analytics Integration',
       price: 250,
       weeks: 0.5,
+      marketMin: 425,
+      marketMax: 750,
       description: 'Visitor and conversion tracking wired up so you can see how people are using your site.'
     },
     {
@@ -69,6 +75,8 @@
       label: 'Authentication',
       price: 750,
       weeks: 1.5,
+      marketMin: 1275,
+      marketMax: 2250,
       description: 'Secure user accounts with sign-up, login, and password reset &mdash; needed for members-only areas or personalised experiences.'
     }
   ];
@@ -92,6 +100,8 @@
 
   var STORAGE_KEY = 'website-cost-estimator:v1';
   var DEPOSIT_RATE = 0.25;
+  // Lowest-cost options for the required fields.
+  var DEFAULT_STATE = { projectType: 'info', features: [], timeline: 'flexible' };
 
   function formatGBP(n) {
     return '£' + Math.round(n).toLocaleString();
@@ -136,21 +146,20 @@
     var isBreakdownOpen = false;
 
     function loadSavedState() {
-      var fallback = { projectType: '', features: [], timeline: '' };
       try {
         var raw = window.localStorage.getItem(STORAGE_KEY);
-        if (!raw) return fallback;
+        if (!raw) return { projectType: DEFAULT_STATE.projectType, features: DEFAULT_STATE.features.slice(), timeline: DEFAULT_STATE.timeline };
         var saved = JSON.parse(raw);
 
-        var projectType = PROJECT_TYPES.some(function (p) { return p.value === saved.projectType; }) ? saved.projectType : '';
-        var timeline = TIMELINES.some(function (t) { return t.value === saved.timeline; }) ? saved.timeline : '';
+        var projectType = PROJECT_TYPES.some(function (p) { return p.value === saved.projectType; }) ? saved.projectType : DEFAULT_STATE.projectType;
+        var timeline = TIMELINES.some(function (t) { return t.value === saved.timeline; }) ? saved.timeline : DEFAULT_STATE.timeline;
         var features = Array.isArray(saved.features)
           ? saved.features.filter(function (value) { return AVAILABLE_FEATURES.some(function (f) { return f.value === value; }); })
-          : [];
+          : DEFAULT_STATE.features.slice();
 
         return { projectType: projectType, features: features, timeline: timeline };
       } catch (e) {
-        return fallback;
+        return { projectType: DEFAULT_STATE.projectType, features: DEFAULT_STATE.features.slice(), timeline: DEFAULT_STATE.timeline };
       }
     }
 
@@ -273,22 +282,30 @@
       var price = project.basePrice;
       var weeksMin = project.weeksMin;
       var weeksMax = project.weeksMax;
+      var marketMin = project.marketMin;
+      var marketMax = project.marketMax;
 
       features.forEach(function (feature) {
         price += feature.price;
         weeksMin += feature.weeks;
         weeksMax += feature.weeks;
+        marketMin += feature.marketMin;
+        marketMax += feature.marketMax;
       });
 
       if (timeline) {
         price += timeline.extraCharge;
         weeksMin *= timeline.weeksMultiplier;
         weeksMax *= timeline.weeksMultiplier;
+        marketMin += timeline.extraCharge;
+        marketMax += timeline.extraCharge;
       }
 
       return {
         price: price,
-        timeframeText: formatWeeks(weeksMin, weeksMax)
+        timeframeText: formatWeeks(weeksMin, weeksMax),
+        marketMin: marketMin,
+        marketMax: marketMax
       };
     }
 
@@ -311,7 +328,10 @@
 
     function updateResetVisibility() {
       if (!resetBtn) return;
-      resetBtn.hidden = !(state.projectType || state.features.length || state.timeline);
+      var isDefault = state.projectType === DEFAULT_STATE.projectType &&
+        state.timeline === DEFAULT_STATE.timeline &&
+        state.features.length === DEFAULT_STATE.features.length;
+      resetBtn.hidden = isDefault;
     }
 
     function setBreakdownOpen(open) {
@@ -379,12 +399,12 @@
 
       var compare = document.createElement('p');
       compare.className = 'breakdown-compare';
-      var savings = project.marketMin - estimate.price;
+      var savings = estimate.marketMin - estimate.price;
       if (savings > 0) {
-        compare.innerHTML = 'Agencies typically charge <strong>' + formatGBPRange(project.marketMin, project.marketMax) +
+        compare.innerHTML = 'Agencies typically charge <strong>' + formatGBPRange(estimate.marketMin, estimate.marketMax) +
           '</strong> for a similar project &mdash; this estimate could save you <strong>' + formatGBP(savings) + '+</strong>.';
       } else {
-        compare.textContent = 'Typical agency price for a similar project: ' + formatGBPRange(project.marketMin, project.marketMax) + '.';
+        compare.textContent = 'Typical agency price for a similar project: ' + formatGBPRange(estimate.marketMin, estimate.marketMax) + '.';
       }
       breakdownList.appendChild(compare);
     }
@@ -480,9 +500,9 @@
 
     if (resetBtn) {
       resetBtn.addEventListener('click', function () {
-        state.projectType = '';
-        state.features = [];
-        state.timeline = '';
+        state.projectType = DEFAULT_STATE.projectType;
+        state.features = DEFAULT_STATE.features.slice();
+        state.timeline = DEFAULT_STATE.timeline;
         saveState();
         renderAll();
         updateEstimate();

@@ -1,7 +1,8 @@
 (function () {
   var submitLead = window.LeadSubmit.submitLead;
 
-  var COMMANDS = ['/name', '/email', '/phone', '/message', '/send', '/clear', '/help', '/matrix'];
+  // /matrix is an easter egg, so it's left out of the suggestions and /help.
+  var COMMANDS = ['/name', '/email', '/phone', '/message', '/send', '/clear', '/help'];
 
   var INITIAL_MESSAGES = [
     { type: 'system', text: 'CONTACT TERMINAL v2.1.0' },
@@ -27,6 +28,9 @@
     var terminalModeEl = document.querySelector('[data-terminal-mode]');
     var simpleModeEl = document.querySelector('[data-simple-mode]');
     var modeToggleBtn = document.querySelector('[data-mode-toggle]');
+    var modeToggleLabel = document.querySelector('[data-mode-toggle-label]');
+    var modeToggleTerminalIcon = document.querySelector('[data-mode-toggle-terminal-icon]');
+    var modeToggleFormIcon = document.querySelector('[data-mode-toggle-form-icon]');
     var simpleFormEl = document.querySelector('[data-simple-form]');
     var simpleFirstNameEl = document.querySelector('[data-simple-first-name]');
     var simpleLastNameEl = document.querySelector('[data-simple-last-name]');
@@ -46,7 +50,7 @@
     var formData = initialFormData();
     var isSending = false;
     var isSimpleSending = false;
-    var currentMode = 'terminal';
+    var currentMode = 'simple';
     var matrixAnimationFrame = null;
     var matrixTimeout = null;
     var matrixKeyHandler = null;
@@ -220,7 +224,10 @@
       if (terminalModeEl) terminalModeEl.hidden = isSimple;
       if (simpleModeEl) simpleModeEl.hidden = !isSimple;
       if (modeToggleBtn) {
-        modeToggleBtn.textContent = isSimple ? 'Switch to terminal contact form' : 'Switch to simpler contact form';
+        modeToggleLabel.textContent = isSimple ? 'Try the terminal' : 'Back to the simple form';
+        modeToggleTerminalIcon.hidden = !isSimple;
+        modeToggleFormIcon.hidden = isSimple;
+        modeToggleFormIcon.style.display = !isSimple ? 'block' : 'none';
       }
 
       if (isSimple) {
@@ -325,7 +332,6 @@
             { type: 'system', text: '  /send - Send message' },
             { type: 'system', text: '  /clear - Clear the terminal' },
             { type: 'system', text: '  /help - Show this help' },
-            { type: 'system', text: '  /matrix - Enter the Matrix' },
             { type: 'system', text: '  exit - Close the terminal' }
           ]);
           break;
@@ -416,7 +422,7 @@
       renderSuggestions([]);
     });
 
-    setMode('terminal');
+    setMode('simple');
     renderMessages();
   });
 })();

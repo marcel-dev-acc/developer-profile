@@ -7,7 +7,9 @@
   <link rel="icon" type="image/png" href="../assets/cartoon_profile_photo.png" />
   <link rel="stylesheet" href="../assets/css/base.css" />
   <link rel="stylesheet" href="../assets/css/estimator.css" />
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/turnstile.js"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&amp;onload=onTurnstileLoad" async defer></script>
 </head>
 <body>
   <div class="estimate-bar" data-estimate-bar>
@@ -94,7 +96,7 @@
           </div>
 
           <div class="turnstile-wrap">
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAAEOzS56m0M5xjAFe" data-theme="dark" data-size="flexible"></div>
+            <div class="cf-turnstile"></div>
           </div>
 
           <div class="simple-status" data-lead-status hidden role="status" aria-live="polite"></div>
@@ -106,7 +108,6 @@
   </div>
 
   <script src="../assets/js/animated-background.js"></script>
-  <script src="../assets/js/config.js"></script>
   <script src="../assets/js/lead-submit.js"></script>
   <script src="../assets/js/estimator.js"></script>
 </body>

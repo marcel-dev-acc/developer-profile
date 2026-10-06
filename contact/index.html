@@ -7,7 +7,9 @@
   <link rel="icon" type="image/png" href="../assets/cartoon_profile_photo.png" />
   <link rel="stylesheet" href="../assets/css/base.css" />
   <link rel="stylesheet" href="../assets/css/contact.css" />
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/turnstile.js"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&amp;onload=onTurnstileLoad" async defer></script>
 </head>
 <body>
   <div class="page-shell terminal-page">
@@ -16,7 +18,7 @@
       <canvas class="matrix-canvas" data-matrix-canvas hidden></canvas>
       <div class="scanline-overlay"></div>
 
-      <div data-terminal-mode>
+      <div data-terminal-mode hidden>
         <div class="terminal-titlebar">
           <div class="terminal-dot red" data-terminal-red-dot></div>
           <div class="terminal-dot yellow" data-terminal-yellow-dot></div>
@@ -32,19 +34,19 @@
           <div class="row">
             <span class="prompt">&gt;</span>
             <div class="terminal-input-wrap">
-              <input type="text" data-terminal-input placeholder="Type a command..." autofocus autocomplete="off" />
+              <input type="text" data-terminal-input placeholder="Type a command..." autocomplete="off" />
               <span class="fake-cursor" data-terminal-cursor>▊</span>
             </div>
           </div>
         </form>
       </div>
 
-      <div data-simple-mode hidden>
+      <div data-simple-mode>
         <a href="../" class="back-link">&larr; Back to Home</a>
 
         <div class="simple-contact">
           <h2 class="simple-contact-title">Send a Message</h2>
-          <p class="simple-contact-intro">Prefer a normal form? Fill in your details below and I'll get back to you.</p>
+          <p class="simple-contact-intro">Fill in your details below and I'll get back to you.</p>
 
           <form data-simple-form novalidate>
             <div class="simple-field">
@@ -80,17 +82,20 @@
       </div>
 
       <div class="turnstile-wrap">
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAAEOzS56m0M5xjAFe" data-theme="dark" data-size="flexible"></div>
+        <div class="cf-turnstile"></div>
       </div>
 
       <div class="mode-toggle-wrap">
-        <button type="button" class="mode-toggle-btn" data-mode-toggle>Switch to simpler contact form</button>
+        <button type="button" class="mode-toggle-btn" data-mode-toggle>
+          <span class="mode-toggle-prompt" aria-hidden="true" data-mode-toggle-terminal-icon>&gt;_</span>
+          <svg class="mode-toggle-icon" aria-hidden="true" data-mode-toggle-form-icon hidden viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"></rect><line x1="8" y1="8" x2="16" y2="8"></line><line x1="8" y1="12" x2="16" y2="12"></line><line x1="8" y1="16" x2="12" y2="16"></line></svg>
+          <span data-mode-toggle-label>Try the terminal</span>
+        </button>
       </div>
     </div>
   </div>
 
   <script src="../assets/js/animated-background.js"></script>
-  <script src="../assets/js/config.js"></script>
   <script src="../assets/js/lead-submit.js"></script>
   <script src="../assets/js/contact.js"></script>
 </body>

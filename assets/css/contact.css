@@ -194,21 +194,47 @@
 }
 
 .mode-toggle-btn {
-  background: none;
-  border: none;
-  color: var(--purple-400);
-  font-size: 0.85rem;
-  text-decoration: underline;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.6rem 1.25rem;
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid var(--green-400);
+  border-radius: 0.5rem;
+  color: var(--green-300);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-shadow: 0 0 8px rgba(74, 222, 128, 0.6);
+  box-shadow: 0 0 10px rgba(74, 222, 128, 0.4), inset 0 0 8px rgba(74, 222, 128, 0.15);
   cursor: pointer;
-  transition: color 0.2s;
+  transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
 }
 
 .mode-toggle-btn:hover {
-  color: var(--purple-200);
+  transform: translateY(-2px);
+  background: rgba(74, 222, 128, 0.12);
+  box-shadow: 0 0 18px rgba(74, 222, 128, 0.7), inset 0 0 10px rgba(74, 222, 128, 0.2);
+}
+
+.mode-toggle-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--green-400);
+  filter: drop-shadow(0 0 4px rgba(74, 222, 128, 0.6));
+}
+
+.mode-toggle-prompt {
+  color: var(--green-400);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mode-toggle-btn:hover { transform: none; }
 }
 
 .mode-toggle-btn:focus-visible {
-  outline: 2px solid var(--purple-400);
+  outline: 2px solid var(--green-400);
   outline-offset: 2px;
 }
 

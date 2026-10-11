@@ -45,11 +45,51 @@
     }, 1000);
   }
 
+  function initOfferProgress() {
+    var progress = document.querySelector('[data-offer-progress]');
+    if (!progress) return;
+
+    var totalSpots = 50;
+    // Spots fill linearly from the start date until the offer ends at the close of 31 July 2027
+    var startDate = new Date(2026, 6, 11);
+    var endDate = new Date(2027, 6, 31, 23, 59, 59);
+    var now = new Date();
+
+    var elapsed = (now - startDate) / (endDate - startDate);
+    var fraction = Math.min(Math.max(elapsed, 0), 1);
+    var claimed = Math.min(Math.round(fraction * totalSpots), totalSpots);
+    var remaining = totalSpots - claimed;
+    var percent = (claimed / totalSpots) * 100;
+
+    var claimedEl = progress.querySelector('[data-offer-claimed]');
+    var totalEl = progress.querySelector('[data-offer-total]');
+    var fillEl = progress.querySelector('[data-offer-fill]');
+    var noteEl = progress.querySelector('[data-offer-note]');
+    var trackEl = progress.querySelector('[role="progressbar"]');
+
+    if (claimedEl) claimedEl.textContent = claimed;
+    if (totalEl) totalEl.textContent = totalSpots;
+    if (fillEl) fillEl.style.width = percent + '%';
+    if (trackEl) {
+      trackEl.setAttribute('aria-valuemax', totalSpots);
+      trackEl.setAttribute('aria-valuenow', claimed);
+    }
+    if (noteEl) {
+      if (now > endDate) {
+        noteEl.textContent = 'This offer ended on 31 July 2027.';
+      } else {
+        noteEl.textContent = 'Limited to the first ' + totalSpots + ' customers. ' +
+          remaining + (remaining === 1 ? ' spot' : ' spots') + ' left. Offer ends 31 July 2027.';
+      }
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     var experienceEl = document.querySelector('[data-experience]');
     if (experienceEl) {
       experienceEl.textContent = calculateExperience();
     }
     initNeonFlicker();
+    initOfferProgress();
   });
 })();

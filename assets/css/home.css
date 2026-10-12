@@ -569,11 +569,13 @@ html {
   margin-top: 0.75rem;
 }
 
-.site-screenshot {
-  display: block;
+/* Screenshot frame; the wrapper carries the glow so overlays (glare, scanline) can sit on top */
+.site-shot {
+  position: relative;
   width: 100%;
   max-width: 600px;
   margin: 1.25rem auto;
+  overflow: hidden;
   border-radius: 0.75rem;
   border: 1px solid rgba(168, 85, 247, 0.6);
   box-shadow:
@@ -583,12 +585,16 @@ html {
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
-.site-screenshot:hover {
+.site-shot:hover {
   box-shadow:
     0 0 15px rgba(168, 85, 247, 0.9),
     0 0 40px rgba(168, 85, 247, 0.6),
     0 0 70px rgba(168, 85, 247, 0.35);
-  transform: scale(1.01);
+}
+
+.site-screenshot {
+  display: block;
+  width: 100%;
 }
 
 /* Desktop: two websites per row, screenshots aligned along the bottom */
@@ -604,7 +610,7 @@ html {
     flex-direction: column;
   }
 
-  .site-entry .site-screenshot {
+  .site-entry .site-shot {
     margin-top: auto;
     margin-bottom: 0;
     padding-top: 0;
@@ -621,7 +627,7 @@ html {
 }
 
 @media (max-width: 640px) {
-  .site-screenshot {
+  .site-shot {
     width: calc(100% - 1.25rem);
   }
 }

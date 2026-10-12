@@ -1,0 +1,240 @@
+/*
+ * Motion effects for the home page, driven by js/effects.js.
+ * Hidden starting states are scoped to html.fx, which is only set when the
+ * visitor hasn't asked for reduced motion, so the page renders fully without it.
+ */
+
+/* Section headings: neon power-on, then typed with a terminal cursor */
+.fx .section-header.is-powering {
+  animation: section-power-on 0.7s steps(1, end) both;
+}
+
+.fx .content-section.is-powering {
+  animation: section-glow-on 0.7s steps(1, end) both;
+}
+
+@keyframes section-power-on {
+  0%, 18%, 40% { opacity: 0.25; text-shadow: none; }
+  10%, 30%, 55%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 8px #a855f7, 0 0 18px rgba(168, 85, 247, 0.7);
+  }
+}
+
+@keyframes section-glow-on {
+  0%, 18%, 40% { box-shadow: none; }
+  10%, 30%, 55%, 100% { box-shadow: 0 0 15px rgba(168, 85, 247, 0.3); }
+}
+
+.type-cursor {
+  margin-left: 0.15rem;
+  color: var(--green-400);
+  font-weight: 400;
+  animation: type-cursor-blink 1.06s steps(1, end) infinite;
+}
+
+@keyframes type-cursor-blink {
+  50% { opacity: 0; }
+}
+
+/* Light sweeping across highlighted offer phrases */
+.fx .switch-offer-text strong {
+  background: linear-gradient(
+    110deg,
+    var(--green-300) 0%,
+    var(--green-300) 40%,
+    #f0fdf4 50%,
+    var(--green-300) 60%,
+    var(--green-300) 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: text-sweep 4.5s ease-in-out infinite;
+}
+
+@keyframes text-sweep {
+  0% { background-position: 100% 0; }
+  55%, 100% { background-position: 0% 0; }
+}
+
+/* Count-up: the progress fill grows alongside the number */
+.offer-progress-fill.is-counting {
+  transition: width 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Screenshot tilt: perspective transform set from JS, glare follows the pointer */
+.site-shot.is-tilting {
+  transition: box-shadow 0.3s ease;
+}
+
+.site-shot-glare {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    circle at var(--glare-x, 50%) var(--glare-y, 50%),
+    rgba(255, 255, 255, 0.28),
+    rgba(255, 255, 255, 0) 55%
+  );
+  transition: opacity 0.3s ease;
+}
+
+.site-shot.is-tilting .site-shot-glare {
+  opacity: 1;
+}
+
+/* Screenshot scanline reveal: the frame glows straight away and the image
+   draws in top to bottom behind a scanline, like a CRT powering on.
+   The image is clipped rather than the frame so the observer can still see the frame. */
+.fx .site-shot .site-screenshot {
+  clip-path: inset(0 0 100% 0);
+}
+
+.fx .site-shot.is-revealed .site-screenshot {
+  animation: shot-reveal 1.1s cubic-bezier(0.45, 0, 0.55, 1) forwards;
+}
+
+.fx .site-shot::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 2;
+  height: 3px;
+  opacity: 0;
+  pointer-events: none;
+  background: var(--purple-200);
+  box-shadow: 0 0 10px 2px var(--purple-400), 0 0 24px 6px rgba(168, 85, 247, 0.6);
+  transform: translateY(-100%);
+}
+
+.fx .site-shot.is-revealed::after {
+  animation: shot-scanline 1.1s cubic-bezier(0.45, 0, 0.55, 1) forwards;
+}
+
+@keyframes shot-reveal {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes shot-scanline {
+  0% { top: 0; opacity: 1; }
+  90% { top: 100%; opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* Skill icons orbiting the profile photo ring */
+.profile-photo-ring {
+  position: relative;
+}
+
+.profile-orbit {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.fx .profile-orbit {
+  animation: orbit-spin 40s linear infinite;
+}
+
+.orbit-item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2rem;
+  height: 2rem;
+  margin: -1rem 0 0 -1rem;
+  padding: 0.3rem;
+  border-radius: 50%;
+  background: rgba(30, 5, 55, 0.9);
+  border: 1px solid rgba(168, 85, 247, 0.6);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+  /* Sit each icon on the ring, then undo the angle so it stays upright */
+  transform: rotate(var(--a)) translateX(6rem) rotate(calc(-1 * var(--a)));
+}
+
+.orbit-item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 0.25rem;
+}
+
+/* Counter-spin keeps icons upright while the orbit turns */
+.fx .orbit-item img {
+  animation: orbit-spin 40s linear infinite reverse;
+}
+
+@keyframes orbit-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Staggered scroll reveal */
+.fx .site-entry,
+.fx .project-entry,
+.fx .timeline-entry {
+  opacity: 0;
+  transform: translateY(1.5rem);
+  transition:
+    opacity 0.6s ease var(--reveal-delay, 0s),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s);
+}
+
+.fx .site-entry.is-visible,
+.fx .project-entry.is-visible,
+.fx .timeline-entry.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Timeline line draws with scroll; dots light up as the line reaches them */
+.fx .timeline::before {
+  transform: scaleY(var(--timeline-progress, 0));
+  transform-origin: top;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.8);
+}
+
+.fx .timeline-dot {
+  background: var(--purple-900);
+  border-color: var(--purple-700);
+  box-shadow: none;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.fx .timeline-entry.is-lit .timeline-dot {
+  background: var(--purple-500);
+  border-color: var(--purple-300);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.8), 0 0 22px rgba(168, 85, 247, 0.5);
+  animation: dot-pop 0.4s ease;
+}
+
+@keyframes dot-pop {
+  50% { transform: scale(1.35); }
+}
+
+/* Soft light following the cursor across the background */
+.cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -5;
+  width: 32rem;
+  height: 32rem;
+  margin: -16rem 0 0 -16rem;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.16), rgba(168, 85, 247, 0) 65%);
+  transition: opacity 0.4s ease;
+  will-change: transform;
+}
+
+.cursor-glow.is-active {
+  opacity: 1;
+}

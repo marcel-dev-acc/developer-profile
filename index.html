@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Marcel Mulders | Developer Profile</title>
   <link rel="icon" type="image/png" href="assets/cartoon_profile_photo.png" />
   <link rel="stylesheet" href="assets/css/base.css" />
@@ -13,7 +13,7 @@
     <div class="animated-bg"></div>
     <div class="page-container">
       <!-- Header Section with Profile -->
-      <div class="profile-header">
+      <div class="profile-header" id="profile" data-section>
         <div class="profile-photo-col">
           <div class="profile-photo-glow"></div>
           <div class="profile-photo-ring">
@@ -92,18 +92,14 @@
         </div>
       </div>
 
-      <!-- Accordions Section -->
-      <div class="accordion-group">
-        <div class="accordion-item open">
-          <button class="accordion-header" aria-expanded="true">
-            <div class="title-group">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-              <span>Website Highlights</span>
-            </div>
-            <svg class="icon chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-          </button>
-          <div class="accordion-panel">
-            <div class="accordion-panel-inner">
+      <!-- Content Sections -->
+      <div class="content-sections">
+        <section class="content-section" id="website-highlights" aria-labelledby="website-highlights-title" data-section>
+          <h2 class="section-header" id="website-highlights-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            <span>Website Highlights</span>
+          </h2>
+          <div class="section-body">
               <div class="site-intro">
                 <p>A selection of websites I've worked on, each chosen for something that sets it apart: rich animations and interactive UI, charity and community work, or the architectural complexity behind it.</p>
                 <p class="site-legend">
@@ -158,20 +154,15 @@
                   <img class="site-screenshot" src="assets/images/site-mjhub.jpg" alt="Screenshot of the MJ Hub homepage" loading="lazy" />
                 </div>
               </div>
-            </div>
           </div>
-        </div>
+        </section>
 
-        <div class="accordion-item">
-          <button class="accordion-header" aria-expanded="false">
-            <div class="title-group">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-              <span>Current Projects</span>
-            </div>
-            <svg class="icon chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-          </button>
-          <div class="accordion-panel">
-            <div class="accordion-panel-inner">
+        <section class="content-section" id="current-projects" aria-labelledby="current-projects-title" data-section>
+          <h2 class="section-header" id="current-projects-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            <span>Current Projects</span>
+          </h2>
+          <div class="section-body">
               <div class="project-list">
                 <div class="project-entry">
                   <div class="project-title-row">
@@ -188,20 +179,15 @@
                   <p>Pioneering a revolutionary open-source mobile phone that breaks free from traditional smartphone constraints. Built on a custom Linux-based architecture specifically optimised to run on the Raspberry Pi Zero 2W with integrated mobile SIM capabilities, FeeNix represents the convergence of open-source philosophy and practical mobile computing. The device features a meticulously crafted custom user interface that seamlessly bridges the Linux and Android ecosystems, enabling users to install and run Android applications while maintaining full control over their device at the kernel level. This isn't just another Linux phone—it's a complete reimagining of what a mobile device can be when you combine the flexibility of ARM-based computing, the power of open-source software, and the practicality of Android app compatibility. The project encompasses custom PCB design for optimal component integration, low-level driver development for hardware interfacing, and an intuitive UI framework that makes advanced features accessible to everyday users. FeeNix is designed for privacy-conscious individuals, developers who want full device control, and anyone who believes in the right to truly own their technology. Currently in active development with working prototypes demonstrating voice calls, data connectivity, and seamless Android app execution on pure Linux infrastructure.</p>
                 </div>
               </div>
-            </div>
           </div>
-        </div>
+        </section>
 
-        <div class="accordion-item">
-          <button class="accordion-header" aria-expanded="false">
-            <div class="title-group">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-              <span>Past Experience</span>
-            </div>
-            <svg class="icon chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-          </button>
-          <div class="accordion-panel">
-            <div class="accordion-panel-inner">
+        <section class="content-section" id="past-experience" aria-labelledby="past-experience-title" data-section>
+          <h2 class="section-header" id="past-experience-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+            <span>Past Experience</span>
+          </h2>
+          <div class="section-body">
               <div class="timeline">
                 <div class="timeline-entries">
 
@@ -367,9 +353,8 @@
 
                 </div>
               </div>
-            </div>
           </div>
-        </div>
+        </section>
       </div>
 
       <!-- Social Media Links -->
@@ -384,8 +369,27 @@
     </div>
   </div>
 
+  <!-- Section navigation: left rail on desktop, bottom bar on tablet and mobile -->
+  <nav class="section-nav" aria-label="Page sections">
+    <a href="#profile" class="section-nav-link" data-section-link="profile" aria-label="Profile">
+      <img class="icon section-nav-avatar" src="assets/cartoon_profile_photo.png" alt="" />
+      <span class="section-nav-label">Profile</span>
+    </a>
+    <a href="#website-highlights" class="section-nav-link" data-section-link="website-highlights" aria-label="Website Highlights">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+      <span class="section-nav-label">Highlights</span>
+    </a>
+    <a href="#current-projects" class="section-nav-link" data-section-link="current-projects" aria-label="Current Projects">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+      <span class="section-nav-label">Projects</span>
+    </a>
+    <a href="#past-experience" class="section-nav-link" data-section-link="past-experience" aria-label="Past Experience">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+      <span class="section-nav-label">Experience</span>
+    </a>
+  </nav>
+
   <script src="assets/js/animated-background.js"></script>
-  <script src="assets/js/accordion.js"></script>
   <script src="assets/js/typewriter.js"></script>
   <script src="assets/js/home.js"></script>
 </body>

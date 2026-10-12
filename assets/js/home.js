@@ -84,6 +84,59 @@
     }
   }
 
+  function initSectionNav() {
+    var sections = document.querySelectorAll('[data-section]');
+    var links = document.querySelectorAll('[data-section-link]');
+    var nav = document.querySelector('.section-nav');
+    if (!sections.length || !links.length) return;
+
+    var ticking = false;
+
+    function setActive(id) {
+      links.forEach(function (link) {
+        var isActive = link.getAttribute('data-section-link') === id;
+        link.classList.toggle('active', isActive);
+        if (isActive) {
+          link.setAttribute('aria-current', 'true');
+          // Point the desktop wheel's dial hand at the active icon
+          var angle = window.getComputedStyle(link).getPropertyValue('--angle').trim();
+          if (nav && angle) nav.style.setProperty('--nav-angle', angle);
+        } else {
+          link.removeAttribute('aria-current');
+        }
+      });
+    }
+
+    // The active section is the last one whose top has passed a line 40% down the viewport,
+    // so the profile stays active from the top of the page until the first content section
+    function update() {
+      ticking = false;
+      var line = window.innerHeight * 0.4;
+      var activeId = sections[0].id;
+
+      sections.forEach(function (section) {
+        if (section.getBoundingClientRect().top <= line) activeId = section.id;
+      });
+
+      // Short final section: activate it once the page is scrolled to the bottom
+      var atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+      if (atBottom) activeId = sections[sections.length - 1].id;
+
+      setActive(activeId);
+    }
+
+    function onScroll() {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(update);
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    update();
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     var experienceEl = document.querySelector('[data-experience]');
     if (experienceEl) {
@@ -91,5 +144,6 @@
     }
     initNeonFlicker();
     initOfferProgress();
+    initSectionNav();
   });
 })();

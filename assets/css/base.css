@@ -54,6 +54,8 @@ img {
   position: relative;
   min-height: 100vh;
   overflow: hidden;
+  /* clip, unlike hidden, can't be scrolled by anchor links */
+  overflow: clip;
   padding: 2rem;
 }
 

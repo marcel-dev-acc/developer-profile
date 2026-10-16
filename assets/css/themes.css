@@ -1,0 +1,3613 @@
+/*
+ * Theme picker + alternative themes.
+ * The default (neon) look lives in the page stylesheets; every other theme is
+ * scoped to html[data-theme="..."] here, so loading this file changes nothing
+ * until a theme is picked. theme.js sets the attribute before first paint.
+ */
+
+/* ------------------------------------------------------------------ */
+/* Theme switch transition: theme.js grows the new theme out of the    */
+/* picker as a circle, so the default cross-fade is switched off       */
+/* ------------------------------------------------------------------ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* ------------------------------------------------------------------ */
+/* Theme picker                                                         */
+/* ------------------------------------------------------------------ */
+.theme-picker {
+  position: fixed;
+  z-index: 60;
+  right: 1rem;
+  bottom: calc(1rem + env(safe-area-inset-bottom));
+}
+
+/* Sit above the home page's bottom section bar on tablet and mobile */
+@media (max-width: 1023px) {
+  body:has(.section-nav) .theme-picker {
+    bottom: calc(5rem + env(safe-area-inset-bottom));
+  }
+}
+
+.theme-picker-toggle {
+  display: block;
+  width: 3rem;
+  height: 3rem;
+  padding: 3px;
+  border-radius: 50%;
+  border: 2px solid rgba(192, 132, 252, 0.7);
+  background: rgba(30, 5, 55, 0.9);
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.6), 0 6px 18px rgba(0, 0, 0, 0.45);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+}
+
+.theme-picker-toggle:hover,
+.theme-picker.is-open .theme-picker-toggle {
+  transform: scale(1.08) rotate(-8deg);
+  box-shadow: 0 0 22px rgba(168, 85, 247, 0.9), 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+.theme-picker-toggle:focus-visible,
+.theme-option:focus-visible {
+  outline: 2px solid var(--green-400);
+  outline-offset: 3px;
+}
+
+.theme-picker-toggle .theme-swatch {
+  width: 100%;
+  height: 100%;
+}
+
+.theme-swatch {
+  display: block;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+}
+
+.theme-swatch--neon {
+  background:
+    radial-gradient(circle at 34% 30%, #f3e8ff 0 9%, rgba(243, 232, 255, 0) 10%),
+    radial-gradient(circle at 50% 50%, var(--purple-400), var(--purple-700) 55%, var(--purple-950) 85%);
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5), 0 0 10px rgba(168, 85, 247, 0.7);
+}
+
+.theme-swatch--graffiti {
+  background:
+    radial-gradient(circle at 28% 30%, #ffe14d 0 21%, transparent 22%),
+    radial-gradient(circle at 70% 34%, #ff2e88 0 25%, transparent 26%),
+    radial-gradient(circle at 44% 72%, #2de2e6 0 23%, transparent 24%),
+    radial-gradient(circle at 80% 76%, #a3ff12 0 11%, transparent 12%),
+    radial-gradient(circle at 18% 64%, #ff7a1a 0 8%, transparent 9%),
+    #1a1517;
+  box-shadow: inset 0 0 0 2px #0d0d0d;
+}
+
+.theme-picker-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 0.75rem);
+  width: 16.5rem;
+  max-width: calc(100vw - 2rem);
+  padding: 0.75rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  background: rgba(20, 3, 38, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 0 24px rgba(168, 85, 247, 0.45), 0 12px 32px rgba(0, 0, 0, 0.5);
+  transform-origin: calc(100% - 1.5rem) calc(100% + 1.5rem);
+  transform: scale(0.6);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease, visibility 0s linear 0.25s;
+}
+
+.theme-picker.is-open .theme-picker-menu {
+  transform: none;
+  opacity: 1;
+  visibility: visible;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+}
+
+.theme-picker-heading {
+  margin: 0 0 0.5rem 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(216, 180, 254, 0.7);
+}
+
+.theme-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.55rem 2rem 0.55rem 0.55rem;
+  border: 1px solid transparent;
+  border-radius: 0.65rem;
+  background: none;
+  color: var(--purple-100);
+  text-align: left;
+  opacity: 0;
+  transform: translateY(0.5rem);
+  transition: background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+}
+
+.theme-option + .theme-option {
+  margin-top: 0.25rem;
+}
+
+.theme-picker.is-open .theme-option {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0s, 0s, calc(0.06s + var(--option-index) * 0.06s), calc(0.06s + var(--option-index) * 0.06s);
+}
+
+.theme-option:hover {
+  background: rgba(168, 85, 247, 0.15);
+}
+
+.theme-option[aria-pressed="true"] {
+  border-color: rgba(192, 132, 252, 0.6);
+  background: rgba(168, 85, 247, 0.2);
+}
+
+/* Tick on the active theme */
+.theme-option[aria-pressed="true"]::after {
+  content: "";
+  position: absolute;
+  right: 0.85rem;
+  top: 50%;
+  width: 0.4rem;
+  height: 0.75rem;
+  margin-top: -0.5rem;
+  border: solid var(--green-400);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.theme-option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.theme-option-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.theme-option-desc {
+  font-size: 0.75rem;
+  color: rgba(216, 180, 254, 0.7);
+}
+
+/* Graffiti-only background layers, hidden in every other theme */
+.bg-drips {
+  display: none;
+}
+
+.spray-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: -5;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-picker-toggle,
+  .theme-picker-menu,
+  .theme-option {
+    transition: none;
+  }
+}
+
+/* ================================================================== */
+/* GRAFFITI                                                             */
+/* Spray paint on a brick wall: marker fonts, hard offset shadows,      */
+/* hand-drawn edges and paint drips                                     */
+/* ================================================================== */
+html[data-theme="graffiti"] {
+  --g-pink: #ff2e88;
+  --g-yellow: #ffe14d;
+  --g-cyan: #2de2e6;
+  --g-lime: #a3ff12;
+  --g-orange: #ff7a1a;
+  --g-ink: #0d0d0d;
+  --g-cream: #f4efe6;
+  --g-text: rgba(244, 239, 230, 0.86);
+  --g-muted: rgba(244, 239, 230, 0.62);
+  --g-panel: rgba(16, 13, 14, 0.9);
+  --g-marker: "Permanent Marker", "Comic Sans MS", cursive;
+  --g-tag: "Sedgwick Ave Display", "Permanent Marker", cursive;
+  /* Wobbly, hand-drawn outline */
+  --g-rough: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  --g-rough-alt: 15px 225px 15px 255px / 255px 15px 225px 15px;
+  /* Subtler wobble for big panels, where the values above would bend the sides */
+  --g-rough-lg: 6px 28px 8px 22px / 22px 8px 26px 6px;
+  --g-drip-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 24' preserveAspectRatio='none'%3E%3Cpath d='M0 0H100V4C97 4 97 14 94 14S91 4 88 4H80C77 4 77 22 74 22S71 4 68 4H55C53 4 53 10 51 10S49 4 47 4H33C30 4 30 18 27 18S24 4 21 4H12C10 4 10 9 8 9S6 4 4 4H0Z'/%3E%3C/svg%3E");
+  --g-can: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cg stroke='%230d0d0d' stroke-width='1.5'%3E%3Crect x='11' y='9' width='10' height='17' rx='2' fill='%23ff2e88'/%3E%3Crect x='13' y='5' width='6' height='4' fill='%23f4efe6'/%3E%3Crect x='14' y='2.5' width='3' height='2.5' fill='%230d0d0d'/%3E%3C/g%3E%3Cg fill='%23ffe14d'%3E%3Ccircle cx='9' cy='3' r='1.2'/%3E%3Ccircle cx='6' cy='5' r='1'/%3E%3Ccircle cx='4' cy='2' r='.9'/%3E%3Ccircle cx='8' cy='7.5' r='.8'/%3E%3C/g%3E%3C/svg%3E");
+  --g-cursor: var(--g-can) 4 3;
+}
+
+html[data-theme="graffiti"] body {
+  font-family: "Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--g-text);
+  background: #121012;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html[data-theme="graffiti"] body {
+    cursor: var(--g-cursor), auto;
+  }
+
+  html[data-theme="graffiti"] a,
+  html[data-theme="graffiti"] button {
+    cursor: var(--g-cursor), pointer;
+  }
+}
+
+html[data-theme="graffiti"] ::selection {
+  background: var(--g-pink);
+  color: var(--g-ink);
+}
+
+/* ---- The wall ---- */
+html[data-theme="graffiti"] .page-shell::before {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.07), transparent 55%),
+    radial-gradient(ellipse at 50% 40%, transparent 35%, rgba(0, 0, 0, 0.75) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60'%3E%3Crect width='120' height='60' fill='%23110e10'/%3E%3Crect x='2' y='2' width='56' height='26' rx='1.5' fill='%23362628'/%3E%3Crect x='62' y='2' width='56' height='26' rx='1.5' fill='%232e2124'/%3E%3Crect x='-28' y='32' width='56' height='26' rx='1.5' fill='%2331232a'/%3E%3Crect x='32' y='32' width='56' height='26' rx='1.5' fill='%233a292a'/%3E%3Crect x='92' y='32' width='56' height='26' rx='1.5' fill='%2331232a'/%3E%3C/svg%3E") 0 0 / 132px 66px,
+    #121012;
+}
+
+html[data-theme="graffiti"] .animated-bg .bg-grid,
+html[data-theme="graffiti"] .animated-bg .bg-particle,
+html[data-theme="graffiti"] .animated-bg .bg-orb,
+html[data-theme="graffiti"] .cursor-glow,
+html[data-theme="graffiti"] .scanline-overlay {
+  display: none;
+}
+
+/* Old paint splats on the wall */
+html[data-theme="graffiti"] .animated-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255, 46, 136, 0.22) 0 4rem, transparent 9rem),
+    radial-gradient(circle at 88% 14%, rgba(45, 226, 230, 0.18) 0 3rem, transparent 8rem),
+    radial-gradient(circle at 78% 42%, rgba(255, 225, 77, 0.14) 0 5rem, transparent 11rem),
+    radial-gradient(circle at 8% 55%, rgba(163, 255, 18, 0.14) 0 3rem, transparent 8rem),
+    radial-gradient(circle at 92% 72%, rgba(255, 46, 136, 0.16) 0 4rem, transparent 10rem),
+    radial-gradient(circle at 20% 88%, rgba(255, 122, 26, 0.16) 0 4rem, transparent 9rem);
+}
+
+/* A huge faded tag behind everything */
+html[data-theme="graffiti"] .animated-bg::after {
+  content: "MARCEL";
+  position: absolute;
+  top: 6rem;
+  left: 50%;
+  transform: translateX(-50%) rotate(-9deg);
+  font-family: var(--g-tag);
+  font-size: clamp(6rem, 24vw, 22rem);
+  line-height: 1;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 3px rgba(255, 46, 136, 0.16);
+  pointer-events: none;
+}
+
+html[data-theme="graffiti"] .bg-drips {
+  display: block;
+  position: absolute;
+  inset: 0 0 auto;
+  height: 100vh;
+}
+
+html[data-theme="graffiti"] .bg-drip {
+  position: absolute;
+  top: 0;
+  width: var(--drip-width, 8px);
+  height: var(--drip-length, 30vh);
+  border-radius: 0 0 999px 999px;
+  background: var(--g-pink);
+  opacity: 0.32;
+  transform-origin: top;
+  transform: scaleY(0);
+}
+
+html[data-theme="graffiti"] .bg-drip:nth-child(4n + 2) { background: var(--g-yellow); }
+html[data-theme="graffiti"] .bg-drip:nth-child(4n + 3) { background: var(--g-cyan); }
+html[data-theme="graffiti"] .bg-drip:nth-child(4n) { background: var(--g-lime); }
+
+html[data-theme="graffiti"].fx .bg-drip {
+  animation-name: wall-drip;
+  animation-timing-function: cubic-bezier(0.3, 0, 0.6, 1);
+  animation-iteration-count: infinite;
+}
+
+html[data-theme="graffiti"]:not(.fx) .bg-drip {
+  transform: none;
+}
+
+@keyframes wall-drip {
+  0% { transform: scaleY(0); opacity: 0.32; }
+  55% { transform: scaleY(1); opacity: 0.32; }
+  85% { transform: scaleY(1); opacity: 0.32; }
+  100% { transform: scaleY(1); opacity: 0; }
+}
+
+/* ---- Picker ---- */
+html[data-theme="graffiti"] .theme-picker-toggle {
+  border: 3px solid var(--g-ink);
+  background: var(--g-cream);
+  box-shadow: 4px 4px 0 var(--g-pink);
+}
+
+html[data-theme="graffiti"] .theme-picker-toggle:hover,
+html[data-theme="graffiti"] .theme-picker.is-open .theme-picker-toggle {
+  transform: scale(1.08) rotate(12deg);
+  box-shadow: 6px 6px 0 var(--g-cyan);
+}
+
+html[data-theme="graffiti"] .theme-picker-menu {
+  border: 3px solid var(--g-ink);
+  border-radius: var(--g-rough-lg);
+  background: var(--g-cream);
+  color: var(--g-ink);
+  box-shadow: 7px 7px 0 var(--g-pink);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html[data-theme="graffiti"] .theme-picker-heading {
+  font-family: var(--g-marker);
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  color: var(--g-ink);
+}
+
+html[data-theme="graffiti"] .theme-option {
+  color: var(--g-ink);
+  border-radius: var(--g-rough-alt);
+}
+
+html[data-theme="graffiti"] .theme-option:hover {
+  background: rgba(255, 225, 77, 0.55);
+}
+
+html[data-theme="graffiti"] .theme-option[aria-pressed="true"] {
+  border: 2px solid var(--g-ink);
+  background: var(--g-yellow);
+}
+
+html[data-theme="graffiti"] .theme-option[aria-pressed="true"]::after {
+  border-color: var(--g-ink);
+}
+
+html[data-theme="graffiti"] .theme-option-name {
+  font-family: var(--g-marker);
+  font-weight: 400;
+  font-size: 1.05rem;
+}
+
+html[data-theme="graffiti"] .theme-option-desc {
+  color: rgba(13, 13, 13, 0.7);
+}
+
+html[data-theme="graffiti"] .theme-picker-toggle:focus-visible,
+html[data-theme="graffiti"] .theme-option:focus-visible {
+  outline: 3px solid var(--g-cyan);
+}
+
+/* ---- Buttons: sprayed-on blocks with paint dripping off the bottom ---- */
+html[data-theme="graffiti"] .btn-pill,
+html[data-theme="graffiti"] .btn-glow,
+html[data-theme="graffiti"] .switch-btn,
+html[data-theme="graffiti"] .neon-cta-button,
+html[data-theme="graffiti"] .mode-toggle-btn {
+  --btn-bg: var(--g-yellow);
+  --btn-fg: var(--g-ink);
+  --btn-shadow: var(--g-pink);
+  position: relative;
+  overflow: visible;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border: 3px solid var(--g-ink);
+  border-radius: var(--g-rough-alt);
+  font-family: var(--g-marker);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-shadow: none;
+  box-shadow: 5px 5px 0 var(--btn-shadow);
+  transform: rotate(-1.5deg);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background 0.2s ease;
+}
+
+html[data-theme="graffiti"] .btn-pill { --btn-bg: var(--g-pink); --btn-fg: var(--g-ink); --btn-shadow: var(--g-cyan); }
+html[data-theme="graffiti"] .mode-toggle-btn { --btn-bg: var(--g-lime); --btn-shadow: var(--g-pink); }
+html[data-theme="graffiti"] .neon-cta-button { --btn-bg: var(--g-cyan); --btn-shadow: var(--g-yellow); }
+
+html[data-theme="graffiti"] .btn-pill::after,
+html[data-theme="graffiti"] .btn-glow::after,
+html[data-theme="graffiti"] .switch-btn::after,
+html[data-theme="graffiti"] .neon-cta-button::after,
+html[data-theme="graffiti"] .mode-toggle-btn::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: calc(100% - 1px);
+  height: 0.45rem;
+  background: var(--btn-bg);
+  -webkit-mask: var(--g-drip-mask) 0 0 / 100% 100% no-repeat;
+  mask: var(--g-drip-mask) 0 0 / 100% 100% no-repeat;
+  transition: height 0.5s cubic-bezier(0.3, 0, 0.4, 1);
+  pointer-events: none;
+}
+
+html[data-theme="graffiti"] .btn-pill:hover,
+html[data-theme="graffiti"] .btn-glow:hover:not(:disabled),
+html[data-theme="graffiti"] .switch-btn:hover,
+html[data-theme="graffiti"] .switch-btn:focus-visible,
+html[data-theme="graffiti"] .neon-cta-button:hover,
+html[data-theme="graffiti"] .mode-toggle-btn:hover {
+  background: var(--btn-bg);
+  transform: rotate(1deg) scale(1.06);
+  box-shadow: 8px 8px 0 var(--btn-shadow);
+}
+
+html[data-theme="graffiti"] .btn-pill:hover::after,
+html[data-theme="graffiti"] .btn-glow:hover:not(:disabled)::after,
+html[data-theme="graffiti"] .switch-btn:hover::after,
+html[data-theme="graffiti"] .neon-cta-button:hover::after,
+html[data-theme="graffiti"] .mode-toggle-btn:hover::after {
+  height: 1.4rem;
+}
+
+html[data-theme="graffiti"] .btn-pill:active,
+html[data-theme="graffiti"] .btn-glow:active:not(:disabled),
+html[data-theme="graffiti"] .switch-btn:active,
+html[data-theme="graffiti"] .neon-cta-button:active,
+html[data-theme="graffiti"] .mode-toggle-btn:active {
+  transform: rotate(0) translate(3px, 3px);
+  box-shadow: 2px 2px 0 var(--btn-shadow);
+}
+
+html[data-theme="graffiti"] .btn-glow:disabled {
+  --btn-bg: #6b6466;
+  --btn-shadow: rgba(0, 0, 0, 0.5);
+}
+
+html[data-theme="graffiti"] .neon-cta-button .icon,
+html[data-theme="graffiti"] .neon-cta-button span {
+  color: var(--g-ink);
+  text-shadow: none;
+}
+
+html[data-theme="graffiti"] .mode-toggle-icon,
+html[data-theme="graffiti"] .mode-toggle-prompt {
+  color: var(--g-ink);
+  filter: none;
+}
+
+html[data-theme="graffiti"] .back-link,
+html[data-theme="graffiti"] .reset-link {
+  font-family: var(--g-marker);
+  color: var(--g-cyan);
+}
+
+html[data-theme="graffiti"] .back-link:hover,
+html[data-theme="graffiti"] .reset-link:hover {
+  color: var(--g-yellow);
+}
+
+/* ---- Form fields ---- */
+html[data-theme="graffiti"] .simple-field label {
+  font-family: var(--g-marker);
+  font-size: 0.95rem;
+  color: var(--g-yellow);
+}
+
+html[data-theme="graffiti"] .simple-field input,
+html[data-theme="graffiti"] .simple-field textarea {
+  border: 2px solid var(--g-cream);
+  border-radius: var(--g-rough-alt);
+  background: rgba(0, 0, 0, 0.55);
+  color: var(--g-cream);
+}
+
+html[data-theme="graffiti"] .simple-field input::placeholder,
+html[data-theme="graffiti"] .simple-field textarea::placeholder {
+  color: var(--g-muted);
+}
+
+html[data-theme="graffiti"] .simple-field input:focus,
+html[data-theme="graffiti"] .simple-field textarea:focus {
+  border-color: var(--g-pink);
+  box-shadow: 4px 4px 0 var(--g-pink);
+}
+
+/* ---- Profile header ---- */
+html[data-theme="graffiti"] .profile-photo-ring {
+  padding: 5px;
+  background: conic-gradient(from 20deg, var(--g-pink), var(--g-yellow), var(--g-lime), var(--g-cyan), var(--g-pink));
+  box-shadow: 0 0 0 4px var(--g-ink), 9px 9px 0 4px var(--g-pink);
+}
+
+html[data-theme="graffiti"] .profile-photo-ring:hover {
+  box-shadow: 0 0 0 4px var(--g-ink), 12px 12px 0 4px var(--g-cyan);
+}
+
+html[data-theme="graffiti"] .profile-photo-mask {
+  background: var(--g-ink);
+}
+
+html[data-theme="graffiti"] .profile-photo-glow {
+  inset: -2.5rem;
+  background:
+    radial-gradient(circle at 30% 35%, rgba(255, 46, 136, 0.55), transparent 45%),
+    radial-gradient(circle at 70% 65%, rgba(45, 226, 230, 0.45), transparent 45%);
+  filter: blur(24px);
+}
+
+html[data-theme="graffiti"] .experience-badge {
+  padding: 0.45rem 1.1rem;
+  border: 3px solid var(--g-ink);
+  border-radius: var(--g-rough-alt);
+  background: var(--g-lime);
+  box-shadow: 4px 4px 0 var(--g-ink);
+  backdrop-filter: none;
+  transform: rotate(-3deg);
+}
+
+html[data-theme="graffiti"] .experience-badge .label {
+  color: rgba(13, 13, 13, 0.75);
+  font-weight: 700;
+}
+
+html[data-theme="graffiti"] .experience-badge .value {
+  font-family: var(--g-marker);
+  font-size: 1rem;
+  color: var(--g-ink);
+}
+
+/* The name gets tagged on: chunky letters, outlined, with a 3D drop */
+html[data-theme="graffiti"] .profile-name {
+  font-family: var(--g-tag);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  background: none;
+  color: var(--g-yellow);
+  -webkit-text-fill-color: var(--g-yellow);
+  -webkit-text-stroke: 2px var(--g-ink);
+  paint-order: stroke fill;
+  text-shadow: 3px 3px 0 var(--g-ink), 6px 6px 0 var(--g-pink), 8px 8px 0 var(--g-ink);
+  transform: rotate(-4deg);
+}
+
+@media (min-width: 768px) {
+  html[data-theme="graffiti"] .profile-name {
+    font-size: 4.5rem;
+  }
+}
+
+html[data-theme="graffiti"] .name-char {
+  display: inline-block;
+}
+
+html[data-theme="graffiti"] .name-char:nth-child(4n + 2) { -webkit-text-fill-color: var(--g-pink); text-shadow: 3px 3px 0 var(--g-ink), 6px 6px 0 var(--g-cyan), 8px 8px 0 var(--g-ink); rotate: 4deg; }
+html[data-theme="graffiti"] .name-char:nth-child(4n + 3) { -webkit-text-fill-color: var(--g-cyan); rotate: -5deg; translate: 0 -0.06em; }
+html[data-theme="graffiti"] .name-char:nth-child(4n) { -webkit-text-fill-color: var(--g-lime); text-shadow: 3px 3px 0 var(--g-ink), 6px 6px 0 var(--g-orange), 8px 8px 0 var(--g-ink); rotate: 3deg; translate: 0 0.05em; }
+
+html[data-theme="graffiti"].fx .profile-name.is-intro .name-char {
+  animation: tag-letter 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+  animation-delay: calc(0.15s + var(--i) * 0.07s);
+}
+
+@keyframes tag-letter {
+  0% { opacity: 0; transform: translateY(-0.35em) scale(1.7) rotate(-14deg); filter: blur(8px); }
+  55% { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: none; filter: none; }
+}
+
+/* Table display shrink-wraps the highlighter stripe but keeps the title on its own line */
+html[data-theme="graffiti"] .profile-title {
+  display: table;
+  margin: 0.5rem auto 0;
+  font-family: var(--g-marker);
+  color: var(--g-cream);
+  background:
+    linear-gradient(transparent 62%, rgba(255, 46, 136, 0.75) 62%, rgba(255, 46, 136, 0.75) 88%, transparent 88%);
+  padding: 0 0.3rem;
+}
+
+@media (min-width: 768px) {
+  html[data-theme="graffiti"] .profile-title {
+    margin-left: 0;
+  }
+}
+
+/* ---- "Need a website?" becomes a full piece on the wall ---- */
+html[data-theme="graffiti"] .neon-cta .glow-backdrop {
+  opacity: 0.5;
+}
+
+html[data-theme="graffiti"] .neon-cta .glow-backdrop::before {
+  height: 12rem;
+  background:
+    radial-gradient(ellipse at 30% 50%, var(--g-pink), transparent 60%),
+    radial-gradient(ellipse at 70% 50%, var(--g-cyan), transparent 60%);
+  filter: blur(60px);
+}
+
+/* Fade in rather than neon-flicker */
+html[data-theme="graffiti"] .neon-cta-content {
+  transition: opacity 0.6s ease;
+}
+
+html[data-theme="graffiti"] .neon-title,
+html[data-theme="graffiti"] .neon-title.flicker {
+  font-family: var(--g-tag);
+  font-weight: 400;
+  line-height: 1.05;
+  color: var(--g-yellow);
+  -webkit-text-stroke: 2px var(--g-ink);
+  paint-order: stroke fill;
+  text-shadow: 3px 3px 0 var(--g-ink), 6px 6px 0 var(--g-pink), 9px 9px 0 var(--g-pink), 11px 11px 0 var(--g-ink);
+  transform: rotate(-3deg);
+  animation: none;
+}
+
+@media (min-width: 768px) {
+  html[data-theme="graffiti"] .neon-title { font-size: 4.75rem; }
+}
+
+html[data-theme="graffiti"].fx .neon-title.flicker {
+  animation: piece-wobble 5s ease-in-out infinite;
+}
+
+@keyframes piece-wobble {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(-1.5deg) scale(1.02); }
+}
+
+html[data-theme="graffiti"] .neon-subtitle,
+html[data-theme="graffiti"] .neon-subtitle.flicker {
+  font-family: var(--g-marker);
+  color: var(--g-cream);
+  text-shadow: 2px 2px 0 var(--g-ink);
+  animation: none;
+}
+
+/* ---- Switch offer: a sticker slapped on the wall ---- */
+html[data-theme="graffiti"] .switch-offer {
+  overflow: visible;
+  background: var(--g-cream);
+  border: 3px solid var(--g-ink);
+  border-radius: var(--g-rough-lg);
+  box-shadow: 9px 9px 0 var(--g-cyan);
+  transform: rotate(1.5deg);
+  color: var(--g-ink);
+}
+
+/* Shimmer becomes a strip of tape holding it up */
+html[data-theme="graffiti"] .switch-offer::before {
+  inset: auto;
+  top: -0.9rem;
+  left: 50%;
+  width: 6.5rem;
+  height: 1.7rem;
+  background: rgba(240, 225, 180, 0.8);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transform: translateX(-50%) rotate(-4deg);
+  animation: none;
+}
+
+html[data-theme="graffiti"] .platform-pill,
+html[data-theme="graffiti"] .feature-pill {
+  border: 2px solid var(--g-ink);
+  border-radius: var(--g-rough-alt);
+  font-family: var(--g-marker);
+  font-weight: 400;
+  text-shadow: none;
+  box-shadow: 3px 3px 0 var(--g-ink);
+}
+
+html[data-theme="graffiti"] .platform-pill {
+  background: var(--g-lime);
+  color: var(--g-ink);
+  transform: rotate(-3deg);
+}
+
+html[data-theme="graffiti"] .platform-pill + .platform-pill {
+  transform: rotate(2deg);
+}
+
+html[data-theme="graffiti"] .feature-pill {
+  background: var(--g-pink);
+  color: var(--g-ink);
+  transform: rotate(2deg);
+}
+
+html[data-theme="graffiti"] .switch-offer-title {
+  font-family: var(--g-marker);
+  font-weight: 400;
+  font-size: 1.75rem;
+  color: var(--g-ink);
+  text-shadow: 2px 2px 0 var(--g-yellow);
+}
+
+html[data-theme="graffiti"] .switch-offer-text {
+  color: rgba(13, 13, 13, 0.85);
+}
+
+html[data-theme="graffiti"] .switch-offer-text strong,
+html[data-theme="graffiti"].fx .switch-offer-text strong {
+  color: var(--g-ink);
+  background: linear-gradient(transparent 55%, rgba(255, 46, 136, 0.55) 55%);
+  -webkit-text-fill-color: currentColor;
+  animation: none;
+}
+
+html[data-theme="graffiti"] .switch-offer-includes-label,
+html[data-theme="graffiti"] .offer-progress-label {
+  color: rgba(13, 13, 13, 0.75);
+}
+
+html[data-theme="graffiti"] .offer-progress-count strong {
+  color: var(--g-pink);
+  text-shadow: none;
+}
+
+html[data-theme="graffiti"] .offer-progress-track {
+  height: 0.85rem;
+  border: 2px solid var(--g-ink);
+  background: rgba(13, 13, 13, 0.1);
+  box-shadow: none;
+}
+
+/* Hazard-tape fill */
+html[data-theme="graffiti"] .offer-progress-fill {
+  background: repeating-linear-gradient(-45deg, var(--g-yellow) 0 8px, var(--g-ink) 8px 16px);
+  box-shadow: none;
+  animation: none;
+}
+
+html[data-theme="graffiti"].fx .offer-progress-fill {
+  background-size: 200% 100%;
+  animation: hazard-crawl 1.2s linear infinite;
+}
+
+@keyframes hazard-crawl {
+  to { background-position: 22.6px 0; }
+}
+
+html[data-theme="graffiti"] .offer-progress-note {
+  color: rgba(13, 13, 13, 0.65);
+}
+
+/* ---- Bio: scrawled in marker ---- */
+html[data-theme="graffiti"] .terminal-box {
+  background: var(--g-panel);
+  border: 2px dashed rgba(244, 239, 230, 0.6);
+  border-radius: var(--g-rough-lg);
+  box-shadow: 7px 7px 0 var(--g-lime);
+  backdrop-filter: none;
+}
+
+html[data-theme="graffiti"] .terminal-box .prompt-line {
+  font-family: var(--g-marker);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+}
+
+html[data-theme="graffiti"] .terminal-box .typed-text {
+  color: var(--g-cream);
+}
+
+html[data-theme="graffiti"] .terminal-box .prompt-arrow,
+html[data-theme="graffiti"] .terminal-box .cursor {
+  color: var(--g-pink);
+}
+
+/* ---- Content sections: panels pasted on the wall ---- */
+html[data-theme="graffiti"] .content-section,
+html[data-theme="graffiti"] .content-section:hover {
+  border: 3px solid var(--g-ink);
+  border-radius: var(--g-rough-lg);
+  background: var(--g-panel);
+  backdrop-filter: none;
+  box-shadow: 8px 8px 0 var(--g-pink);
+}
+
+html[data-theme="graffiti"] .content-section:nth-child(3n + 2),
+html[data-theme="graffiti"] .content-section:nth-child(3n + 2):hover { box-shadow: 8px 8px 0 var(--g-cyan); }
+html[data-theme="graffiti"] .content-section:nth-child(3n),
+html[data-theme="graffiti"] .content-section:nth-child(3n):hover { box-shadow: 8px 8px 0 var(--g-lime); }
+
+/* Header is a stripe of yellow paint with drips running off it */
+html[data-theme="graffiti"] .section-header {
+  position: relative;
+  z-index: 1;
+  padding: 0.85rem 1.5rem;
+  background: linear-gradient(var(--g-yellow), var(--g-yellow)) 0 0 / 100% 100% no-repeat;
+  color: var(--g-ink);
+  font-family: var(--g-marker);
+  font-weight: 400;
+  font-size: 1.4rem;
+  letter-spacing: 0.03em;
+}
+
+html[data-theme="graffiti"] .section-header .icon {
+  color: var(--g-ink);
+  stroke-width: 2.5;
+}
+
+html[data-theme="graffiti"] .section-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% - 1px);
+  height: 1.1rem;
+  background: var(--g-yellow);
+  -webkit-mask: var(--g-drip-mask) 0 0 / 100% 100% no-repeat;
+  mask: var(--g-drip-mask) 0 0 / 100% 100% no-repeat;
+  pointer-events: none;
+}
+
+html[data-theme="graffiti"] .section-body {
+  padding-top: 1.75rem;
+  color: var(--g-text);
+}
+
+html[data-theme="graffiti"] .type-cursor {
+  color: var(--g-pink);
+}
+
+/* Scroll-in: the stripe is rolled on left to right, then the drips run.
+   Animates background-size rather than clip-path so the observer still sees the header. */
+html[data-theme="graffiti"].fx .section-header {
+  background-size: 0% 100%;
+}
+
+html[data-theme="graffiti"].fx .section-header::after {
+  height: 0;
+}
+
+html[data-theme="graffiti"].fx .section-header.is-powering {
+  animation: paint-roll 0.6s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+html[data-theme="graffiti"].fx .section-header.is-powering::after {
+  animation: drip-run 1.4s cubic-bezier(0.3, 0, 0.5, 1) 0.45s both;
+}
+
+html[data-theme="graffiti"].fx .content-section.is-powering {
+  animation: none;
+}
+
+@keyframes paint-roll {
+  from { background-size: 0% 100%; }
+  to { background-size: 100% 100%; }
+}
+
+@keyframes drip-run {
+  from { height: 0; }
+  to { height: 1.1rem; }
+}
+
+/* ---- Website highlights ---- */
+html[data-theme="graffiti"] .site-intro {
+  border-bottom: 2px dashed rgba(244, 239, 230, 0.3);
+}
+
+html[data-theme="graffiti"] .site-intro p,
+html[data-theme="graffiti"] .site-entry p,
+html[data-theme="graffiti"] .project-entry p,
+html[data-theme="graffiti"] .timeline-entry ul {
+  color: var(--g-text);
+}
+
+html[data-theme="graffiti"] .site-intro .site-legend {
+  color: var(--g-muted);
+}
+
+html[data-theme="graffiti"] .site-dot.live {
+  background: var(--g-lime);
+  box-shadow: 0 0 0 2px var(--g-ink);
+}
+
+html[data-theme="graffiti"] .site-dot.retired {
+  background: #8a8486;
+  box-shadow: 0 0 0 2px var(--g-ink);
+}
+
+/* Links get a marker scribble underneath on hover */
+html[data-theme="graffiti"] .site-link-row a {
+  color: var(--g-cyan);
+  font-weight: 700;
+  background: linear-gradient(var(--g-pink), var(--g-pink)) 0 100% / 0 0.3em no-repeat;
+  transition: background-size 0.3s ease, color 0.2s;
+}
+
+html[data-theme="graffiti"] .site-link-row a:hover,
+html[data-theme="graffiti"] .site-link-row a:focus-visible {
+  color: var(--g-cream);
+  background-size: 100% 0.3em;
+  animation: none;
+  text-shadow: none;
+}
+
+/* Screenshots pinned up like prints */
+html[data-theme="graffiti"] .site-shot {
+  border: 6px solid var(--g-cream);
+  border-radius: 3px;
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.6);
+  rotate: -1.2deg;
+}
+
+html[data-theme="graffiti"] .site-entry:nth-child(even) .site-shot {
+  rotate: 1.4deg;
+}
+
+html[data-theme="graffiti"] .site-shot:hover {
+  box-shadow: 10px 10px 0 var(--g-pink);
+}
+
+/* Reveal: effects.js covers each screenshot with a wall-coloured canvas and
+   sprays it away, so the image itself is shown and the scanline is dropped */
+html[data-theme="graffiti"].fx .site-shot .site-screenshot,
+html[data-theme="graffiti"].fx .site-shot.is-revealed .site-screenshot {
+  clip-path: none;
+  animation: none;
+}
+
+html[data-theme="graffiti"].fx .site-shot::after {
+  display: none;
+}
+
+.shot-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  background: #141112;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+/* Once painting starts the canvas pixels take over from the flat fill */
+.shot-cover.is-painting {
+  background: none;
+}
+
+.shot-cover.is-done {
+  opacity: 0;
+}
+
+/* The can follows the nozzle; its spray tip sits on the point being painted */
+.shot-spray-can {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin: -0.4rem 0 0 -0.6rem;
+  background: var(--g-can) center / contain no-repeat;
+  filter: drop-shadow(3px 3px 0 rgba(0, 0, 0, 0.55));
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.shot-spray-can.is-done {
+  opacity: 0;
+}
+
+/* ---- Projects ---- */
+html[data-theme="graffiti"] .project-entry h3,
+html[data-theme="graffiti"] .timeline-entry h3 {
+  font-family: var(--g-marker);
+  font-weight: 400;
+  font-size: 1.2rem;
+  letter-spacing: 0.02em;
+  color: var(--g-yellow);
+}
+
+html[data-theme="graffiti"] .project-entry .project-title-row .icon {
+  color: var(--g-pink);
+}
+
+/* ---- Timeline: a dripping paint line ---- */
+html[data-theme="graffiti"] .timeline::before,
+html[data-theme="graffiti"].fx .timeline::before {
+  width: 5px;
+  left: 0.4rem;
+  border-radius: 999px;
+  background: linear-gradient(to bottom, var(--g-pink), var(--g-orange), var(--g-yellow));
+  box-shadow: none;
+}
+
+html[data-theme="graffiti"] .timeline-dot,
+html[data-theme="graffiti"].fx .timeline-dot {
+  background: var(--g-ink);
+  border: 3px solid var(--g-cream);
+  border-radius: 45% 55% 50% 50% / 55% 45% 55% 45%;
+  box-shadow: none;
+}
+
+html[data-theme="graffiti"]:not(.fx) .timeline-dot,
+html[data-theme="graffiti"].fx .timeline-entry.is-lit .timeline-dot {
+  background: var(--g-cyan);
+  border-color: var(--g-ink);
+  box-shadow: 3px 3px 0 var(--g-pink);
+}
+
+html[data-theme="graffiti"].fx .timeline-entry.is-lit .timeline-dot {
+  animation: dot-splat 0.45s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+@keyframes dot-splat {
+  0% { transform: scale(0.4) rotate(-40deg); }
+  60% { transform: scale(1.6) rotate(10deg); }
+  100% { transform: none; }
+}
+
+html[data-theme="graffiti"] .timeline-date {
+  font-family: var(--g-marker);
+  color: var(--g-lime);
+}
+
+/* ---- Section nav ---- */
+html[data-theme="graffiti"] .section-nav {
+  border: 3px solid var(--g-ink);
+  background: rgba(244, 239, 230, 0.95);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 6px 6px 0 var(--g-pink);
+}
+
+@media (min-width: 1024px) {
+  html[data-theme="graffiti"] .section-nav {
+    border-left: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  html[data-theme="graffiti"] .section-nav {
+    border-width: 3px 0 0;
+    box-shadow: 0 -4px 0 var(--g-pink);
+  }
+}
+
+html[data-theme="graffiti"] .section-nav-link {
+  color: var(--g-ink);
+}
+
+html[data-theme="graffiti"] .section-nav-link .icon {
+  border: 2px solid var(--g-ink);
+  background: var(--g-cream);
+}
+
+html[data-theme="graffiti"] .section-nav-link:hover .icon,
+html[data-theme="graffiti"] .section-nav-link:focus-visible .icon {
+  color: var(--g-ink);
+  border-color: var(--g-ink);
+  box-shadow: 3px 3px 0 var(--g-cyan);
+}
+
+html[data-theme="graffiti"] .section-nav-link.active .icon {
+  color: var(--g-ink);
+  border-color: var(--g-ink);
+  background: var(--g-yellow);
+  box-shadow: 3px 3px 0 var(--g-pink);
+}
+
+html[data-theme="graffiti"] .section-nav-link.active .section-nav-avatar {
+  background: none;
+}
+
+html[data-theme="graffiti"] .section-nav-label {
+  font-family: var(--g-marker);
+  font-weight: 400;
+}
+
+html[data-theme="graffiti"] .section-nav-link.active .section-nav-label {
+  color: var(--g-ink);
+}
+
+@media (min-width: 1024px) {
+  html[data-theme="graffiti"] .section-nav-label {
+    border: 2px solid var(--g-ink);
+    background: var(--g-yellow);
+    color: var(--g-ink);
+    box-shadow: 3px 3px 0 var(--g-ink);
+  }
+}
+
+/* ---- Social stickers ---- */
+html[data-theme="graffiti"] .social-icon-link {
+  background: var(--g-cream);
+  border: 3px solid var(--g-ink);
+  border-radius: var(--g-rough);
+  box-shadow: 4px 4px 0 var(--g-pink);
+  transform: rotate(-6deg);
+}
+
+html[data-theme="graffiti"] .social-icon-link + .social-icon-link {
+  box-shadow: 4px 4px 0 var(--g-cyan);
+  transform: rotate(5deg);
+}
+
+html[data-theme="graffiti"] .social-icon-link:hover {
+  border-color: var(--g-ink);
+  box-shadow: 7px 7px 0 var(--g-yellow);
+  transform: rotate(0) scale(1.1);
+}
+
+html[data-theme="graffiti"] .social-icon-link .icon,
+html[data-theme="graffiti"] .social-icon-link:hover .icon {
+  color: var(--g-ink);
+}
+
+/* ---- Contact page ---- */
+html[data-theme="graffiti"] .terminal-window {
+  background: rgba(14, 11, 12, 0.82);
+  backdrop-filter: none;
+}
+
+html[data-theme="graffiti"] .terminal-titlebar {
+  background: var(--g-yellow);
+  border-bottom: 3px solid var(--g-ink);
+}
+
+html[data-theme="graffiti"] .terminal-titlebar .terminal-label {
+  color: var(--g-ink);
+  font-family: var(--g-marker);
+}
+
+html[data-theme="graffiti"] .terminal-log .line.system {
+  color: var(--g-cream);
+}
+
+html[data-theme="graffiti"] .simple-contact-title {
+  font-family: var(--g-marker);
+  font-weight: 400;
+  font-size: 1.9rem;
+  color: var(--g-yellow);
+  text-shadow: 3px 3px 0 var(--g-pink);
+}
+
+html[data-theme="graffiti"] .simple-contact-intro {
+  color: var(--g-text);
+}
+
+/* ---- Estimator ---- */
+html[data-theme="graffiti"] .estimate-bar {
+  background: rgba(13, 13, 13, 0.94);
+  border-bottom: 4px solid var(--g-yellow);
+}
+
+html[data-theme="graffiti"] .estimate-stat-label {
+  color: var(--g-cyan);
+  font-weight: 700;
+}
+
+html[data-theme="graffiti"] .estimate-stat-value {
+  font-family: var(--g-marker);
+  font-weight: 400;
+  color: var(--g-yellow);
+  text-shadow: 2px 2px 0 var(--g-pink);
+}
+
+html[data-theme="graffiti"] .breakdown-toggle {
+  border: 2px solid var(--g-cream);
+  border-radius: var(--g-rough-alt);
+  color: var(--g-cream);
+}
+
+html[data-theme="graffiti"] .breakdown-toggle:hover:not(:disabled) {
+  color: var(--g-ink);
+  border-color: var(--g-ink);
+  background: var(--g-yellow);
+}
+
+html[data-theme="graffiti"] .estimator-header h1 {
+  font-family: var(--g-tag);
+  font-weight: 400;
+  background: none;
+  color: var(--g-yellow);
+  -webkit-text-fill-color: var(--g-yellow);
+  -webkit-text-stroke: 1.5px var(--g-ink);
+  paint-order: stroke fill;
+  text-shadow: 3px 3px 0 var(--g-ink), 5px 5px 0 var(--g-pink);
+  transform: rotate(-2deg);
+}
+
+html[data-theme="graffiti"] .estimator-intro,
+html[data-theme="graffiti"] .section-subtitle {
+  color: var(--g-text);
+}
+
+html[data-theme="graffiti"] .section-title {
+  font-family: var(--g-marker);
+  font-weight: 400;
+  color: var(--g-cyan);
+}
+
+html[data-theme="graffiti"] .option-btn {
+  border: 2px solid rgba(244, 239, 230, 0.75);
+  border-radius: var(--g-rough-lg);
+  background: var(--g-panel);
+}
+
+html[data-theme="graffiti"] .option-btn:hover {
+  background: rgba(30, 24, 26, 0.95);
+  border-color: var(--g-cream);
+  transform: rotate(-0.6deg);
+}
+
+html[data-theme="graffiti"] .option-btn.selected {
+  border: 3px solid var(--g-ink);
+  background: var(--g-cream);
+  box-shadow: 6px 6px 0 var(--g-pink);
+}
+
+html[data-theme="graffiti"] .option-btn .option-label {
+  font-family: var(--g-marker);
+  font-weight: 400;
+  color: var(--g-cream);
+}
+
+html[data-theme="graffiti"] .option-btn .option-price {
+  color: var(--g-yellow);
+}
+
+html[data-theme="graffiti"] .option-btn .option-desc {
+  color: var(--g-text);
+}
+
+html[data-theme="graffiti"] .option-btn .option-market {
+  color: var(--g-muted);
+}
+
+html[data-theme="graffiti"] .option-btn.selected .option-label,
+html[data-theme="graffiti"] .option-btn.selected .option-desc {
+  color: var(--g-ink);
+}
+
+html[data-theme="graffiti"] .option-btn.selected .option-price {
+  color: var(--g-pink);
+}
+
+html[data-theme="graffiti"] .option-btn.selected .option-market {
+  color: rgba(13, 13, 13, 0.6);
+}
+
+/* ---- 404 ---- */
+html[data-theme="graffiti"] .glitch-heading .code {
+  font-family: var(--g-tag);
+  font-weight: 400;
+  color: var(--g-pink);
+  -webkit-text-stroke: 3px var(--g-ink);
+  paint-order: stroke fill;
+  text-shadow: 4px 4px 0 var(--g-ink), 8px 8px 0 var(--g-yellow), 11px 11px 0 var(--g-ink);
+  transform: rotate(-5deg);
+  animation: none;
+}
+
+html[data-theme="graffiti"] .glitch-heading .code::before,
+html[data-theme="graffiti"] .glitch-heading .code::after {
+  display: none;
+}
+
+html[data-theme="graffiti"] .error-subtitle {
+  font-family: var(--g-marker);
+  color: var(--g-yellow);
+  text-shadow: 2px 2px 0 var(--g-ink);
+  animation: none;
+}
+
+html[data-theme="graffiti"] .boot-terminal,
+html[data-theme="graffiti"] .hud-badge {
+  background: var(--g-panel);
+  border: 2px dashed rgba(244, 239, 230, 0.6);
+  box-shadow: 6px 6px 0 var(--g-lime);
+  backdrop-filter: none;
+}
+
+html[data-theme="graffiti"] .planet-core {
+  background: radial-gradient(circle at 35% 35%, var(--g-yellow), var(--g-pink) 70%);
+  box-shadow: 0 0 0 3px var(--g-ink), 4px 4px 0 3px var(--g-cyan);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="graffiti"] .btn-pill,
+  html[data-theme="graffiti"] .btn-glow,
+  html[data-theme="graffiti"] .switch-btn,
+  html[data-theme="graffiti"] .neon-cta-button,
+  html[data-theme="graffiti"] .mode-toggle-btn,
+  html[data-theme="graffiti"] .btn-pill::after,
+  html[data-theme="graffiti"] .btn-glow::after,
+  html[data-theme="graffiti"] .switch-btn::after,
+  html[data-theme="graffiti"] .neon-cta-button::after,
+  html[data-theme="graffiti"] .mode-toggle-btn::after {
+    transition: none;
+  }
+}
+
+/* ---- Picker swatches for the newer themes ---- */
+.theme-swatch--blueprint {
+  background:
+    radial-gradient(circle, transparent 0 36%, rgba(235, 244, 255, 0.95) 37% 41%, transparent 42%),
+    linear-gradient(rgba(235, 244, 255, 0.3) 1px, transparent 1px) 0 0 / 6px 6px,
+    linear-gradient(90deg, rgba(235, 244, 255, 0.3) 1px, transparent 1px) 0 0 / 6px 6px,
+    #134a8a;
+  box-shadow: inset 0 0 0 1px rgba(235, 244, 255, 0.6);
+}
+
+.theme-swatch--professional {
+  background:
+    radial-gradient(circle at 50% 50%, #2453c4 0 22%, transparent 23%),
+    linear-gradient(#ffffff 50%, #e8edf7 50%);
+  box-shadow: inset 0 0 0 1px #cdd3dd;
+}
+
+/* Drafting tools only appear in blueprint */
+.shot-pen,
+.cad-guide,
+.cad-readout {
+  display: none;
+}
+
+/* ================================================================== */
+/* BLUEPRINT                                                            */
+/* The site drafted as an engineering plan: white linework on           */
+/* blueprint blue, monospace annotations and drafting-pen animations    */
+/* ================================================================== */
+html[data-theme="blueprint"] {
+  --b-paper: #134a8a;
+  --b-paper-deep: #0d3566;
+  --b-panel: rgba(21, 71, 127, 0.92);
+  --b-line: rgba(235, 244, 255, 0.92);
+  --b-line-soft: rgba(235, 244, 255, 0.55);
+  --b-faint: rgba(235, 244, 255, 0.18);
+  --b-text: #e8f1ff;
+  --b-body: rgba(232, 241, 255, 0.84);
+  --b-muted: rgba(232, 241, 255, 0.66);
+  --b-pencil: #ffd166;
+  --b-red: #ff8a80;
+  --b-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, Menlo, monospace;
+  --b-sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --b-hand: "Architects Daughter", "Comic Sans MS", cursive;
+}
+
+html[data-theme="blueprint"] body {
+  font-family: var(--b-sans);
+  color: var(--b-body);
+  background: var(--b-paper);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html[data-theme="blueprint"] body {
+    cursor: crosshair;
+  }
+}
+
+html[data-theme="blueprint"] ::selection {
+  background: var(--b-pencil);
+  color: var(--b-paper-deep);
+}
+
+/* ---- The sheet: major and minor grid, vignette ---- */
+html[data-theme="blueprint"] .page-shell::before {
+  background:
+    radial-gradient(ellipse at 50% 20%, rgba(255, 255, 255, 0.09), transparent 60%),
+    radial-gradient(ellipse at 50% 50%, transparent 45%, rgba(0, 12, 35, 0.45) 100%),
+    linear-gradient(rgba(235, 244, 255, 0.1) 1px, transparent 1px) 0 0 / 100px 100px,
+    linear-gradient(90deg, rgba(235, 244, 255, 0.1) 1px, transparent 1px) 0 0 / 100px 100px,
+    linear-gradient(rgba(235, 244, 255, 0.045) 1px, transparent 1px) 0 0 / 20px 20px,
+    linear-gradient(90deg, rgba(235, 244, 255, 0.045) 1px, transparent 1px) 0 0 / 20px 20px,
+    var(--b-paper);
+}
+
+html[data-theme="blueprint"] .animated-bg .bg-grid,
+html[data-theme="blueprint"] .animated-bg .bg-particle,
+html[data-theme="blueprint"] .animated-bg .bg-orb,
+html[data-theme="blueprint"] .cursor-glow,
+html[data-theme="blueprint"] .scanline-overlay {
+  display: none;
+}
+
+/* Drawing border around the whole sheet */
+html[data-theme="blueprint"] .animated-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0.75rem;
+  border: 1.5px solid var(--b-line-soft);
+  outline: 1px solid var(--b-faint);
+  outline-offset: 4px;
+  pointer-events: none;
+}
+
+/* Title block in the corner of the sheet */
+html[data-theme="blueprint"] .animated-bg::after {
+  content: "DRAWN BY   M. MULDERS\A TITLE      DEVELOPER PROFILE\A SCALE      1:1     SHEET 1/1\A REV        2026";
+  position: absolute;
+  left: 1.75rem;
+  bottom: 1.75rem;
+  padding: 0.6rem 0.85rem;
+  border: 1.5px solid var(--b-line-soft);
+  background: rgba(13, 53, 102, 0.6);
+  font-family: var(--b-mono);
+  font-size: 0.65rem;
+  line-height: 1.7;
+  letter-spacing: 0.06em;
+  white-space: pre;
+  color: var(--b-muted);
+  pointer-events: none;
+}
+
+@media (max-width: 1023px) {
+  html[data-theme="blueprint"] .animated-bg::after {
+    display: none;
+  }
+}
+
+/* ---- CAD cursor (theme.js) ---- */
+html[data-theme="blueprint"] .cad-guide {
+  display: block;
+  position: fixed;
+  z-index: -5;
+  top: 0;
+  left: 0;
+  background: rgba(235, 244, 255, 0.22);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+html[data-theme="blueprint"] .cad-guide-x {
+  right: 0;
+  height: 1px;
+}
+
+html[data-theme="blueprint"] .cad-guide-y {
+  bottom: 0;
+  width: 1px;
+}
+
+html[data-theme="blueprint"] .cad-readout {
+  display: block;
+  position: fixed;
+  z-index: 70;
+  top: 0;
+  left: 0;
+  padding: 0.15rem 0.45rem;
+  border: 1px solid var(--b-line-soft);
+  background: rgba(13, 53, 102, 0.92);
+  font-family: var(--b-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+  white-space: pre;
+  color: var(--b-pencil);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+html[data-theme="blueprint"] body.cad-cursor-on .cad-guide,
+html[data-theme="blueprint"] body.cad-cursor-on .cad-readout {
+  opacity: 1;
+}
+
+/* ---- Picker ---- */
+html[data-theme="blueprint"] .theme-picker-toggle {
+  border: 1.5px solid var(--b-line);
+  background: var(--b-paper-deep);
+  box-shadow: 0 0 0 4px var(--b-paper-deep), 0 0 0 5px var(--b-faint);
+}
+
+html[data-theme="blueprint"] .theme-picker-toggle:hover,
+html[data-theme="blueprint"] .theme-picker.is-open .theme-picker-toggle {
+  box-shadow: 0 0 0 4px var(--b-paper-deep), 0 0 0 5px var(--b-pencil);
+}
+
+html[data-theme="blueprint"] .theme-picker-menu {
+  border: 1.5px solid var(--b-line);
+  border-radius: 0;
+  background: var(--b-paper-deep);
+  outline: 1px solid var(--b-faint);
+  outline-offset: 4px;
+  box-shadow: 0 12px 30px rgba(0, 10, 30, 0.45);
+}
+
+html[data-theme="blueprint"] .theme-picker-heading {
+  font-family: var(--b-mono);
+  color: var(--b-pencil);
+}
+
+html[data-theme="blueprint"] .theme-option {
+  border-radius: 0;
+  color: var(--b-text);
+}
+
+html[data-theme="blueprint"] .theme-option:hover {
+  background: rgba(235, 244, 255, 0.08);
+}
+
+html[data-theme="blueprint"] .theme-option[aria-pressed="true"] {
+  border-color: var(--b-line-soft);
+  background: rgba(235, 244, 255, 0.1);
+}
+
+html[data-theme="blueprint"] .theme-option[aria-pressed="true"]::after {
+  border-color: var(--b-pencil);
+}
+
+html[data-theme="blueprint"] .theme-option-name {
+  font-family: var(--b-mono);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+html[data-theme="blueprint"] .theme-option-desc {
+  color: var(--b-muted);
+}
+
+html[data-theme="blueprint"] .theme-picker-toggle:focus-visible,
+html[data-theme="blueprint"] .theme-option:focus-visible {
+  outline: 2px solid var(--b-pencil);
+}
+
+/* ---- Buttons: outlined, with a dimension line above that stretches on hover ---- */
+html[data-theme="blueprint"] .btn-pill,
+html[data-theme="blueprint"] .btn-glow,
+html[data-theme="blueprint"] .switch-btn,
+html[data-theme="blueprint"] .neon-cta-button,
+html[data-theme="blueprint"] .mode-toggle-btn {
+  position: relative;
+  overflow: visible;
+  background: transparent;
+  border: 1.5px solid var(--b-line);
+  border-radius: 0;
+  color: var(--b-text);
+  font-family: var(--b-mono);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-shadow: none;
+  box-shadow: none;
+  transform: none;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+html[data-theme="blueprint"] .btn-pill::before,
+html[data-theme="blueprint"] .btn-glow::before,
+html[data-theme="blueprint"] .switch-btn::before,
+html[data-theme="blueprint"] .neon-cta-button::before,
+html[data-theme="blueprint"] .mode-toggle-btn::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -0.75rem;
+  height: 0.45rem;
+  border-left: 1px solid var(--b-line-soft);
+  border-right: 1px solid var(--b-line-soft);
+  background: linear-gradient(var(--b-line-soft), var(--b-line-soft)) center / 100% 1px no-repeat;
+  transform: scaleX(0.9);
+  opacity: 0.7;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease, border-color 0.2s ease;
+  pointer-events: none;
+}
+
+html[data-theme="blueprint"] .btn-pill:hover,
+html[data-theme="blueprint"] .btn-glow:hover:not(:disabled),
+html[data-theme="blueprint"] .switch-btn:hover,
+html[data-theme="blueprint"] .switch-btn:focus-visible,
+html[data-theme="blueprint"] .neon-cta-button:hover,
+html[data-theme="blueprint"] .mode-toggle-btn:hover {
+  background: rgba(235, 244, 255, 0.1);
+  border-color: var(--b-pencil);
+  color: var(--b-pencil);
+  box-shadow: none;
+  transform: none;
+}
+
+html[data-theme="blueprint"] .btn-pill:hover::before,
+html[data-theme="blueprint"] .btn-glow:hover:not(:disabled)::before,
+html[data-theme="blueprint"] .switch-btn:hover::before,
+html[data-theme="blueprint"] .neon-cta-button:hover::before,
+html[data-theme="blueprint"] .mode-toggle-btn:hover::before {
+  transform: scaleX(1.12);
+  opacity: 1;
+  border-color: var(--b-pencil);
+  background-image: linear-gradient(var(--b-pencil), var(--b-pencil));
+}
+
+html[data-theme="blueprint"] .btn-glow:disabled {
+  opacity: 0.45;
+}
+
+html[data-theme="blueprint"] .neon-cta-button .icon,
+html[data-theme="blueprint"] .neon-cta-button span,
+html[data-theme="blueprint"] .mode-toggle-icon,
+html[data-theme="blueprint"] .mode-toggle-prompt {
+  color: inherit;
+  text-shadow: none;
+  filter: none;
+}
+
+html[data-theme="blueprint"] .neon-cta-button span {
+  font-size: 1rem;
+}
+
+html[data-theme="blueprint"] .btn-pill:focus-visible,
+html[data-theme="blueprint"] .switch-btn:focus-visible,
+html[data-theme="blueprint"] .mode-toggle-btn:focus-visible {
+  outline: 2px solid var(--b-pencil);
+}
+
+html[data-theme="blueprint"] .back-link,
+html[data-theme="blueprint"] .reset-link {
+  font-family: var(--b-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--b-text);
+}
+
+html[data-theme="blueprint"] .back-link:hover,
+html[data-theme="blueprint"] .reset-link:hover {
+  color: var(--b-pencil);
+}
+
+/* ---- Form fields ---- */
+html[data-theme="blueprint"] .simple-field label {
+  font-family: var(--b-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--b-muted);
+}
+
+html[data-theme="blueprint"] .simple-field input,
+html[data-theme="blueprint"] .simple-field textarea {
+  border: 1.5px solid var(--b-line-soft);
+  border-radius: 0;
+  background: rgba(13, 53, 102, 0.55);
+  color: var(--b-text);
+}
+
+html[data-theme="blueprint"] .simple-field input::placeholder,
+html[data-theme="blueprint"] .simple-field textarea::placeholder {
+  color: var(--b-muted);
+}
+
+html[data-theme="blueprint"] .simple-field input:focus,
+html[data-theme="blueprint"] .simple-field textarea:focus {
+  border-color: var(--b-pencil);
+  box-shadow: none;
+}
+
+html[data-theme="blueprint"] .simple-status.system { color: var(--b-text); background: rgba(235, 244, 255, 0.1); }
+
+/* ---- Profile header ---- */
+html[data-theme="blueprint"] .profile-photo-ring {
+  padding: 5px;
+  background: var(--b-paper-deep);
+  border: 1.5px solid var(--b-line);
+  box-shadow: 0 0 0 7px var(--b-paper), 0 0 0 8.5px var(--b-line-soft);
+}
+
+html[data-theme="blueprint"] .profile-photo-ring:hover {
+  box-shadow: 0 0 0 7px var(--b-paper), 0 0 0 8.5px var(--b-pencil);
+}
+
+html[data-theme="blueprint"] .profile-photo-mask {
+  background: var(--b-paper-deep);
+}
+
+html[data-theme="blueprint"] .profile-photo-glow {
+  display: none;
+}
+
+html[data-theme="blueprint"] .experience-badge {
+  border: 1.5px solid var(--b-line);
+  border-radius: 0;
+  background: var(--b-paper-deep);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+html[data-theme="blueprint"] .experience-badge .label {
+  font-family: var(--b-mono);
+  color: var(--b-pencil);
+}
+
+html[data-theme="blueprint"] .experience-badge .value {
+  font-family: var(--b-mono);
+  color: var(--b-text);
+}
+
+/* The name is plotted in outline, then hatched in */
+html[data-theme="blueprint"] .profile-name {
+  font-family: var(--b-mono);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: none;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1.5px var(--b-line);
+  text-shadow: none;
+}
+
+/* Wide monospace capitals: scale down on phones so the name stays on one line */
+@media (max-width: 767px) {
+  html[data-theme="blueprint"] .profile-name {
+    font-size: 1.95rem;
+  }
+}
+
+/* Hatched fill; on the letters when they exist, otherwise on the heading itself */
+html[data-theme="blueprint"] .profile-name:not(:has(.name-char)),
+html[data-theme="blueprint"] .name-char {
+  background: repeating-linear-gradient(-45deg, rgba(235, 244, 255, 0.55) 0 1px, transparent 1px 5px);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+html[data-theme="blueprint"] .name-char {
+  display: inline-block;
+}
+
+html[data-theme="blueprint"].fx .profile-name.is-intro .name-char {
+  animation: plot-letter 0.45s linear both;
+  animation-delay: calc(0.2s + var(--i) * 0.09s);
+}
+
+@keyframes plot-letter {
+  from { clip-path: inset(-20% 100% -20% -20%); }
+  to { clip-path: inset(-20% -20% -20% -20%); }
+}
+
+html[data-theme="blueprint"] .profile-title {
+  font-family: var(--b-mono);
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--b-muted);
+}
+
+html[data-theme="blueprint"] .profile-title::before {
+  content: "ROLE: ";
+  color: var(--b-pencil);
+}
+
+@media (min-width: 768px) {
+  html[data-theme="blueprint"] .profile-title {
+    font-size: 1.1rem;
+  }
+}
+
+/* ---- "Need a website?" as a hand-lettered callout ---- */
+html[data-theme="blueprint"] .neon-cta .glow-backdrop {
+  display: none;
+}
+
+html[data-theme="blueprint"] .neon-cta-content {
+  transition: opacity 0.6s ease;
+}
+
+html[data-theme="blueprint"] .neon-title,
+html[data-theme="blueprint"] .neon-title.flicker {
+  font-family: var(--b-hand);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--b-text);
+  text-shadow: none;
+  animation: none;
+  text-decoration: underline wavy var(--b-pencil);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
+}
+
+html[data-theme="blueprint"] .neon-subtitle,
+html[data-theme="blueprint"] .neon-subtitle.flicker {
+  font-family: var(--b-mono);
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--b-muted);
+  text-shadow: none;
+  animation: none;
+}
+
+/* ---- Switch offer: a revision note pinned to the drawing ---- */
+html[data-theme="blueprint"] .switch-offer {
+  overflow: visible;
+  background: var(--b-panel);
+  border: 1.5px dashed var(--b-line);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* The shimmer becomes a revision tag */
+html[data-theme="blueprint"] .switch-offer::before {
+  content: "REV B";
+  inset: auto;
+  top: -0.8rem;
+  right: 1rem;
+  padding: 0.15rem 0.55rem;
+  border: 1.5px solid var(--b-red);
+  background: var(--b-paper-deep);
+  font-family: var(--b-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--b-red);
+  transform: none;
+  animation: none;
+}
+
+html[data-theme="blueprint"] .platform-pill,
+html[data-theme="blueprint"] .feature-pill {
+  border: 1.5px solid var(--b-line-soft);
+  border-radius: 0;
+  background: transparent;
+  font-family: var(--b-mono);
+  font-weight: 600;
+  color: var(--b-text);
+  text-shadow: none;
+  box-shadow: none;
+}
+
+html[data-theme="blueprint"] .platform-pill {
+  border-color: var(--b-pencil);
+  color: var(--b-pencil);
+}
+
+html[data-theme="blueprint"] .switch-offer-title {
+  font-family: var(--b-hand);
+  font-weight: 400;
+  font-size: 1.75rem;
+  color: var(--b-text);
+  text-shadow: none;
+}
+
+html[data-theme="blueprint"] .switch-offer-text {
+  color: var(--b-body);
+}
+
+html[data-theme="blueprint"] .switch-offer-text strong,
+html[data-theme="blueprint"].fx .switch-offer-text strong {
+  color: var(--b-pencil);
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  animation: none;
+}
+
+html[data-theme="blueprint"] .switch-offer-includes-label,
+html[data-theme="blueprint"] .offer-progress-label {
+  font-family: var(--b-mono);
+  color: var(--b-muted);
+}
+
+html[data-theme="blueprint"] .offer-progress-count strong {
+  color: var(--b-pencil);
+  text-shadow: none;
+}
+
+html[data-theme="blueprint"] .offer-progress-track {
+  border: 1.5px solid var(--b-line-soft);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+html[data-theme="blueprint"] .offer-progress-fill {
+  border-radius: 0;
+  background: repeating-linear-gradient(-45deg, var(--b-line) 0 2px, transparent 2px 6px);
+  box-shadow: none;
+  animation: none;
+}
+
+html[data-theme="blueprint"] .offer-progress-note {
+  color: var(--b-muted);
+}
+
+/* ---- Bio: drafting notes ---- */
+html[data-theme="blueprint"] .terminal-box {
+  margin-top: 2.5rem;
+  background: var(--b-panel);
+  border: 1.5px solid var(--b-line);
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+html[data-theme="blueprint"] .terminal-box::before {
+  content: "NOTES";
+  position: absolute;
+  left: -1.5px;
+  bottom: 100%;
+  padding: 0.2rem 0.6rem;
+  border: 1.5px solid var(--b-line);
+  border-bottom: none;
+  background: var(--b-paper-deep);
+  font-family: var(--b-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--b-pencil);
+}
+
+html[data-theme="blueprint"] .terminal-box .prompt-line {
+  font-family: var(--b-hand);
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+html[data-theme="blueprint"] .terminal-box .typed-text {
+  color: var(--b-text);
+}
+
+html[data-theme="blueprint"] .terminal-box .prompt-arrow,
+html[data-theme="blueprint"] .terminal-box .cursor {
+  color: var(--b-pencil);
+}
+
+/* ---- Content sections: figures on the sheet ---- */
+html[data-theme="blueprint"] .content-sections {
+  counter-reset: fig;
+}
+
+html[data-theme="blueprint"] .content-section,
+html[data-theme="blueprint"] .content-section:hover {
+  border: 1.5px solid var(--b-line);
+  border-radius: 0;
+  background: var(--b-panel);
+  backdrop-filter: none;
+  box-shadow: none;
+  outline: 1px solid var(--b-faint);
+  outline-offset: 5px;
+  overflow: visible;
+}
+
+html[data-theme="blueprint"] .section-header {
+  background: none;
+  border-bottom: 1.5px solid var(--b-line-soft);
+  color: var(--b-text);
+  font-family: var(--b-mono);
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+html[data-theme="blueprint"] .section-header::before {
+  counter-increment: fig;
+  content: "FIG. " counter(fig, decimal-leading-zero) " —";
+  flex-shrink: 0;
+  color: var(--b-pencil);
+}
+
+/* Leader line from the label to the edge of the figure */
+html[data-theme="blueprint"] .section-header::after {
+  content: "";
+  flex: 1;
+  min-width: 1rem;
+  height: 7px;
+  background:
+    radial-gradient(circle, var(--b-line-soft) 0 3px, transparent 3.5px) right center / 7px 7px no-repeat,
+    linear-gradient(var(--b-line-soft), var(--b-line-soft)) left center / calc(100% - 4px) 1px no-repeat;
+  transform-origin: left;
+}
+
+html[data-theme="blueprint"] .section-header .icon {
+  color: var(--b-pencil);
+}
+
+html[data-theme="blueprint"].fx .section-header.is-powering,
+html[data-theme="blueprint"].fx .content-section.is-powering {
+  animation: none;
+}
+
+html[data-theme="blueprint"].fx .section-header::after {
+  transform: scaleX(0);
+}
+
+html[data-theme="blueprint"].fx .section-header.is-powering::after {
+  animation: leader-draw 0.9s cubic-bezier(0.65, 0, 0.35, 1) 0.2s both;
+}
+
+@keyframes leader-draw {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+html[data-theme="blueprint"] .type-cursor {
+  color: var(--b-pencil);
+}
+
+html[data-theme="blueprint"] .section-body {
+  color: var(--b-body);
+}
+
+/* ---- Website highlights ---- */
+html[data-theme="blueprint"] .site-intro {
+  border-bottom: 1px dashed var(--b-line-soft);
+}
+
+html[data-theme="blueprint"] .site-intro p,
+html[data-theme="blueprint"] .site-entry p,
+html[data-theme="blueprint"] .project-entry p,
+html[data-theme="blueprint"] .timeline-entry ul {
+  color: var(--b-body);
+}
+
+html[data-theme="blueprint"] .site-intro .site-legend {
+  font-family: var(--b-mono);
+  color: var(--b-muted);
+}
+
+html[data-theme="blueprint"] .site-dot.live {
+  background: var(--b-line);
+  box-shadow: none;
+}
+
+html[data-theme="blueprint"] .site-dot.retired {
+  background: transparent;
+  border: 1.5px solid var(--b-line-soft);
+  box-shadow: none;
+}
+
+html[data-theme="blueprint"] .site-link-row a {
+  font-family: var(--b-mono);
+  font-weight: 600;
+  color: var(--b-text);
+  text-decoration: underline dashed var(--b-line-soft);
+  text-underline-offset: 0.25em;
+}
+
+html[data-theme="blueprint"] .site-link-row a:hover,
+html[data-theme="blueprint"] .site-link-row a:focus-visible {
+  color: var(--b-pencil);
+  text-decoration-color: var(--b-pencil);
+  animation: none;
+  text-shadow: none;
+}
+
+html[data-theme="blueprint"] .site-shot {
+  border: 1.5px solid var(--b-line);
+  border-radius: 0;
+  box-shadow: none;
+  outline: 1px dashed var(--b-line-soft);
+  outline-offset: 5px;
+}
+
+html[data-theme="blueprint"] .site-shot:hover,
+html[data-theme="blueprint"] .site-shot:focus-visible {
+  box-shadow: none;
+  outline-color: var(--b-pencil);
+}
+
+html[data-theme="blueprint"] .site-shot:focus-visible {
+  outline-style: solid;
+}
+
+/* Reveal: effects.js hatches the image in with a drafting pen over a blank panel */
+html[data-theme="blueprint"].fx .site-shot .site-screenshot,
+html[data-theme="blueprint"].fx .site-shot.is-revealed .site-screenshot {
+  clip-path: none;
+  animation: none;
+}
+
+html[data-theme="blueprint"].fx .site-shot::after {
+  display: none;
+}
+
+html[data-theme="blueprint"] .shot-cover {
+  background: #15477f;
+}
+
+html[data-theme="blueprint"] .shot-cover.is-painting {
+  background: none;
+}
+
+html[data-theme="blueprint"] .shot-pen {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  width: 1.4rem;
+  height: 1.4rem;
+  margin: -0.7rem 0 0 -0.7rem;
+  border: 1.5px solid var(--b-pencil);
+  border-radius: 50%;
+  background:
+    linear-gradient(var(--b-pencil), var(--b-pencil)) center / 100% 1px no-repeat,
+    linear-gradient(var(--b-pencil), var(--b-pencil)) center / 1px 100% no-repeat;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+html[data-theme="blueprint"] .shot-pen.is-done {
+  opacity: 0;
+}
+
+/* ---- Projects + timeline ---- */
+html[data-theme="blueprint"] .project-entry h3,
+html[data-theme="blueprint"] .timeline-entry h3 {
+  font-family: var(--b-sans);
+  font-weight: 600;
+  color: var(--b-text);
+}
+
+html[data-theme="blueprint"] .project-entry .project-title-row .icon {
+  color: var(--b-pencil);
+}
+
+/* The timeline becomes a dimension line with ticks */
+html[data-theme="blueprint"] .timeline::before,
+html[data-theme="blueprint"].fx .timeline::before {
+  left: calc(0.5rem - 4px);
+  width: 9px;
+  background:
+    linear-gradient(var(--b-line), var(--b-line)) center / 1.5px 100% no-repeat,
+    repeating-linear-gradient(to bottom, var(--b-line-soft) 0 1px, transparent 1px 20px);
+  box-shadow: none;
+}
+
+html[data-theme="blueprint"] .timeline-dot,
+html[data-theme="blueprint"].fx .timeline-dot {
+  border: 1.5px solid var(--b-line-soft);
+  background:
+    linear-gradient(var(--b-line-soft), var(--b-line-soft)) center / 100% 1px no-repeat,
+    linear-gradient(var(--b-line-soft), var(--b-line-soft)) center / 1px 100% no-repeat,
+    var(--b-paper-deep);
+  box-shadow: none;
+}
+
+html[data-theme="blueprint"]:not(.fx) .timeline-dot,
+html[data-theme="blueprint"].fx .timeline-entry.is-lit .timeline-dot {
+  border-color: var(--b-pencil);
+  background:
+    linear-gradient(var(--b-pencil), var(--b-pencil)) center / 100% 1px no-repeat,
+    linear-gradient(var(--b-pencil), var(--b-pencil)) center / 1px 100% no-repeat,
+    var(--b-paper-deep);
+  box-shadow: 0 0 0 3px rgba(255, 209, 102, 0.2);
+}
+
+html[data-theme="blueprint"] .timeline-date {
+  font-family: var(--b-mono);
+  font-size: 0.8rem;
+  color: var(--b-pencil);
+}
+
+/* ---- Section nav ---- */
+html[data-theme="blueprint"] .section-nav {
+  border: 1.5px solid var(--b-line);
+  background: rgba(13, 53, 102, 0.95);
+  box-shadow: none;
+}
+
+@media (min-width: 1024px) {
+  html[data-theme="blueprint"] .section-nav {
+    border-left: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  html[data-theme="blueprint"] .section-nav {
+    border-width: 1.5px 0 0;
+  }
+}
+
+html[data-theme="blueprint"] .section-nav-link {
+  color: var(--b-text);
+}
+
+html[data-theme="blueprint"] .section-nav-link .icon {
+  border: 1.5px solid var(--b-line-soft);
+  background: transparent;
+}
+
+html[data-theme="blueprint"] .section-nav-link:hover .icon,
+html[data-theme="blueprint"] .section-nav-link:focus-visible .icon {
+  color: var(--b-pencil);
+  border-color: var(--b-pencil);
+  box-shadow: none;
+}
+
+html[data-theme="blueprint"] .section-nav-link.active .icon {
+  color: var(--b-paper-deep);
+  border-color: var(--b-line);
+  background: var(--b-line);
+  box-shadow: 0 0 0 4px rgba(235, 244, 255, 0.15);
+}
+
+html[data-theme="blueprint"] .section-nav-link.active .section-nav-avatar {
+  background: none;
+}
+
+html[data-theme="blueprint"] .section-nav-label {
+  font-family: var(--b-mono);
+}
+
+html[data-theme="blueprint"] .section-nav-link.active .section-nav-label {
+  color: var(--b-text);
+}
+
+@media (min-width: 1024px) {
+  html[data-theme="blueprint"] .section-nav-label {
+    border: 1.5px solid var(--b-line);
+    border-radius: 0;
+    background: var(--b-paper-deep);
+    color: var(--b-text);
+    box-shadow: none;
+  }
+}
+
+/* ---- Social ---- */
+html[data-theme="blueprint"] .social-icon-link {
+  background: transparent;
+  border: 1.5px solid var(--b-line);
+  box-shadow: 0 0 0 5px var(--b-paper), 0 0 0 6px var(--b-faint);
+}
+
+html[data-theme="blueprint"] .social-icon-link:hover {
+  border-color: var(--b-pencil);
+  box-shadow: 0 0 0 5px var(--b-paper), 0 0 0 6px var(--b-pencil);
+}
+
+html[data-theme="blueprint"] .social-icon-link .icon {
+  color: var(--b-text);
+}
+
+html[data-theme="blueprint"] .social-icon-link:hover .icon {
+  color: var(--b-pencil);
+}
+
+/* ---- Contact page ---- */
+html[data-theme="blueprint"] .terminal-window {
+  background: rgba(13, 53, 102, 0.82);
+  backdrop-filter: none;
+}
+
+html[data-theme="blueprint"] .terminal-titlebar {
+  background: transparent;
+  border-bottom: 1.5px solid var(--b-line-soft);
+}
+
+html[data-theme="blueprint"] .terminal-titlebar .terminal-label,
+html[data-theme="blueprint"] .terminal-log .line.system {
+  color: var(--b-text);
+}
+
+html[data-theme="blueprint"] .terminal-log .line.user,
+html[data-theme="blueprint"] .terminal-input-row .prompt,
+html[data-theme="blueprint"] .terminal-input-wrap input,
+html[data-theme="blueprint"] .terminal-input-wrap .fake-cursor {
+  color: var(--b-pencil);
+}
+
+html[data-theme="blueprint"] .terminal-input-row,
+html[data-theme="blueprint"] .turnstile-wrap,
+html[data-theme="blueprint"] .terminal-suggestions .box {
+  background: rgba(235, 244, 255, 0.06);
+  border-color: var(--b-line-soft);
+}
+
+html[data-theme="blueprint"] .terminal-suggestions .box-label {
+  color: var(--b-pencil);
+}
+
+html[data-theme="blueprint"] .terminal-suggestions .chip {
+  border: 1px solid var(--b-line-soft);
+  border-radius: 0;
+  background: transparent;
+  color: var(--b-text);
+}
+
+html[data-theme="blueprint"] .simple-contact-title {
+  font-family: var(--b-hand);
+  font-weight: 400;
+  font-size: 1.75rem;
+  color: var(--b-text);
+}
+
+html[data-theme="blueprint"] .simple-contact-intro {
+  color: var(--b-body);
+}
+
+/* ---- Estimator ---- */
+html[data-theme="blueprint"] .estimate-bar {
+  background: rgba(13, 53, 102, 0.95);
+  border-bottom: 1.5px solid var(--b-line);
+}
+
+html[data-theme="blueprint"] .estimate-stat-label {
+  font-family: var(--b-mono);
+  color: var(--b-pencil);
+}
+
+html[data-theme="blueprint"] .estimate-stat-value {
+  font-family: var(--b-mono);
+  color: var(--b-text);
+  text-shadow: none;
+}
+
+html[data-theme="blueprint"] .breakdown-toggle {
+  border: 1.5px solid var(--b-line-soft);
+  border-radius: 0;
+  font-family: var(--b-mono);
+  color: var(--b-text);
+}
+
+html[data-theme="blueprint"] .breakdown-toggle:hover:not(:disabled) {
+  color: var(--b-pencil);
+  border-color: var(--b-pencil);
+  background: transparent;
+}
+
+html[data-theme="blueprint"] .estimate-breakdown {
+  background: rgba(0, 20, 50, 0.3);
+}
+
+html[data-theme="blueprint"] .breakdown-row,
+html[data-theme="blueprint"] .breakdown-compare {
+  color: var(--b-body);
+}
+
+html[data-theme="blueprint"] .breakdown-row-price,
+html[data-theme="blueprint"] .breakdown-total {
+  font-family: var(--b-mono);
+  color: var(--b-text);
+}
+
+html[data-theme="blueprint"] .breakdown-compare strong {
+  color: var(--b-pencil);
+}
+
+html[data-theme="blueprint"] .estimator-header h1 {
+  font-family: var(--b-hand);
+  font-weight: 400;
+  background: none;
+  color: var(--b-text);
+  -webkit-text-fill-color: currentColor;
+}
+
+html[data-theme="blueprint"] .estimator-intro,
+html[data-theme="blueprint"] .section-subtitle {
+  color: var(--b-body);
+}
+
+html[data-theme="blueprint"] .section-title {
+  font-family: var(--b-mono);
+  font-size: 1.05rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--b-text);
+}
+
+html[data-theme="blueprint"] .option-btn {
+  border: 1.5px solid var(--b-line-soft);
+  border-radius: 0;
+  background: var(--b-panel);
+}
+
+html[data-theme="blueprint"] .option-btn:hover {
+  border-color: var(--b-line);
+  background: rgba(25, 82, 145, 0.95);
+}
+
+html[data-theme="blueprint"] .option-btn.selected {
+  border-color: var(--b-pencil);
+  background: rgba(255, 209, 102, 0.1);
+  box-shadow: 0 0 0 4px rgba(255, 209, 102, 0.15);
+}
+
+html[data-theme="blueprint"] .option-btn .option-label {
+  color: var(--b-text);
+}
+
+html[data-theme="blueprint"] .option-btn .option-price {
+  font-family: var(--b-mono);
+  color: var(--b-pencil);
+}
+
+html[data-theme="blueprint"] .option-btn .option-desc {
+  color: var(--b-body);
+}
+
+html[data-theme="blueprint"] .option-btn .option-market {
+  color: var(--b-muted);
+}
+
+html[data-theme="blueprint"] .contact-section {
+  border: 1.5px solid var(--b-line);
+  border-radius: 0;
+  background: var(--b-panel);
+}
+
+/* ---- 404 ---- */
+html[data-theme="blueprint"] .glitch-heading .code {
+  font-family: var(--b-mono);
+  color: transparent;
+  -webkit-text-stroke: 2px var(--b-line);
+  text-shadow: none;
+  animation: none;
+}
+
+html[data-theme="blueprint"] .glitch-heading .code::before,
+html[data-theme="blueprint"] .glitch-heading .code::after {
+  display: none;
+}
+
+html[data-theme="blueprint"] .error-subtitle {
+  font-family: var(--b-mono);
+  color: var(--b-red);
+  text-shadow: none;
+  animation: none;
+}
+
+html[data-theme="blueprint"] .boot-terminal,
+html[data-theme="blueprint"] .hud-badge {
+  border: 1.5px solid var(--b-line);
+  border-radius: 0;
+  background: var(--b-panel);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+html[data-theme="blueprint"] .boot-terminal .boot-line,
+html[data-theme="blueprint"] .hud-badge .hud-label,
+html[data-theme="blueprint"] .not-found .hint {
+  color: var(--b-body);
+}
+
+html[data-theme="blueprint"] .planet-core {
+  background: var(--b-paper-deep);
+  border: 1.5px solid var(--b-line);
+  box-shadow: none;
+}
+
+html[data-theme="blueprint"] .orbit-scene .orbit-ring {
+  border-color: var(--b-line-soft);
+}
+
+/* ================================================================== */
+/* PROFESSIONAL                                                         */
+/* Light, clean and restrained: one accent colour, soft shadows and     */
+/* calm fades in place of the showier effects                           */
+/* ================================================================== */
+html[data-theme="professional"] {
+  --p-bg: #f6f7f9;
+  --p-surface: #ffffff;
+  --p-subtle: #f3f5f8;
+  --p-text: #161b26;
+  --p-body: #3b4352;
+  --p-muted: #5d6677;
+  --p-border: #e2e6ed;
+  --p-border-strong: #cdd3dd;
+  --p-accent: #2453c4;
+  --p-accent-hover: #1c44a6;
+  --p-accent-soft: #eaf0fc;
+  --p-success: #18805a;
+  --p-danger: #b42318;
+  --p-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.08);
+  --p-shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.08), 0 12px 24px -6px rgba(16, 24, 40, 0.12);
+  --p-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color-scheme: light;
+}
+
+html[data-theme="professional"] body {
+  font-family: var(--p-font);
+  color: var(--p-body);
+  background: var(--p-bg);
+}
+
+html[data-theme="professional"] ::selection {
+  background: var(--p-accent-soft);
+  color: var(--p-text);
+}
+
+html[data-theme="professional"] .page-shell::before {
+  background: linear-gradient(180deg, #eaf0f8 0, var(--p-bg) 28rem);
+}
+
+html[data-theme="professional"] .animated-bg,
+html[data-theme="professional"] .cursor-glow,
+html[data-theme="professional"] .scanline-overlay,
+html[data-theme="professional"] .profile-photo-glow,
+html[data-theme="professional"] .neon-cta .glow-backdrop {
+  display: none;
+}
+
+/* ---- Picker ---- */
+html[data-theme="professional"] .theme-picker-toggle {
+  border: 1px solid var(--p-border-strong);
+  background: var(--p-surface);
+  box-shadow: var(--p-shadow-md);
+}
+
+html[data-theme="professional"] .theme-picker-toggle:hover,
+html[data-theme="professional"] .theme-picker.is-open .theme-picker-toggle {
+  transform: scale(1.06);
+  box-shadow: var(--p-shadow-md), 0 0 0 4px var(--p-accent-soft);
+}
+
+html[data-theme="professional"] .theme-picker-menu {
+  border: 1px solid var(--p-border);
+  border-radius: 0.75rem;
+  background: var(--p-surface);
+  box-shadow: var(--p-shadow-md);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html[data-theme="professional"] .theme-picker-heading {
+  color: var(--p-muted);
+}
+
+html[data-theme="professional"] .theme-option {
+  color: var(--p-text);
+  border-radius: 0.5rem;
+}
+
+html[data-theme="professional"] .theme-option:hover {
+  background: var(--p-subtle);
+}
+
+html[data-theme="professional"] .theme-option[aria-pressed="true"] {
+  border-color: rgba(36, 83, 196, 0.3);
+  background: var(--p-accent-soft);
+}
+
+html[data-theme="professional"] .theme-option[aria-pressed="true"]::after {
+  border-color: var(--p-accent);
+}
+
+html[data-theme="professional"] .theme-option-desc {
+  color: var(--p-muted);
+}
+
+html[data-theme="professional"] .theme-picker-toggle:focus-visible,
+html[data-theme="professional"] .theme-option:focus-visible {
+  outline: 2px solid var(--p-accent);
+}
+
+/* ---- Buttons ---- */
+html[data-theme="professional"] .btn-glow,
+html[data-theme="professional"] .switch-btn-primary,
+html[data-theme="professional"] .neon-cta-button {
+  background: var(--p-accent);
+  border: 1px solid var(--p-accent);
+  border-radius: 0.5rem;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: var(--p-shadow-sm);
+  transform: none;
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+html[data-theme="professional"] .btn-glow:hover:not(:disabled),
+html[data-theme="professional"] .switch-btn-primary:hover,
+html[data-theme="professional"] .neon-cta-button:hover {
+  background: var(--p-accent-hover);
+  box-shadow: var(--p-shadow-md);
+  transform: translateY(-1px);
+}
+
+html[data-theme="professional"] .btn-glow:disabled {
+  background: var(--p-border-strong);
+  border-color: var(--p-border-strong);
+  box-shadow: none;
+}
+
+html[data-theme="professional"] .neon-cta-button .icon,
+html[data-theme="professional"] .neon-cta-button span {
+  color: #fff;
+  text-shadow: none;
+}
+
+html[data-theme="professional"] .neon-cta-button span {
+  font-size: 1.05rem;
+}
+
+/* Secondary buttons */
+html[data-theme="professional"] .btn-pill,
+html[data-theme="professional"] .mode-toggle-btn {
+  border-radius: 0.5rem;
+  border: 1px solid var(--p-border-strong);
+  background: var(--p-surface);
+  color: var(--p-text);
+  font-family: var(--p-font);
+  font-weight: 500;
+  text-shadow: none;
+  box-shadow: var(--p-shadow-sm);
+}
+
+html[data-theme="professional"] .btn-pill:hover,
+html[data-theme="professional"] .mode-toggle-btn:hover {
+  border-color: var(--p-accent);
+  background: var(--p-surface);
+  color: var(--p-accent);
+  box-shadow: var(--p-shadow-sm);
+  transform: none;
+}
+
+html[data-theme="professional"] .mode-toggle-icon,
+html[data-theme="professional"] .mode-toggle-prompt {
+  color: var(--p-accent);
+  filter: none;
+}
+
+html[data-theme="professional"] .btn-pill.btn-pill--alt {
+  color: var(--p-success);
+}
+
+html[data-theme="professional"] .switch-btn:focus-visible,
+html[data-theme="professional"] .mode-toggle-btn:focus-visible {
+  outline: 2px solid var(--p-accent);
+}
+
+html[data-theme="professional"] .back-link,
+html[data-theme="professional"] .reset-link {
+  color: var(--p-accent);
+  font-weight: 500;
+}
+
+html[data-theme="professional"] .back-link:hover,
+html[data-theme="professional"] .reset-link:hover {
+  color: var(--p-accent-hover);
+}
+
+/* ---- Form fields ---- */
+html[data-theme="professional"] .simple-field label {
+  color: var(--p-text);
+  font-weight: 500;
+}
+
+html[data-theme="professional"] .simple-field input,
+html[data-theme="professional"] .simple-field textarea {
+  border: 1px solid var(--p-border-strong);
+  border-radius: 0.5rem;
+  background: var(--p-surface);
+  color: var(--p-text);
+}
+
+html[data-theme="professional"] .simple-field input::placeholder,
+html[data-theme="professional"] .simple-field textarea::placeholder {
+  color: #98a1b0;
+}
+
+html[data-theme="professional"] .simple-field input:focus,
+html[data-theme="professional"] .simple-field textarea:focus {
+  border-color: var(--p-accent);
+  box-shadow: 0 0 0 3px var(--p-accent-soft);
+}
+
+html[data-theme="professional"] .simple-status.system { color: var(--p-accent); background: var(--p-accent-soft); }
+html[data-theme="professional"] .simple-status.success { color: var(--p-success); background: #e7f6ee; }
+html[data-theme="professional"] .simple-status.error { color: var(--p-danger); background: #fdecea; }
+
+/* ---- Profile header ---- */
+html[data-theme="professional"] .profile-photo-ring {
+  background: var(--p-surface);
+  box-shadow: 0 0 0 1px var(--p-border), var(--p-shadow-md);
+}
+
+html[data-theme="professional"] .profile-photo-ring:hover {
+  box-shadow: 0 0 0 1px var(--p-border), var(--p-shadow-md);
+}
+
+html[data-theme="professional"] .profile-photo-mask {
+  background: #e9edf3;
+}
+
+html[data-theme="professional"] .experience-badge {
+  border: 1px solid var(--p-border);
+  background: var(--p-surface);
+  box-shadow: var(--p-shadow-sm);
+  backdrop-filter: none;
+}
+
+html[data-theme="professional"] .experience-badge .label {
+  color: var(--p-muted);
+}
+
+html[data-theme="professional"] .experience-badge .value {
+  color: var(--p-text);
+  font-weight: 600;
+}
+
+html[data-theme="professional"] .profile-name {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  background: none;
+  color: var(--p-text);
+  -webkit-text-fill-color: currentColor;
+  text-shadow: none;
+}
+
+html[data-theme="professional"].fx .profile-name.is-intro {
+  animation: pro-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes pro-rise {
+  from { opacity: 0; transform: translateY(0.75rem); }
+  to { opacity: 1; transform: none; }
+}
+
+html[data-theme="professional"] .profile-title {
+  color: var(--p-muted);
+  font-weight: 500;
+}
+
+/* ---- Call to action ---- */
+html[data-theme="professional"] .neon-cta-content {
+  transition: opacity 0.5s ease;
+}
+
+html[data-theme="professional"] .neon-title,
+html[data-theme="professional"] .neon-title.flicker {
+  font-size: 2.25rem;
+  letter-spacing: -0.02em;
+  color: var(--p-text);
+  text-shadow: none;
+  animation: none;
+}
+
+@media (min-width: 768px) {
+  html[data-theme="professional"] .neon-title { font-size: 3rem; }
+}
+
+html[data-theme="professional"] .neon-subtitle,
+html[data-theme="professional"] .neon-subtitle.flicker {
+  color: var(--p-muted);
+  text-shadow: none;
+  animation: none;
+}
+
+/* ---- Switch offer card ---- */
+html[data-theme="professional"] .switch-offer {
+  background: var(--p-surface);
+  border: 1px solid var(--p-border);
+  border-radius: 0.75rem;
+  box-shadow: var(--p-shadow-md);
+}
+
+/* The shimmer becomes an accent bar along the top */
+html[data-theme="professional"] .switch-offer::before {
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: var(--p-accent);
+  transform: none;
+  animation: none;
+}
+
+html[data-theme="professional"] .platform-pill,
+html[data-theme="professional"] .feature-pill {
+  border: 1px solid rgba(36, 83, 196, 0.25);
+  background: var(--p-accent-soft);
+  color: var(--p-accent);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+html[data-theme="professional"] .feature-pill {
+  border-color: var(--p-border);
+  background: var(--p-subtle);
+  color: var(--p-body);
+}
+
+html[data-theme="professional"] .switch-offer-title {
+  color: var(--p-text);
+  text-shadow: none;
+}
+
+html[data-theme="professional"] .switch-offer-text {
+  color: var(--p-body);
+}
+
+html[data-theme="professional"] .switch-offer-text strong,
+html[data-theme="professional"].fx .switch-offer-text strong {
+  color: var(--p-text);
+  font-weight: 600;
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  animation: none;
+}
+
+html[data-theme="professional"] .switch-offer-includes-label,
+html[data-theme="professional"] .offer-progress-label {
+  color: var(--p-muted);
+}
+
+html[data-theme="professional"] .offer-progress-count strong {
+  color: var(--p-accent);
+  text-shadow: none;
+}
+
+html[data-theme="professional"] .offer-progress-track {
+  border: none;
+  background: #eef1f5;
+  box-shadow: none;
+}
+
+html[data-theme="professional"] .offer-progress-fill {
+  background: var(--p-accent);
+  box-shadow: none;
+  animation: none;
+}
+
+html[data-theme="professional"] .offer-progress-note {
+  color: var(--p-muted);
+}
+
+/* ---- Bio as an "about" card ---- */
+html[data-theme="professional"] .terminal-box {
+  background: var(--p-surface);
+  border: 1px solid var(--p-border);
+  border-left: 4px solid var(--p-accent);
+  border-radius: 0.75rem;
+  box-shadow: var(--p-shadow-sm);
+  backdrop-filter: none;
+}
+
+html[data-theme="professional"] .terminal-box .prompt-line {
+  font-family: var(--p-font);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+html[data-theme="professional"] .terminal-box .prompt-arrow {
+  display: none;
+}
+
+html[data-theme="professional"] .terminal-box .typed-text {
+  color: var(--p-body);
+}
+
+html[data-theme="professional"] .terminal-box .cursor {
+  color: var(--p-accent);
+}
+
+/* ---- Content sections ---- */
+html[data-theme="professional"] .content-section {
+  border: 1px solid var(--p-border);
+  border-radius: 0.75rem;
+  background: var(--p-surface);
+  backdrop-filter: none;
+  box-shadow: var(--p-shadow-sm);
+}
+
+html[data-theme="professional"] .content-section:hover {
+  box-shadow: var(--p-shadow-md);
+}
+
+html[data-theme="professional"] .section-header {
+  padding: 1.1rem 1.5rem;
+  background: none;
+  border-bottom: 1px solid var(--p-border);
+  color: var(--p-text);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+html[data-theme="professional"] .section-header .icon {
+  color: var(--p-accent);
+}
+
+html[data-theme="professional"].fx .content-section.is-powering {
+  animation: none;
+}
+
+html[data-theme="professional"].fx .section-header.is-powering {
+  animation: pro-fade 0.6s ease both;
+}
+
+@keyframes pro-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+html[data-theme="professional"] .type-cursor {
+  display: none;
+}
+
+html[data-theme="professional"] .section-body {
+  color: var(--p-body);
+}
+
+/* ---- Website highlights ---- */
+html[data-theme="professional"] .site-intro {
+  border-bottom: 1px solid var(--p-border);
+}
+
+html[data-theme="professional"] .site-intro p,
+html[data-theme="professional"] .site-entry p,
+html[data-theme="professional"] .project-entry p,
+html[data-theme="professional"] .timeline-entry ul {
+  color: var(--p-body);
+}
+
+html[data-theme="professional"] .site-intro .site-legend {
+  color: var(--p-muted);
+}
+
+html[data-theme="professional"] .site-dot.live {
+  background: var(--p-success);
+  box-shadow: none;
+}
+
+html[data-theme="professional"] .site-dot.retired {
+  background: #9aa3b2;
+  box-shadow: none;
+}
+
+html[data-theme="professional"] .site-link-row a {
+  color: var(--p-accent);
+  font-weight: 600;
+}
+
+html[data-theme="professional"] .site-link-row a:hover,
+html[data-theme="professional"] .site-link-row a:focus-visible {
+  color: var(--p-accent-hover);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  animation: none;
+  text-shadow: none;
+}
+
+html[data-theme="professional"] .site-shot {
+  border: 1px solid var(--p-border);
+  border-radius: 0.6rem;
+  box-shadow: var(--p-shadow-md);
+}
+
+html[data-theme="professional"] .site-shot:hover {
+  box-shadow: 0 8px 16px -4px rgba(16, 24, 40, 0.1), 0 20px 40px -8px rgba(16, 24, 40, 0.16);
+}
+
+html[data-theme="professional"] .site-shot-glare {
+  background: radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 50%), rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 55%);
+}
+
+/* Reveal: a soft fade and settle in place of the scanline */
+html[data-theme="professional"].fx .site-shot::after {
+  display: none;
+}
+
+html[data-theme="professional"].fx .site-shot .site-screenshot {
+  clip-path: none;
+  animation: none;
+  opacity: 0;
+  transform: scale(1.03);
+  filter: blur(6px);
+  transition: opacity 0.8s ease, transform 1s cubic-bezier(0.22, 1, 0.36, 1), filter 0.8s ease;
+}
+
+html[data-theme="professional"].fx .site-shot.is-revealed .site-screenshot {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* ---- Projects + timeline ---- */
+html[data-theme="professional"] .project-entry h3,
+html[data-theme="professional"] .timeline-entry h3 {
+  color: var(--p-text);
+  font-weight: 600;
+}
+
+html[data-theme="professional"] .project-entry .project-title-row .icon {
+  color: var(--p-accent);
+}
+
+html[data-theme="professional"] .timeline::before,
+html[data-theme="professional"].fx .timeline::before {
+  background: var(--p-border-strong);
+  box-shadow: none;
+}
+
+html[data-theme="professional"] .timeline-dot,
+html[data-theme="professional"].fx .timeline-dot {
+  background: var(--p-surface);
+  border: 2px solid var(--p-border-strong);
+  box-shadow: none;
+}
+
+html[data-theme="professional"]:not(.fx) .timeline-dot,
+html[data-theme="professional"].fx .timeline-entry.is-lit .timeline-dot {
+  background: var(--p-accent);
+  border-color: var(--p-accent);
+  box-shadow: 0 0 0 4px var(--p-accent-soft);
+}
+
+html[data-theme="professional"] .timeline-date {
+  color: var(--p-muted);
+  font-weight: 500;
+}
+
+/* ---- Section nav ---- */
+html[data-theme="professional"] .section-nav {
+  border: 1px solid var(--p-border);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--p-shadow-md);
+}
+
+@media (min-width: 1024px) {
+  html[data-theme="professional"] .section-nav {
+    border-left: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  html[data-theme="professional"] .section-nav {
+    border-width: 1px 0 0;
+    box-shadow: 0 -4px 16px rgba(16, 24, 40, 0.06);
+  }
+}
+
+html[data-theme="professional"] .section-nav-link {
+  color: var(--p-muted);
+}
+
+html[data-theme="professional"] .section-nav-link .icon {
+  border: 1px solid var(--p-border);
+  background: var(--p-surface);
+}
+
+html[data-theme="professional"] .section-nav-link:hover .icon,
+html[data-theme="professional"] .section-nav-link:focus-visible .icon {
+  color: var(--p-accent);
+  border-color: var(--p-accent);
+  box-shadow: none;
+}
+
+html[data-theme="professional"] .section-nav-link.active .icon {
+  color: #fff;
+  border-color: var(--p-accent);
+  background: var(--p-accent);
+  box-shadow: 0 0 0 4px var(--p-accent-soft);
+}
+
+html[data-theme="professional"] .section-nav-link.active .section-nav-avatar {
+  background: none;
+}
+
+html[data-theme="professional"] .section-nav-link.active .section-nav-label {
+  color: var(--p-text);
+}
+
+@media (min-width: 1024px) {
+  html[data-theme="professional"] .section-nav-label {
+    border: none;
+    background: var(--p-text);
+    color: #fff;
+    box-shadow: var(--p-shadow-md);
+  }
+}
+
+/* ---- Social ---- */
+html[data-theme="professional"] .social-icon-link {
+  background: var(--p-surface);
+  border: 1px solid var(--p-border);
+  box-shadow: var(--p-shadow-sm);
+}
+
+html[data-theme="professional"] .social-icon-link:hover {
+  border-color: var(--p-accent);
+  box-shadow: var(--p-shadow-md);
+}
+
+html[data-theme="professional"] .social-icon-link .icon {
+  color: var(--p-muted);
+}
+
+html[data-theme="professional"] .social-icon-link:hover .icon {
+  color: var(--p-accent);
+}
+
+/* ---- Contact page ---- */
+html[data-theme="professional"] .terminal-window {
+  background: var(--p-surface);
+  backdrop-filter: none;
+}
+
+html[data-theme="professional"] .terminal-titlebar {
+  background: var(--p-subtle);
+  border-bottom: 1px solid var(--p-border);
+}
+
+html[data-theme="professional"] .terminal-titlebar .terminal-label,
+html[data-theme="professional"] .terminal-log .line.system {
+  color: var(--p-body);
+}
+
+html[data-theme="professional"] .terminal-log .line.user,
+html[data-theme="professional"] .terminal-input-row .prompt,
+html[data-theme="professional"] .terminal-input-wrap input,
+html[data-theme="professional"] .terminal-input-wrap .fake-cursor {
+  color: var(--p-accent);
+}
+
+html[data-theme="professional"] .terminal-input-wrap input::placeholder {
+  color: #98a1b0;
+}
+
+html[data-theme="professional"] .terminal-log .line.error { color: var(--p-danger); }
+html[data-theme="professional"] .terminal-log .line.success { color: var(--p-success); }
+
+html[data-theme="professional"] .terminal-input-row,
+html[data-theme="professional"] .turnstile-wrap {
+  background: var(--p-subtle);
+}
+
+html[data-theme="professional"] .terminal-suggestions .box {
+  background: var(--p-subtle);
+  border-color: var(--p-border);
+}
+
+html[data-theme="professional"] .terminal-suggestions .box-label {
+  color: var(--p-muted);
+}
+
+html[data-theme="professional"] .terminal-suggestions .chip {
+  border-color: var(--p-border-strong);
+  background: var(--p-surface);
+  color: var(--p-accent);
+}
+
+html[data-theme="professional"] .terminal-suggestions .chip:hover {
+  background: var(--p-accent-soft);
+}
+
+html[data-theme="professional"] .simple-contact-title {
+  color: var(--p-text);
+  font-weight: 600;
+}
+
+html[data-theme="professional"] .simple-contact-intro {
+  color: var(--p-muted);
+}
+
+/* ---- Estimator ---- */
+html[data-theme="professional"] .estimate-bar {
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom: 1px solid var(--p-border);
+  box-shadow: var(--p-shadow-sm);
+}
+
+html[data-theme="professional"] .estimate-stat-label {
+  color: var(--p-muted);
+}
+
+html[data-theme="professional"] .estimate-stat-value {
+  color: var(--p-text);
+  text-shadow: none;
+}
+
+html[data-theme="professional"] .breakdown-toggle {
+  border: 1px solid var(--p-border-strong);
+  border-radius: 0.5rem;
+  color: var(--p-text);
+}
+
+html[data-theme="professional"] .breakdown-toggle:hover:not(:disabled) {
+  color: var(--p-accent);
+  border-color: var(--p-accent);
+  background: var(--p-accent-soft);
+}
+
+html[data-theme="professional"] .estimate-breakdown {
+  background: var(--p-subtle);
+}
+
+html[data-theme="professional"] .breakdown-row,
+html[data-theme="professional"] .breakdown-compare {
+  color: var(--p-body);
+}
+
+html[data-theme="professional"] .breakdown-row-price,
+html[data-theme="professional"] .breakdown-total {
+  color: var(--p-text);
+}
+
+html[data-theme="professional"] .breakdown-compare strong {
+  color: var(--p-success);
+}
+
+html[data-theme="professional"] .estimator-header h1 {
+  background: none;
+  color: var(--p-text);
+  -webkit-text-fill-color: currentColor;
+  letter-spacing: -0.02em;
+}
+
+html[data-theme="professional"] .estimator-intro,
+html[data-theme="professional"] .section-subtitle {
+  color: var(--p-muted);
+}
+
+html[data-theme="professional"] .section-title {
+  color: var(--p-text);
+}
+
+html[data-theme="professional"] .option-btn {
+  border: 1px solid var(--p-border);
+  border-radius: 0.75rem;
+  background: var(--p-surface);
+  box-shadow: var(--p-shadow-sm);
+}
+
+html[data-theme="professional"] .option-btn:hover {
+  border-color: var(--p-border-strong);
+  background: var(--p-surface);
+  box-shadow: var(--p-shadow-md);
+}
+
+html[data-theme="professional"] .option-btn.selected {
+  border-color: var(--p-accent);
+  background: var(--p-accent-soft);
+  box-shadow: 0 0 0 3px var(--p-accent-soft);
+}
+
+html[data-theme="professional"] .option-btn .option-label {
+  color: var(--p-text);
+}
+
+html[data-theme="professional"] .option-btn .option-price {
+  color: var(--p-accent);
+  font-weight: 600;
+}
+
+html[data-theme="professional"] .option-btn .option-desc {
+  color: var(--p-body);
+}
+
+html[data-theme="professional"] .option-btn .option-market {
+  color: var(--p-muted);
+}
+
+html[data-theme="professional"] .contact-section {
+  border: 1px solid var(--p-border);
+  border-radius: 0.75rem;
+  background: var(--p-surface);
+  box-shadow: var(--p-shadow-sm);
+}
+
+/* ---- 404 ---- */
+html[data-theme="professional"] .glitch-heading .code {
+  color: var(--p-text);
+  letter-spacing: -0.04em;
+  text-shadow: none;
+  animation: none;
+}
+
+html[data-theme="professional"] .glitch-heading .code::before,
+html[data-theme="professional"] .glitch-heading .code::after {
+  display: none;
+}
+
+html[data-theme="professional"] .error-subtitle {
+  color: var(--p-accent);
+  text-shadow: none;
+  animation: none;
+}
+
+html[data-theme="professional"] .boot-terminal,
+html[data-theme="professional"] .hud-badge {
+  border: 1px solid var(--p-border);
+  background: var(--p-surface);
+  box-shadow: var(--p-shadow-sm);
+  backdrop-filter: none;
+}
+
+html[data-theme="professional"] .boot-terminal .boot-line,
+html[data-theme="professional"] .hud-badge .hud-label,
+html[data-theme="professional"] .not-found .hint,
+html[data-theme="professional"] .satellite {
+  color: var(--p-body);
+}
+
+html[data-theme="professional"] .telemetry {
+  color: var(--p-muted);
+}
+
+html[data-theme="professional"] .boot-terminal .boot-line.is-error .line-text,
+html[data-theme="professional"] .hud-badge .hud-value { color: var(--p-danger); }
+html[data-theme="professional"] .boot-terminal .boot-line.is-ok .line-text { color: var(--p-success); }
+
+html[data-theme="professional"] .planet-core {
+  background: radial-gradient(circle at 35% 35%, #6f8fe0, var(--p-accent) 70%);
+  box-shadow: var(--p-shadow-md);
+}
+
+html[data-theme="professional"] .orbit-scene .orbit-ring {
+  border-color: var(--p-border-strong);
+}
+
+/* ================================================================== */
+/* BIO MODES (typewriter.js)                                            */
+/* Neon keeps the terminal prompt; graffiti and blueprint swap it for   */
+/* a stage that typewriter.js fills, flagged with data-bio on the box   */
+/* ================================================================== */
+.bio-stage {
+  display: none;
+}
+
+.terminal-box[data-bio="graffiti"] .prompt-line,
+.terminal-box[data-bio="blueprint"] .prompt-line {
+  display: none;
+}
+
+.terminal-box[data-bio="graffiti"] .bio-stage,
+.terminal-box[data-bio="blueprint"] .bio-stage {
+  display: grid;
+  position: relative;
+}
+
+/* ---- Graffiti: tag, hold, buff, repeat ---- */
+/* A patch of rendered wall rather than a dashed terminal box */
+html[data-theme="graffiti"] .terminal-box[data-bio="graffiti"] {
+  border: 3px solid var(--g-ink);
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.035) 0 2px, transparent 3px) 0 0 / 23px 19px,
+    radial-gradient(circle at 70% 60%, rgba(0, 0, 0, 0.25) 0 1.5px, transparent 2.5px) 0 0 / 17px 21px,
+    #272325;
+  box-shadow: 7px 7px 0 var(--g-lime);
+}
+
+.bio-tag {
+  grid-area: 1 / 1;
+  margin: 0;
+  visibility: hidden;
+  font-family: var(--g-marker);
+  font-size: 1.2rem;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: var(--paint, var(--g-pink));
+  text-shadow: 2px 2px 0 var(--g-ink);
+}
+
+.bio-tag.is-active {
+  visibility: visible;
+}
+
+.bio-word {
+  display: inline-block;
+}
+
+/* Words are written on by wiping them in left to right behind the marker */
+.bio-stage:not(.is-static) .bio-word {
+  clip-path: inset(-25% 100% -25% 0);
+  transition: clip-path 0.12s linear;
+}
+
+.bio-stage:not(.is-static) .bio-word.is-on {
+  clip-path: inset(-25% -10% -25% -10%);
+}
+
+/* Reduced motion: every statement, stacked and finished */
+.bio-stage.is-static {
+  gap: 0.75rem;
+}
+
+.bio-stage.is-static .bio-tag {
+  grid-area: auto;
+  visibility: visible;
+}
+
+.bio-stage.is-static .bio-tag:nth-child(2) { color: var(--g-yellow); }
+.bio-stage.is-static .bio-tag:nth-child(3) { color: var(--g-cyan); }
+
+/* Fat marker that rides along the end of the line being written */
+.bio-marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0.85rem;
+  height: 2.6rem;
+  margin: -1.2rem 0 0 -0.1rem;
+  border: 2px solid var(--g-ink);
+  border-radius: 0.2rem 0.2rem 0.35rem 0.35rem;
+  background:
+    linear-gradient(var(--paint, var(--g-pink)) 0 30%, var(--g-cream) 30% 36%, #1d1a1b 36%);
+  transform-origin: 50% 100%;
+  transform: rotate(28deg);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.11s linear, opacity 0.3s ease;
+}
+
+.bio-marker.is-writing {
+  opacity: 1;
+}
+
+/* Council-grey buff rolled over the piece, ghosting the old text */
+.bio-buff {
+  position: absolute;
+  inset: -0.6rem -0.8rem;
+  z-index: 1;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 7px, transparent 7px 15px),
+    #4a4547;
+  opacity: 0.9;
+  clip-path: inset(0 100% 0 0);
+  pointer-events: none;
+}
+
+.bio-roller {
+  position: absolute;
+  top: -1.1rem;
+  bottom: -1.1rem;
+  left: -0.8rem;
+  z-index: 2;
+  width: 1rem;
+  margin-left: -0.5rem;
+  border: 2px solid var(--g-ink);
+  border-radius: 0.35rem;
+  background: repeating-linear-gradient(0deg, #5a5457 0 4px, #4a4547 4px 8px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bio-stage.is-buffing .bio-buff {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.9s cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+.bio-stage.is-buffing .bio-roller {
+  left: calc(100% + 0.8rem);
+  opacity: 1;
+  transition: left 0.9s cubic-bezier(0.45, 0, 0.55, 1), opacity 0.15s ease;
+}
+
+.bio-stage.is-buffed .bio-buff,
+.bio-stage.is-buffed .bio-roller,
+.bio-stage.is-buffed .bio-tag.is-active {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+/* ---- Blueprint: general notes, ruled then lettered ---- */
+html[data-theme="blueprint"] .terminal-box::before {
+  content: "GENERAL NOTES";
+}
+
+.bio-notes {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bio-notes li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  font-family: var(--b-hand);
+  font-size: 1.05rem;
+  line-height: 1.7rem;
+  color: var(--b-text);
+}
+
+/* Lettering guide lines ruled under each note before it's written */
+.bio-notes li::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 2rem;
+  background: repeating-linear-gradient(to bottom, transparent 0 calc(1.7rem - 1px), rgba(235, 244, 255, 0.2) calc(1.7rem - 1px) 1.7rem);
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  pointer-events: none;
+}
+
+.bio-notes li.is-ruled::before,
+.bio-stage.is-static .bio-notes li::before {
+  transform: none;
+}
+
+.bio-note-num {
+  font-family: var(--b-mono);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--b-pencil);
+}
+
+.bio-pen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0.9rem;
+  height: 0.9rem;
+  margin: 0.4rem 0 0 -0.2rem;
+  border: 1.5px solid var(--b-pencil);
+  border-radius: 50%;
+  background:
+    linear-gradient(var(--b-pencil), var(--b-pencil)) center / 100% 1px no-repeat,
+    linear-gradient(var(--b-pencil), var(--b-pencil)) center / 1px 100% no-repeat;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.12s linear, opacity 0.3s ease;
+}
+
+.bio-pen.is-writing {
+  opacity: 1;
+}
+
+/* ================================================================== */
+/* HEADING LETTERS (effects.js)                                         */
+/* ================================================================== */
+.heading-char {
+  display: inline-block;
+}
+
+/* Graffiti: each letter sprayed through a stencil once the stripe is rolled on */
+html[data-theme="graffiti"].fx .section-header.is-powering .heading-char {
+  animation: stencil-spray 0.4s ease-out both;
+  animation-delay: calc(0.5s + var(--i) * 0.045s);
+}
+
+@keyframes stencil-spray {
+  0% { opacity: 0; transform: scale(1.35); filter: blur(5px); text-shadow: 0 0 10px rgba(13, 13, 13, 0.7); }
+  60% { opacity: 1; filter: blur(0.6px); }
+  100% { opacity: 1; transform: none; filter: none; text-shadow: none; }
+}
+
+/* Blueprint: a guide line is ruled under the label, then the letters are plotted onto it */
+html[data-theme="blueprint"] .section-header > span {
+  padding-bottom: 2px;
+  background: linear-gradient(var(--b-line-soft), var(--b-line-soft)) 0 100% / 100% 1px no-repeat;
+}
+
+html[data-theme="blueprint"].fx .section-header > span {
+  background-size: 0 1px;
+}
+
+html[data-theme="blueprint"].fx .section-header.is-powering > span {
+  animation: guide-rule 0.4s cubic-bezier(0.65, 0, 0.35, 1) 0.1s both;
+}
+
+@keyframes guide-rule {
+  from { background-size: 0 1px; }
+  to { background-size: 100% 1px; }
+}
+
+html[data-theme="blueprint"].fx .section-header.is-powering .heading-char {
+  animation: plot-letter 0.18s linear both;
+  animation-delay: calc(0.35s + var(--i) * 0.035s);
+}

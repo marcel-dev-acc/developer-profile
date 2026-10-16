@@ -23,6 +23,21 @@
     var orb2 = document.createElement('div');
     orb2.className = 'bg-orb bg-orb-2';
     container.appendChild(orb2);
+
+    // Paint running down the wall; only shown by the graffiti theme
+    var drips = document.createElement('div');
+    drips.className = 'bg-drips';
+    for (var j = 0; j < 9; j++) {
+      var drip = document.createElement('div');
+      drip.className = 'bg-drip';
+      drip.style.left = (4 + j * 11 + Math.random() * 6) + '%';
+      drip.style.setProperty('--drip-length', (18 + Math.random() * 40) + 'vh');
+      drip.style.setProperty('--drip-width', (5 + Math.random() * 7) + 'px');
+      drip.style.animationDuration = (9 + Math.random() * 8) + 's';
+      drip.style.animationDelay = -(Math.random() * 12) + 's';
+      drips.appendChild(drip);
+    }
+    container.appendChild(drips);
   }
 
   document.addEventListener('DOMContentLoaded', function () {

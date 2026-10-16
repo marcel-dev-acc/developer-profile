@@ -128,54 +128,6 @@
   100% { top: 100%; opacity: 0; }
 }
 
-/* Skill icons orbiting the profile photo ring */
-.profile-photo-ring {
-  position: relative;
-  /* Keeps the icons' front/back z-index juggling local to the ring */
-  isolation: isolate;
-}
-
-.profile-photo-mask {
-  position: relative;
-  z-index: 1;
-}
-
-.profile-orbit {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.orbit-item {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 2rem;
-  height: 2rem;
-  margin: -1rem 0 0 -1rem;
-  padding: 0.3rem;
-  border-radius: 50%;
-  background: rgba(30, 5, 55, 0.9);
-  border: 1px solid rgba(168, 85, 247, 0.6);
-  box-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
-  z-index: 2;
-  /* Static fallback: sit each icon on the ring, then undo the angle so it stays upright */
-  transform: rotate(var(--a)) translateX(6rem) rotate(calc(-1 * var(--a)));
-}
-
-/* With motion on, effects.js drives each icon along an electron-style orbit */
-.fx .orbit-item {
-  opacity: 0;
-  will-change: transform, opacity;
-}
-
-.orbit-item img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: 0.25rem;
-}
-
 /* Staggered scroll reveal */
 .fx .site-entry,
 .fx .project-entry,

@@ -20,36 +20,86 @@
     elements.forEach(function (el) { observer.observe(el); });
   }
 
-  // 1. Name resolves from random glyphs, letter by letter
-  function initNameDecode() {
+  function theme() {
+    return root.getAttribute('data-theme') || 'neon';
+  }
+
+  // 1. Name intro, replayed on theme change: neon resolves it from random glyphs; the other
+  //    themes animate the letters in CSS (graffiti tags them, blueprint plots them, professional fades up)
+  function initNameIntro() {
     var el = document.querySelector('[data-decode]');
     if (!el) return;
 
+    // One span per letter so themes can colour and animate each one
+    var chars = [];
     var finalText = el.textContent;
+    el.textContent = '';
+    finalText.split('').forEach(function (char) {
+      if (char === ' ') {
+        el.appendChild(document.createTextNode(' '));
+        return;
+      }
+      var span = document.createElement('span');
+      span.className = 'name-char';
+      span.style.setProperty('--i', chars.length);
+      span.textContent = char;
+      el.appendChild(span);
+      chars.push({ el: span, char: char });
+    });
+
     // Scramble within the same case so the name keeps roughly its final width and doesn't wrap
     var upper = 'ABCDEFGHIKLNOPRSTUVXYZ';
     var lower = 'abcdeghknopqrsuvxyz';
-    var resolveAt = finalText.split('').map(function (_, i) {
-      return 300 + i * 55 + Math.random() * 200;
-    });
-    var start = null;
+    var run = 0;
 
-    function frame(now) {
-      if (start === null) start = now;
-      var elapsed = now - start;
-      var done = true;
+    function decode() {
+      var thisRun = ++run;
+      var resolveAt = chars.map(function (_, i) {
+        return 300 + i * 55 + Math.random() * 200;
+      });
+      var start = null;
 
-      el.textContent = finalText.split('').map(function (char, i) {
-        if (char === ' ' || elapsed >= resolveAt[i]) return char;
-        done = false;
-        var glyphs = char === char.toUpperCase() ? upper : lower;
-        return glyphs.charAt(Math.floor(Math.random() * glyphs.length));
-      }).join('');
+      function frame(now) {
+        if (thisRun !== run) return;
+        if (start === null) start = now;
+        var elapsed = now - start;
+        var done = true;
 
-      if (!done) window.requestAnimationFrame(frame);
+        chars.forEach(function (c, i) {
+          if (elapsed >= resolveAt[i]) {
+            c.el.textContent = c.char;
+            return;
+          }
+          done = false;
+          var glyphs = c.char === c.char.toUpperCase() ? upper : lower;
+          c.el.textContent = glyphs.charAt(Math.floor(Math.random() * glyphs.length));
+        });
+
+        if (!done) window.requestAnimationFrame(frame);
+      }
+
+      window.requestAnimationFrame(frame);
     }
 
-    window.requestAnimationFrame(frame);
+    function cssIntro() {
+      run++;
+      chars.forEach(function (c) { c.el.textContent = c.char; });
+      el.classList.remove('is-intro');
+      void el.offsetWidth; // restart the CSS animation
+      el.classList.add('is-intro');
+    }
+
+    function play() {
+      if (theme() === 'neon') {
+        el.classList.remove('is-intro');
+        decode();
+      } else {
+        cssIntro();
+      }
+    }
+
+    document.addEventListener('themechange', play);
+    play();
   }
 
   // 2 + 3. Section headings flicker on like a neon sign, then type out with a cursor
@@ -73,6 +123,30 @@
       if (section) section.classList.add('is-powering');
 
       var text = label.getAttribute('data-text');
+      // Professional keeps it calm: the heading fades in whole (CSS) rather than typing
+      if (theme() === 'professional') {
+        label.textContent = text;
+        return;
+      }
+
+      // Graffiti stencil-sprays the letters onto the stripe; blueprint letters them along
+      // a guide line. Both animate per-letter spans in CSS instead of typing
+      if (theme() === 'graffiti' || theme() === 'blueprint') {
+        label.textContent = '';
+        text.split('').forEach(function (char, i) {
+          if (char === ' ') {
+            label.appendChild(document.createTextNode(' '));
+            return;
+          }
+          var span = document.createElement('span');
+          span.className = 'heading-char';
+          span.style.setProperty('--i', i);
+          span.textContent = char;
+          label.appendChild(span);
+        });
+        return;
+      }
+
       var typed = document.createElement('span');
       var cursor = document.createElement('span');
       cursor.className = 'type-cursor';
@@ -181,12 +255,241 @@
     });
   }
 
-  // 7. Screenshots draw in behind a glowing scanline
-  function initScanlineReveal() {
+  // 7. Screenshots draw in. Neon (scanline) and professional (fade) are pure CSS on is-revealed;
+  //    graffiti and blueprint hide each image under a canvas and erase it with spray or pen hatching
+  var CANVAS_REVEALS = {
+    graffiti: function (shot) { sprayReveal(shot); },
+    blueprint: function (shot) { hatchReveal(shot); }
+  };
+
+  function initShotReveal() {
     var shots = Array.prototype.slice.call(document.querySelectorAll('.site-shot'));
+
+    function syncCovers() {
+      shots.forEach(function (shot) {
+        if (shot.classList.contains('is-revealed')) return;
+        if (CANVAS_REVEALS[theme()]) coverShot(shot); else uncoverShot(shot);
+      });
+    }
+
+    syncCovers();
+    document.addEventListener('themechange', syncCovers);
+
     inView(shots, function (shot) {
       shot.classList.add('is-revealed');
+      var reveal = CANVAS_REVEALS[theme()];
+      if (shot.sprayCover && reveal) reveal(shot);
     }, { threshold: 0.3 });
+  }
+
+  // The cover's flat CSS fill matches the theme's panel until a reveal paints it onto the canvas
+  var COVER_COLORS = { graffiti: '#141112', blueprint: '#15477f' };
+
+  function coverShot(shot) {
+    if (shot.sprayCover) return;
+    var canvas = document.createElement('canvas');
+    canvas.className = 'shot-cover';
+    canvas.setAttribute('aria-hidden', 'true');
+    shot.appendChild(canvas);
+    shot.sprayCover = canvas;
+  }
+
+  function uncoverShot(shot) {
+    if (!shot.sprayCover) return;
+    shot.sprayCover.remove();
+    shot.sprayCover = null;
+  }
+
+  // Waits for the screenshot to load, then sizes the cover canvas and fills it with the theme colour
+  function prepareCover(shot, onReady) {
+    var canvas = shot.sprayCover;
+    var img = shot.querySelector('img');
+    var loaded = img && !img.complete
+      ? new Promise(function (resolve) {
+          img.addEventListener('load', resolve, { once: true });
+          img.addEventListener('error', resolve, { once: true });
+        })
+      : Promise.resolve();
+
+    loaded.then(function () {
+      if (shot.sprayCover !== canvas) return; // theme switched away meanwhile
+      var w = shot.clientWidth;
+      var h = shot.clientHeight;
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      var ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      ctx.fillStyle = COVER_COLORS[theme()] || '#000';
+      ctx.fillRect(0, 0, w, h);
+      canvas.classList.add('is-painting');
+      ctx.globalCompositeOperation = 'destination-out';
+      onReady(canvas, ctx, w, h);
+    });
+  }
+
+  // Fades out what's left of the cover along with the tool that drew it
+  function finishCover(shot, canvas, tool) {
+    tool.classList.add('is-done');
+    canvas.classList.add('is-done');
+    setTimeout(function () {
+      tool.remove();
+      if (shot.sprayCover === canvas) uncoverShot(shot);
+    }, 600);
+  }
+
+  // Soft round burst with speckled edges, stamped along the nozzle's path
+  function makeSprayBrush(radius) {
+    var size = Math.ceil(radius * 2);
+    var brush = document.createElement('canvas');
+    brush.width = brush.height = size;
+    var ctx = brush.getContext('2d');
+    var gradient = ctx.createRadialGradient(radius, radius, 0, radius, radius, radius * 0.75);
+    gradient.addColorStop(0, 'rgba(0, 0, 0, 0.55)');
+    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, size, size);
+    ctx.fillStyle = '#000';
+    for (var i = 0; i < 140; i++) {
+      // Squaring bunches speckles toward the centre like a real can
+      var r = Math.pow(Math.random(), 1.6) * radius;
+      var a = Math.random() * Math.PI * 2;
+      ctx.globalAlpha = 0.3 + Math.random() * 0.7;
+      ctx.beginPath();
+      ctx.arc(radius + Math.cos(a) * r, radius + Math.sin(a) * r, 0.5 + Math.random() * 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    return brush;
+  }
+
+  function sprayReveal(shot) {
+    prepareCover(shot, function (canvas, ctx, w, h) {
+      var can = document.createElement('span');
+      can.className = 'shot-spray-can';
+      can.setAttribute('aria-hidden', 'true');
+      shot.appendChild(can);
+
+      // One pass, west to east: the can travels straight across at mid-height and its
+      // spray fans out to cover the full height of the image as it goes
+      var bands = Math.max(3, Math.round(h / 70));
+      var bandHeight = h / bands;
+      var radius = bandHeight * 0.95;
+      var brush = makeSprayBrush(radius);
+      var overshoot = radius * 0.4;
+      var travel = w + overshoot * 2;
+      var step = radius * 0.2; // px between stamps, so the bursts overlap however wide the image is
+      var DURATION = 1800;
+      var start = null;
+      var done = 0;
+
+      function frame(now) {
+        if (start === null) start = now;
+        var t = Math.min((now - start) / DURATION, 1);
+        var target = t * travel;
+
+        for (; done <= target; done += step) {
+          var x = -overshoot + done;
+          for (var band = 0; band < bands; band++) {
+            ctx.save();
+            ctx.translate(
+              x + (Math.random() - 0.5) * step,
+              (band + 0.5) * bandHeight + (Math.random() - 0.5) * bandHeight * 0.3
+            );
+            ctx.rotate(Math.random() * Math.PI * 2);
+            ctx.drawImage(brush, -radius, -radius);
+            ctx.restore();
+          }
+        }
+
+        var nozzleX = -overshoot + Math.min(target, travel);
+        can.style.transform = 'translate(' + nozzleX.toFixed(1) + 'px, ' + (h / 2).toFixed(1) + 'px)';
+
+        if (t < 1) {
+          window.requestAnimationFrame(frame);
+          return;
+        }
+
+        // Clear the last specks of wall and put the can away
+        finishCover(shot, canvas, can);
+      }
+
+      window.requestAnimationFrame(frame);
+    });
+  }
+
+  // Blueprint: a drafting pen hatches the image in with diagonal strokes, then cross-hatches it
+  function hatchReveal(shot) {
+    prepareCover(shot, function (canvas, ctx, w, h) {
+      var pen = document.createElement('span');
+      pen.className = 'shot-pen';
+      pen.setAttribute('aria-hidden', 'true');
+      shot.appendChild(pen);
+
+      var SPACING = 7;
+      var DURATION = 1700;
+      var lines = Math.ceil((w + h) / SPACING) + 1;
+      // Each pass sweeps its strokes across the image; the cross pass starts as the first ends
+      var passes = [
+        { from: 0, to: 0.55, dir: 1, width: 3.6 },
+        { from: 0.45, to: 0.9, dir: -1, width: 2.6 }
+      ];
+      var drawn = [0, 0];
+      var start = null;
+
+      // Stroke k of a pass runs along x + dir*y = k*SPACING, clipped to the image
+      function stroke(k, dir) {
+        var c = k * SPACING;
+        if (dir === 1) {
+          return { x1: c, y1: 0, x2: c - h, y2: h };
+        }
+        return { x1: w - c, y1: 0, x2: w - c + h, y2: h };
+      }
+
+      ctx.lineCap = 'round';
+
+      function frame(now) {
+        if (start === null) start = now;
+        var t = Math.min((now - start) / DURATION, 1);
+        var tip = null;
+
+        passes.forEach(function (pass, i) {
+          var local = Math.min(Math.max((t - pass.from) / (pass.to - pass.from), 0), 1);
+          var target = Math.floor(local * lines);
+          ctx.lineWidth = pass.width;
+          for (; drawn[i] < target; drawn[i]++) {
+            var line = stroke(drawn[i], pass.dir);
+            ctx.beginPath();
+            ctx.moveTo(line.x1, line.y1);
+            ctx.lineTo(line.x2, line.y2);
+            ctx.stroke();
+          }
+          if (local > 0 && local < 1) {
+            var current = stroke(drawn[i], pass.dir);
+            // Pen bounces along its stroke as it hatches
+            var along = (now / 90) % 2;
+            along = along > 1 ? 2 - along : along;
+            tip = {
+              x: Math.min(Math.max(current.x1 + (current.x2 - current.x1) * along, 0), w),
+              y: Math.min(Math.max(current.y1 + (current.y2 - current.y1) * along, 0), h)
+            };
+          }
+        });
+
+        if (tip) {
+          pen.style.transform = 'translate(' + tip.x.toFixed(1) + 'px, ' + tip.y.toFixed(1) + 'px)';
+        }
+
+        if (t < 1) {
+          window.requestAnimationFrame(frame);
+          return;
+        }
+
+        // Ink in whatever the hatching missed
+        finishCover(shot, canvas, pen);
+      }
+
+      window.requestAnimationFrame(frame);
+    });
   }
 
   // 11. Entries fade and slide up, staggered when several enter together
@@ -232,88 +535,6 @@
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
     update();
-  }
-
-  // 14. Skill icons orbit the photo like electrons: fade in slowly, spin up, fade out, rest, repeat
-  function initAtomOrbit() {
-    var items = Array.prototype.slice.call(document.querySelectorAll('.profile-orbit .orbit-item'));
-    if (!items.length) return;
-
-    var RX = 6.75; // rem, long axis of each electron path
-    var RY = 2.25; // rem, short axis, makes the path read as a tilted ring
-    var SLOW = 0.6; // rad/s
-    var FAST = 28; // rad/s
-    // Cycle timings in seconds
-    var FADE_IN = 2;
-    var CRUISE = 4;
-    var SPIN_UP = 3;
-    var FULL_SPEED = 2; // held at top speed before the fade starts
-    var FADE_OUT = 1;
-    var REST = 10;
-    var ACTIVE = FADE_IN + CRUISE + SPIN_UP + FULL_SPEED;
-    var CYCLE = ACTIVE + REST;
-
-    // Pair icons on three orbital planes 60deg apart, opposite each other on their plane
-    var electrons = items.map(function (el, i) {
-      var plane = i % 3;
-      var tilt = (plane * 60 - 30) * Math.PI / 180;
-      return {
-        el: el,
-        cos: Math.cos(tilt),
-        sin: Math.sin(tilt),
-        phase: Math.floor(i / 3) * Math.PI + plane * 0.9,
-        rate: [1, 1.18, 0.86][plane]
-      };
-    });
-
-    var angle = 0;
-    var clock = 0;
-    var last = null;
-
-    function frame(now) {
-      // Clamp so a backgrounded tab doesn't jump the cycle on return
-      var dt = last === null ? 0 : Math.min((now - last) / 1000, 0.05);
-      last = now;
-      clock = (clock + dt) % CYCLE;
-
-      var speed = SLOW;
-      var opacity = 0;
-      var spin = 0;
-      if (clock < FADE_IN) {
-        opacity = clock / FADE_IN;
-      } else if (clock < FADE_IN + CRUISE) {
-        opacity = 1;
-      } else if (clock < ACTIVE) {
-        spin = Math.min(1, (clock - FADE_IN - CRUISE) / SPIN_UP);
-        speed = SLOW + (FAST - SLOW) * spin * spin * spin;
-        opacity = Math.min(1, (ACTIVE - clock) / FADE_OUT);
-      }
-      angle += speed * dt;
-
-      if (opacity > 0) {
-        var blur = (spin * spin * 3).toFixed(2);
-        electrons.forEach(function (e) {
-          var t = angle * e.rate + e.phase;
-          var ex = Math.cos(t) * RX;
-          var ey = Math.sin(t) * RY;
-          var x = ex * e.cos - ey * e.sin;
-          var y = ex * e.sin + ey * e.cos;
-          // sin(t) < 0 is the far side of the orbit: shrink, dim and tuck behind the photo
-          var depth = Math.sin(t);
-          var scale = 0.85 + 0.15 * depth;
-          e.el.style.transform = 'translate(' + x.toFixed(3) + 'rem,' + y.toFixed(3) + 'rem) scale(' + scale.toFixed(3) + ')';
-          e.el.style.opacity = (opacity * (0.75 + 0.25 * depth)).toFixed(3);
-          e.el.style.zIndex = depth < 0 ? '0' : '2';
-          e.el.style.filter = blur > 0 ? 'blur(' + blur + 'px)' : '';
-        });
-      } else {
-        electrons.forEach(function (e) { e.el.style.opacity = '0'; });
-      }
-
-      window.requestAnimationFrame(frame);
-    }
-
-    window.requestAnimationFrame(frame);
   }
 
   // 13. Soft glow trailing the cursor across the background (mouse/trackpad only)
@@ -367,14 +588,13 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     if (!root.classList.contains('fx')) return;
-    initNameDecode();
+    initNameIntro();
     initSectionHeadings();
     initCountUps();
     initTilt();
-    initScanlineReveal();
+    initShotReveal();
     initStaggerReveal();
     initTimelineDraw();
     initCursorGlow();
-    initAtomOrbit();
   });
 })();

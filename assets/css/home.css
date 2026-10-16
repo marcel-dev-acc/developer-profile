@@ -361,13 +361,12 @@ html {
   }
 }
 
-/* Desktop: half wheel docked to the left edge, icons placed along its arc
-   and a dial hand pointing at the active section; labels appear on hover */
+/* Desktop: half wheel docked to the left edge, icons placed along its arc;
+   labels appear on hover */
 @media (min-width: 1024px) {
   .section-nav {
     --wheel-radius: 7.5rem;
     --icon-orbit: 5.5rem;
-    --nav-angle: -66deg;
     left: 0;
     top: 50%;
     bottom: auto;
@@ -378,38 +377,6 @@ html {
     padding: 0;
     border-left: none;
     border-radius: 0 9999px 9999px 0;
-  }
-
-  /* Inner dashed ring, centred on the screen edge */
-  .section-nav::before {
-    content: "";
-    position: absolute;
-    left: -3.25rem;
-    top: 50%;
-    width: 6.5rem;
-    height: 6.5rem;
-    margin-top: -3.25rem;
-    border: 1px dashed rgba(192, 132, 252, 0.35);
-    border-radius: 50%;
-    pointer-events: none;
-  }
-
-  /* Dial hand that swings to the active icon */
-  .section-nav::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: 4rem;
-    height: 2px;
-    margin-top: -1px;
-    transform-origin: 0 50%;
-    transform: rotate(var(--nav-angle));
-    border-radius: 9999px;
-    background: linear-gradient(to right, rgba(168, 85, 247, 0), var(--purple-300));
-    box-shadow: 0 0 8px rgba(168, 85, 247, 0.8);
-    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-    pointer-events: none;
   }
 
   .section-nav-link {
@@ -458,8 +425,7 @@ html {
 
 @media (prefers-reduced-motion: reduce) {
   .section-nav-link .icon,
-  .section-nav-label,
-  .section-nav::after {
+  .section-nav-label {
     transition: none;
   }
 }
@@ -522,15 +488,15 @@ html {
   box-shadow: 0 0 8px rgba(156, 163, 175, 0.8);
 }
 
-.site-entry a {
+.site-link-row a {
   color: var(--purple-200);
   font-weight: 500;
   word-break: break-all;
   transition: color 0.2s;
 }
 
-.site-entry a:hover,
-.site-entry a:focus-visible {
+.site-link-row a:hover,
+.site-link-row a:focus-visible {
   color: var(--purple-100);
   animation: link-neon-jolt 0.5s linear forwards;
 }
@@ -551,8 +517,8 @@ html {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .site-entry a:hover,
-  .site-entry a:focus-visible {
+  .site-link-row a:hover,
+  .site-link-row a:focus-visible {
     animation: none;
     text-shadow: 0 0 10px #a855f7, 0 0 20px #a855f7, 0 0 30px #a855f7;
   }
@@ -572,6 +538,7 @@ html {
 /* Screenshot frame; the wrapper carries the glow so overlays (glare, scanline) can sit on top */
 .site-shot {
   position: relative;
+  display: block;
   width: 100%;
   max-width: 600px;
   margin: 1.25rem auto;
@@ -595,6 +562,12 @@ html {
 .site-screenshot {
   display: block;
   width: 100%;
+}
+
+/* Screenshots link to their site */
+.site-shot:focus-visible {
+  outline: 2px solid var(--green-400);
+  outline-offset: 4px;
 }
 
 /* Desktop: two websites per row, screenshots aligned along the bottom */

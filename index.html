@@ -8,8 +8,10 @@
   <link rel="stylesheet" href="assets/css/base.css" />
   <link rel="stylesheet" href="assets/css/home.css" />
   <link rel="stylesheet" href="assets/css/effects.css" />
+  <link rel="stylesheet" href="assets/css/themes.css" />
   <!-- Opt into motion effects unless the visitor prefers reduced motion -->
   <script>if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('fx');</script>
+  <script src="assets/js/theme.js"></script>
 </head>
 <body>
   <div class="page-shell">
@@ -22,14 +24,6 @@
           <div class="profile-photo-ring">
             <div class="profile-photo-mask">
               <img src="assets/cartoon_profile_photo.png" alt="Profile" />
-            </div>
-            <div class="profile-orbit" aria-hidden="true">
-              <span class="orbit-item" style="--a: 0deg"><img src="https://skillicons.dev/icons?i=react" alt="" /></span>
-              <span class="orbit-item" style="--a: 60deg"><img src="https://skillicons.dev/icons?i=nodejs" alt="" /></span>
-              <span class="orbit-item" style="--a: 120deg"><img src="https://skillicons.dev/icons?i=ts" alt="" /></span>
-              <span class="orbit-item" style="--a: 180deg"><img src="https://skillicons.dev/icons?i=aws" alt="" /></span>
-              <span class="orbit-item" style="--a: 240deg"><img src="https://skillicons.dev/icons?i=python" alt="" /></span>
-              <span class="orbit-item" style="--a: 300deg"><img src="https://skillicons.dev/icons?i=cloudflare" alt="" /></span>
             </div>
           </div>
           <div class="experience-badge">
@@ -126,10 +120,10 @@
                   </div>
                   <p>An online tutor marketplace where educators work anywhere, anytime, and keep 100% of their hourly rate—no platform fees, no middlemen. Students book sessions through an interactive calendar with PayPal payments, while an admin suite handles tutor approvals, moderation, and settlements.</p>
                   <p>Built as a TypeScript monorepo: a Next.js frontend on Cloudflare Pages, an Express API behind a Cloudflare Worker gateway with independently deployable functions, and PostgreSQL via Prisma. A background worker handles emails, payment reminders, and backups, all running in Docker.</p>
-                  <div class="site-shot" data-tilt>
+                  <a class="site-shot" href="https://www.123helpmestudy.com" target="_blank" rel="noopener noreferrer" aria-label="Visit www.123helpmestudy.com (opens in a new tab)" data-tilt>
                     <img class="site-screenshot" src="assets/images/site-123helpmestudy.jpg" alt="Screenshot of the 123 Help Me Study homepage" loading="lazy" />
                     <span class="site-shot-glare" aria-hidden="true"></span>
-                  </div>
+                  </a>
                 </div>
 
                 <div class="site-entry">
@@ -138,10 +132,10 @@
                     <a href="https://www.moneysavingexpert.com/savings-hub" target="_blank" rel="noopener noreferrer">www.moneysavingexpert.com/savings-hub</a>
                   </div>
                   <p>An innovative interactive savings recommendation hub built while leading a development team for a previous employer. Though no longer actively maintained, I architected and implemented the groundbreaking foundation—leveraging Cloudflare edge computing for lightning-fast performance and building the dynamic, user-centric features that power intelligent savings insights. A testament to modern web architecture at scale.</p>
-                  <div class="site-shot" data-tilt>
+                  <a class="site-shot" href="https://www.moneysavingexpert.com/savings-hub" target="_blank" rel="noopener noreferrer" aria-label="Visit www.moneysavingexpert.com/savings-hub (opens in a new tab)" data-tilt>
                     <img class="site-screenshot" src="assets/images/site-moneysavingexpert.jpg" alt="Screenshot of the MoneySavingExpert Savings Hub homepage" loading="lazy" />
                     <span class="site-shot-glare" aria-hidden="true"></span>
-                  </div>
+                  </a>
                 </div>
 
                 <div class="site-entry">
@@ -150,10 +144,10 @@
                     <a href="https://www.hantsiowrosecroix.org.uk" target="_blank" rel="noopener noreferrer">www.hantsiowrosecroix.org.uk</a>
                   </div>
                   <p>The official digital hub for the Rose Croix in the province of Hampshire and Isle of Wight. This comprehensive informational website keeps members and visitors connected with real-time event calendars, announcements, and organisational updates—bridging tradition with modern digital accessibility.</p>
-                  <div class="site-shot" data-tilt>
+                  <a class="site-shot" href="https://www.hantsiowrosecroix.org.uk" target="_blank" rel="noopener noreferrer" aria-label="Visit www.hantsiowrosecroix.org.uk (opens in a new tab)" data-tilt>
                     <img class="site-screenshot" src="assets/images/site-hantsiowrosecroix.jpg" alt="Screenshot of the Hampshire &amp; Isle of Wight Rose Croix homepage" loading="lazy" />
                     <span class="site-shot-glare" aria-hidden="true"></span>
-                  </div>
+                  </a>
                 </div>
 
                 <div class="site-entry">
@@ -162,10 +156,10 @@
                     <a href="https://www.community-playlink.com" target="_blank" rel="noopener noreferrer">www.community-playlink.com</a>
                   </div>
                   <p>The digital home of Community Playlink, a registered charity running free toy libraries and PLAYTIME sessions for families across Southampton. The site helps parents and carers browse the toy index, discover toddler groups and early-years services, and connect with a charity dedicated to empowering children through play—built to be warm, accessible, and easy to navigate for the families who rely on it.</p>
-                  <div class="site-shot" data-tilt>
+                  <a class="site-shot" href="https://www.community-playlink.com" target="_blank" rel="noopener noreferrer" aria-label="Visit www.community-playlink.com (opens in a new tab)" data-tilt>
                     <img class="site-screenshot" src="assets/images/site-community-playlink.jpg" alt="Screenshot of the Community Playlink homepage" loading="lazy" />
                     <span class="site-shot-glare" aria-hidden="true"></span>
-                  </div>
+                  </a>
                 </div>
 
                 <div class="site-entry">
@@ -174,10 +168,10 @@
                     <a href="https://www.mjhub.co.uk" target="_blank" rel="noopener noreferrer">www.mjhub.co.uk</a>
                   </div>
                   <p>MJ Hub is a business consulting studio based in Southampton that I run and actively manage with a business partner, taking founders from idea to enterprise. The site captures leads for website and e-commerce builds, hands-on HR consulting, and AI-driven insights and proposals—designed to be engaging and conversion-focused for founders exploring what MJ Hub can build for them.</p>
-                  <div class="site-shot" data-tilt>
+                  <a class="site-shot" href="https://www.mjhub.co.uk" target="_blank" rel="noopener noreferrer" aria-label="Visit www.mjhub.co.uk (opens in a new tab)" data-tilt>
                     <img class="site-screenshot" src="assets/images/site-mjhub.jpg" alt="Screenshot of the MJ Hub homepage" loading="lazy" />
                     <span class="site-shot-glare" aria-hidden="true"></span>
-                  </div>
+                  </a>
                 </div>
               </div>
           </div>

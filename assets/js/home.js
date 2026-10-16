@@ -87,7 +87,6 @@
   function initSectionNav() {
     var sections = document.querySelectorAll('[data-section]');
     var links = document.querySelectorAll('[data-section-link]');
-    var nav = document.querySelector('.section-nav');
     if (!sections.length || !links.length) return;
 
     var ticking = false;
@@ -98,9 +97,6 @@
         link.classList.toggle('active', isActive);
         if (isActive) {
           link.setAttribute('aria-current', 'true');
-          // Point the desktop wheel's dial hand at the active icon
-          var angle = window.getComputedStyle(link).getPropertyValue('--angle').trim();
-          if (nav && angle) nav.style.setProperty('--nav-angle', angle);
         } else {
           link.removeAttribute('aria-current');
         }

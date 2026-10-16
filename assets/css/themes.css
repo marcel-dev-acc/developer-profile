@@ -30,6 +30,13 @@
   body:has(.section-nav) .theme-picker {
     bottom: calc(5rem + env(safe-area-inset-bottom));
   }
+
+  /* Matches the section nav ignoring Firefox's bottom inset (home.css) */
+  @supports (-moz-appearance: none) {
+    body:has(.section-nav) .theme-picker {
+      bottom: 5rem;
+    }
+  }
 }
 
 .theme-picker-toggle {

@@ -364,6 +364,15 @@ html {
   .section-nav-label {
     display: none;
   }
+
+  /* Firefox on Android reports a bottom inset while its toolbar is showing and
+     drops it on scroll, so the bar's padding jumped. Ignore the inset there. */
+  @supports (-moz-appearance: none) {
+    .section-nav {
+      --safe-area-max-inset-bottom: 0px;
+      bottom: 0;
+    }
+  }
 }
 
 /* Desktop: half wheel docked to the left edge, icons placed along its arc;

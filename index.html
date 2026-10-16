@@ -10,7 +10,9 @@
   <link rel="stylesheet" href="assets/css/effects.css" />
   <link rel="stylesheet" href="assets/css/themes.css" />
   <!-- Opt into motion effects unless the visitor prefers reduced motion -->
-  <script>if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('fx');</script>
+  <!-- On tablet and mobile, fx-stagger brings effects in one after another; fx-boot holds the
+       ambient loops until the intro has played (effects.js removes it) -->
+  <script>if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) { document.documentElement.classList.add('fx'); if (window.matchMedia('(max-width: 1023px), (pointer: coarse)').matches) document.documentElement.classList.add('fx-stagger', 'fx-boot'); }</script>
   <script src="assets/js/theme.js"></script>
 </head>
 <body>

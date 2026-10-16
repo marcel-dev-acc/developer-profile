@@ -586,8 +586,36 @@
     });
   }
 
+  // 14. Mobile: the background, glows and shimmers stay still (fx-boot) while the intro plays,
+  //     then come in once the main thread is free
+  function initAmbientStagger() {
+    if (!root.classList.contains('fx-boot')) return;
+    setTimeout(function () {
+      var release = function () { root.classList.remove('fx-boot'); };
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(release, { timeout: 1000 });
+      } else {
+        release();
+      }
+    }, 2000);
+  }
+
+  // 15. Looping animations pause while their block is off screen, so only what's visible costs anything
+  function initOffscreenPause() {
+    if (!('IntersectionObserver' in window)) return;
+    var zones = document.querySelectorAll('.profile-header, .neon-cta, .switch-offer, .content-section');
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        entry.target.classList.toggle('fx-offscreen', !entry.isIntersecting);
+      });
+    }, { rootMargin: '100px 0px' });
+    zones.forEach(function (zone) { observer.observe(zone); });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     if (!root.classList.contains('fx')) return;
+    initAmbientStagger();
+    initOffscreenPause();
     initNameIntro();
     initSectionHeadings();
     initCountUps();

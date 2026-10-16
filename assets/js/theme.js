@@ -116,7 +116,11 @@
       return;
     }
 
-    // Paint the new theme in as a circle growing out of the picker, then reload into it
+    // Paint the new theme in as a circle growing out of the picker, then reload into it.
+    // On mobile the ambient loops hold still meanwhile (fx-hold) so the circle animates smoothly;
+    // the reload starts them again after its own intro.
+    var stagger = root.classList.contains('fx-stagger');
+    if (stagger) root.classList.add('fx-hold');
 
     var x = origin ? origin.x : window.innerWidth;
     var y = origin ? origin.y : window.innerHeight;
@@ -125,7 +129,7 @@
     transition.ready.then(function () {
       root.animate(
         { clipPath: ['circle(0px at ' + x + 'px ' + y + 'px)', 'circle(' + radius + 'px at ' + x + 'px ' + y + 'px)'] },
-        { duration: 700, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', pseudoElement: '::view-transition-new(root)' }
+        { duration: stagger ? 550 : 700, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', pseudoElement: '::view-transition-new(root)' }
       );
     }).catch(function () { /* transition skipped; the theme is already applied */ });
     transition.finished.then(reloadFresh, reloadFresh);

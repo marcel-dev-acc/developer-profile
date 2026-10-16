@@ -37,6 +37,44 @@
   50% { opacity: 0; }
 }
 
+/* Looping animations hold still while their block is off screen (effects.js) */
+.fx-offscreen,
+.fx-offscreen::before,
+.fx-offscreen::after,
+.fx-offscreen *,
+.fx-offscreen *::before,
+.fx-offscreen *::after {
+  animation-play-state: paused !important;
+}
+
+/* Mobile: the ambient loops wait for the intro to finish (fx-boot), and the background
+   fades in rather than starting at full strength */
+.fx-stagger .animated-bg {
+  transition: opacity 1.2s ease;
+}
+
+.fx-boot .animated-bg {
+  opacity: 0;
+}
+
+/* fx-hold pauses the same loops without hiding anything, for the theme switch (theme.js) */
+.fx-boot .animated-bg *,
+.fx-hold .animated-bg *,
+.fx-boot .profile-photo-glow,
+.fx-hold .profile-photo-glow,
+.fx-boot .glow-backdrop::before,
+.fx-hold .glow-backdrop::before,
+.fx-boot .scanline-overlay::before,
+.fx-hold .scanline-overlay::before,
+.fx-boot .switch-offer::before,
+.fx-hold .switch-offer::before,
+.fx-boot .switch-offer-text strong,
+.fx-hold .switch-offer-text strong,
+.fx-boot .offer-progress-fill,
+.fx-hold .offer-progress-fill {
+  animation-play-state: paused !important;
+}
+
 /* Light sweeping across highlighted offer phrases */
 .fx .switch-offer-text strong {
   background: linear-gradient(

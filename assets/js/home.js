@@ -138,7 +138,12 @@
     if (experienceEl) {
       experienceEl.textContent = calculateExperience();
     }
-    initNeonFlicker();
+    // On mobile the call to action flickers on once the name has mostly resolved, rather than alongside it
+    if (document.documentElement.classList.contains('fx-stagger')) {
+      setTimeout(initNeonFlicker, 900);
+    } else {
+      initNeonFlicker();
+    }
     initOfferProgress();
     initSectionNav();
   });

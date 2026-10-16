@@ -234,6 +234,88 @@
     update();
   }
 
+  // 14. Skill icons orbit the photo like electrons: fade in slowly, spin up, fade out, rest, repeat
+  function initAtomOrbit() {
+    var items = Array.prototype.slice.call(document.querySelectorAll('.profile-orbit .orbit-item'));
+    if (!items.length) return;
+
+    var RX = 6.75; // rem, long axis of each electron path
+    var RY = 2.25; // rem, short axis, makes the path read as a tilted ring
+    var SLOW = 0.6; // rad/s
+    var FAST = 28; // rad/s
+    // Cycle timings in seconds
+    var FADE_IN = 2;
+    var CRUISE = 4;
+    var SPIN_UP = 3;
+    var FULL_SPEED = 2; // held at top speed before the fade starts
+    var FADE_OUT = 1;
+    var REST = 10;
+    var ACTIVE = FADE_IN + CRUISE + SPIN_UP + FULL_SPEED;
+    var CYCLE = ACTIVE + REST;
+
+    // Pair icons on three orbital planes 60deg apart, opposite each other on their plane
+    var electrons = items.map(function (el, i) {
+      var plane = i % 3;
+      var tilt = (plane * 60 - 30) * Math.PI / 180;
+      return {
+        el: el,
+        cos: Math.cos(tilt),
+        sin: Math.sin(tilt),
+        phase: Math.floor(i / 3) * Math.PI + plane * 0.9,
+        rate: [1, 1.18, 0.86][plane]
+      };
+    });
+
+    var angle = 0;
+    var clock = 0;
+    var last = null;
+
+    function frame(now) {
+      // Clamp so a backgrounded tab doesn't jump the cycle on return
+      var dt = last === null ? 0 : Math.min((now - last) / 1000, 0.05);
+      last = now;
+      clock = (clock + dt) % CYCLE;
+
+      var speed = SLOW;
+      var opacity = 0;
+      var spin = 0;
+      if (clock < FADE_IN) {
+        opacity = clock / FADE_IN;
+      } else if (clock < FADE_IN + CRUISE) {
+        opacity = 1;
+      } else if (clock < ACTIVE) {
+        spin = Math.min(1, (clock - FADE_IN - CRUISE) / SPIN_UP);
+        speed = SLOW + (FAST - SLOW) * spin * spin * spin;
+        opacity = Math.min(1, (ACTIVE - clock) / FADE_OUT);
+      }
+      angle += speed * dt;
+
+      if (opacity > 0) {
+        var blur = (spin * spin * 3).toFixed(2);
+        electrons.forEach(function (e) {
+          var t = angle * e.rate + e.phase;
+          var ex = Math.cos(t) * RX;
+          var ey = Math.sin(t) * RY;
+          var x = ex * e.cos - ey * e.sin;
+          var y = ex * e.sin + ey * e.cos;
+          // sin(t) < 0 is the far side of the orbit: shrink, dim and tuck behind the photo
+          var depth = Math.sin(t);
+          var scale = 0.85 + 0.15 * depth;
+          e.el.style.transform = 'translate(' + x.toFixed(3) + 'rem,' + y.toFixed(3) + 'rem) scale(' + scale.toFixed(3) + ')';
+          e.el.style.opacity = (opacity * (0.75 + 0.25 * depth)).toFixed(3);
+          e.el.style.zIndex = depth < 0 ? '0' : '2';
+          e.el.style.filter = blur > 0 ? 'blur(' + blur + 'px)' : '';
+        });
+      } else {
+        electrons.forEach(function (e) { e.el.style.opacity = '0'; });
+      }
+
+      window.requestAnimationFrame(frame);
+    }
+
+    window.requestAnimationFrame(frame);
+  }
+
   // 13. Soft glow trailing the cursor across the background (mouse/trackpad only)
   function initCursorGlow() {
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
@@ -293,5 +375,6 @@
     initStaggerReveal();
     initTimelineDraw();
     initCursorGlow();
+    initAtomOrbit();
   });
 })();

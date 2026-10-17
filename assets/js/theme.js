@@ -13,7 +13,7 @@
       id: 'graffiti',
       name: 'Graffiti',
       description: 'Spray paint on a brick wall',
-      fonts: 'https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Rubik:wght@400;500;700&family=Sedgwick+Ave+Display&display=swap'
+      fonts: 'https://fonts.googleapis.com/css2?family=Knewave&family=Permanent+Marker&family=Rubik:wght@400;500;700;800;900&family=Sedgwick+Ave+Display&display=swap'
     },
     {
       id: 'blueprint',

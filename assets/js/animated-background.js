@@ -27,10 +27,12 @@
     // Paint running down the wall; only shown by the graffiti theme
     var drips = document.createElement('div');
     drips.className = 'bg-drips';
-    for (var j = 0; j < 9; j++) {
+    // 14 drips; phones show only the first 9 (themes.css)
+    for (var j = 0; j < 14; j++) {
       var drip = document.createElement('div');
       drip.className = 'bg-drip';
-      drip.style.left = (4 + j * 11 + Math.random() * 6) + '%';
+      // The first nine span the full width; the last five fill the gaps between them
+      drip.style.left = (j < 9 ? 4 + j * 11 : 9.5 + (j - 9) * 22) + Math.random() * 5 + '%';
       drip.style.setProperty('--drip-length', (18 + Math.random() * 40) + 'vh');
       drip.style.setProperty('--drip-width', (5 + Math.random() * 7) + 'px');
       drip.style.animationDuration = (9 + Math.random() * 8) + 's';

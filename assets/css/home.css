@@ -1134,3 +1134,10 @@ html {
 .social-icon-link:hover .icon {
   color: var(--purple-100);
 }
+
+/* Extra icons and arrows that only the graffiti theme shows (themes.css) */
+.btn-arrow,
+.icon-alt,
+.pill-icon {
+  display: none;
+}

@@ -132,17 +132,25 @@
       // Graffiti stencil-sprays the letters onto the stripe; blueprint letters them along
       // a guide line. Both animate per-letter spans in CSS instead of typing
       if (theme() === 'graffiti' || theme() === 'blueprint') {
+        // Letters are grouped into words that can't break, so a long heading wraps between
+        // words rather than between any two letters
         label.textContent = '';
-        text.split('').forEach(function (char, i) {
-          if (char === ' ') {
+        var index = 0;
+        text.split(' ').forEach(function (word, w) {
+          if (w > 0) {
             label.appendChild(document.createTextNode(' '));
-            return;
+            index++;
           }
-          var span = document.createElement('span');
-          span.className = 'heading-char';
-          span.style.setProperty('--i', i);
-          span.textContent = char;
-          label.appendChild(span);
+          var wordEl = document.createElement('span');
+          wordEl.className = 'heading-word';
+          word.split('').forEach(function (char) {
+            var span = document.createElement('span');
+            span.className = 'heading-char';
+            span.style.setProperty('--i', index++);
+            span.textContent = char;
+            wordEl.appendChild(span);
+          });
+          label.appendChild(wordEl);
         });
         return;
       }

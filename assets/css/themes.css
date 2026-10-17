@@ -2039,6 +2039,19 @@ html[data-theme="blueprint"] .section-header .icon {
   color: var(--b-pencil);
 }
 
+/* Phones: the figure number becomes a caption above the title, so the title gets the full row */
+@media (max-width: 479px) {
+  html[data-theme="blueprint"] .section-header {
+    flex-wrap: wrap;
+    row-gap: 0.4rem;
+  }
+
+  html[data-theme="blueprint"] .section-header::before {
+    flex-basis: 100%;
+    font-size: 0.7rem;
+  }
+}
+
 html[data-theme="blueprint"].fx .section-header.is-powering,
 html[data-theme="blueprint"].fx .content-section.is-powering {
   animation: none;
@@ -3579,6 +3592,11 @@ html[data-theme="blueprint"] .terminal-box::before {
 /* ================================================================== */
 /* HEADING LETTERS (effects.js)                                         */
 /* ================================================================== */
+.heading-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
 .heading-char {
   display: inline-block;
 }

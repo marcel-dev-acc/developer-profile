@@ -19,6 +19,12 @@
     var subtitle = document.querySelector('[data-neon-subtitle]');
     if (!content) return;
 
+    // Professional skips the neon power-on: the block is shown once and its lines fade up in CSS
+    if (document.documentElement.getAttribute('data-theme') === 'professional') {
+      content.classList.add('visible');
+      return;
+    }
+
     var flickerSequence = [
       { delay: 0, visible: false },
       { delay: 100, visible: true },

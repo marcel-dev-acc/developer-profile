@@ -21,7 +21,7 @@
   }
 
   function theme() {
-    return root.getAttribute('data-theme') || 'neon';
+    return root.getAttribute('data-theme') || 'professional';
   }
 
   // 1. Name intro, replayed on theme change: neon resolves it from random glyphs; the other

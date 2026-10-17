@@ -13,7 +13,7 @@
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function theme() {
-    return root.getAttribute('data-theme') || 'neon';
+    return root.getAttribute('data-theme') || 'professional';
   }
 
   // Timeouts a mode can cancel all at once when the theme changes
@@ -233,7 +233,65 @@
     };
   }
 
-  var MODES = { graffiti: startGraffiti, blueprint: startBlueprint };
+  // Professional: the statements crossfade one at a time. A row of hairline bars shows which
+  // is up; the active bar fills (CSS) and the next statement comes in when it's full, so
+  // hovering, which pauses the fill, also holds the statement. Reduced motion lists all three.
+  function startProfessional(ctx) {
+    var stage = ctx.stage;
+    var statements = TEXTS.map(function (text) {
+      var p = document.createElement('p');
+      p.className = 'bio-statement';
+      p.textContent = text;
+      stage.appendChild(p);
+      return p;
+    });
+
+    if (reducedMotion) {
+      stage.classList.add('is-static');
+      return function stop() {};
+    }
+
+    stage.classList.add('is-carousel');
+    var nav = document.createElement('div');
+    nav.className = 'bio-bars';
+    stage.appendChild(nav);
+
+    var index = 0;
+    var bars = statements.map(function (_, i) {
+      var bar = document.createElement('button');
+      bar.type = 'button';
+      bar.className = 'bio-bar';
+      bar.setAttribute('aria-label', 'Show statement ' + (i + 1) + ' of ' + statements.length);
+      bar.appendChild(document.createElement('span')).className = 'bio-bar-fill';
+      bar.addEventListener('click', function () { show(i); });
+      nav.appendChild(bar);
+      return bar;
+    });
+
+    function show(i) {
+      index = i;
+      statements.forEach(function (p, j) { p.classList.toggle('is-active', j === i); });
+      bars.forEach(function (bar, j) {
+        bar.classList.remove('is-active');
+        bar.toggleAttribute('aria-current', j === i);
+      });
+      void nav.offsetWidth; // restart the fill when the same bar is picked again
+      bars[i].classList.add('is-active');
+    }
+
+    function onFilled(event) {
+      if (event.target.classList.contains('bio-bar-fill')) show((index + 1) % statements.length);
+    }
+
+    nav.addEventListener('animationend', onFilled);
+    show(0);
+
+    return function stop() {
+      nav.removeEventListener('animationend', onFilled);
+    };
+  }
+
+  var MODES = { graffiti: startGraffiti, blueprint: startBlueprint, professional: startProfessional };
 
   document.addEventListener('DOMContentLoaded', function () {
     var textEl = document.querySelector('[data-typewriter-text]');

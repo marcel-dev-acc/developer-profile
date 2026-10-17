@@ -6,7 +6,7 @@
  */
 (function () {
   var STORAGE_KEY = 'site-theme';
-  var DEFAULT_THEME = 'neon';
+  var DEFAULT_THEME = 'professional';
   var THEMES = [
     { id: 'neon', name: 'Neon', description: 'Purple glow, terminals and flicker' },
     {
@@ -20,14 +20,13 @@
       name: 'Blueprint',
       description: 'Drafted like an engineering plan',
       fonts: 'https://fonts.googleapis.com/css2?family=Architects+Daughter&family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap'
+    },
+    {
+      id: 'professional',
+      name: 'Professional',
+      description: 'Black, bold and to the point',
+      fonts: 'https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800;900&family=Nunito+Sans:wght@400;600&display=swap'
     }
-    // Professional is styled in themes.css but hidden from the picker for now
-    // {
-    //   id: 'professional',
-    //   name: 'Professional',
-    //   description: 'Clean, light and to the point',
-    //   fonts: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'
-    // }
   ];
 
   var root = document.documentElement;

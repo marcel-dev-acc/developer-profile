@@ -27,10 +27,6 @@
 
     var terminalModeEl = document.querySelector('[data-terminal-mode]');
     var simpleModeEl = document.querySelector('[data-simple-mode]');
-    var modeToggleBtn = document.querySelector('[data-mode-toggle]');
-    var modeToggleLabel = document.querySelector('[data-mode-toggle-label]');
-    var modeToggleTerminalIcon = document.querySelector('[data-mode-toggle-terminal-icon]');
-    var modeToggleFormIcon = document.querySelector('[data-mode-toggle-form-icon]');
     var simpleFormEl = document.querySelector('[data-simple-form]');
     var simpleFirstNameEl = document.querySelector('[data-simple-first-name]');
     var simpleLastNameEl = document.querySelector('[data-simple-last-name]');
@@ -50,7 +46,6 @@
     var formData = initialFormData();
     var isSending = false;
     var isSimpleSending = false;
-    var currentMode = 'simple';
     var matrixAnimationFrame = null;
     var matrixTimeout = null;
     var matrixKeyHandler = null;
@@ -217,18 +212,16 @@
       });
     }
 
+    // The neon theme gets the terminal; every other theme gets the plain form
+    function modeForTheme() {
+      return document.documentElement.getAttribute('data-theme') === 'neon' ? 'terminal' : 'simple';
+    }
+
     function setMode(mode) {
-      currentMode = mode;
       var isSimple = mode === 'simple';
 
       if (terminalModeEl) terminalModeEl.hidden = isSimple;
       if (simpleModeEl) simpleModeEl.hidden = !isSimple;
-      if (modeToggleBtn) {
-        modeToggleLabel.textContent = isSimple ? 'Try the terminal' : 'Back to the simple form';
-        modeToggleTerminalIcon.hidden = !isSimple;
-        modeToggleFormIcon.hidden = isSimple;
-        modeToggleFormIcon.style.display = !isSimple ? 'block' : 'none';
-      }
 
       if (isSimple) {
         if (simpleFirstNameEl) simpleFirstNameEl.focus();
@@ -237,11 +230,10 @@
       }
     }
 
-    if (modeToggleBtn) {
-      modeToggleBtn.addEventListener('click', function () {
-        setMode(currentMode === 'terminal' ? 'simple' : 'terminal');
-      });
-    }
+    // Only fires when the theme switches in place (storage blocked); otherwise the page reloads
+    document.addEventListener('themechange', function () {
+      setMode(modeForTheme());
+    });
 
     function stopMatrix() {
       if (matrixAnimationFrame) cancelAnimationFrame(matrixAnimationFrame);
@@ -422,7 +414,7 @@
       renderSuggestions([]);
     });
 
-    setMode('simple');
+    setMode(modeForTheme());
     renderMessages();
   });
 })();

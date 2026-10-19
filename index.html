@@ -8,12 +8,14 @@
   <link rel="stylesheet" href="assets/css/base.css" />
   <link rel="stylesheet" href="assets/css/home.css" />
   <link rel="stylesheet" href="assets/css/effects.css" />
+  <link rel="stylesheet" href="assets/css/consent.css" />
   <link rel="stylesheet" href="assets/css/themes.css" />
   <!-- Opt into motion effects unless the visitor prefers reduced motion -->
   <!-- On tablet and mobile, fx-stagger brings effects in one after another; fx-boot holds the
        ambient loops until the intro has played (effects.js removes it) -->
   <script>if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) { document.documentElement.classList.add('fx'); if (window.matchMedia('(max-width: 1023px), (pointer: coarse)').matches) document.documentElement.classList.add('fx-stagger', 'fx-boot'); }</script>
   <script src="assets/js/theme.js"></script>
+  <script src="assets/js/consent.js"></script>
 </head>
 <body>
   <div class="page-shell">
@@ -389,6 +391,11 @@
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
         </a>
       </div>
+
+      <footer class="site-footer">
+        <a href="privacy/">Privacy and cookies</a>
+        <button type="button" data-cookie-settings>Cookie settings</button>
+      </footer>
     </div>
   </div>
 

@@ -5,17 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>404 | Marcel Mulders</title>
   <!--
-    GitHub Pages serves this file for any unmatched path under the project
-    site without changing the browser URL, so plain relative links/assets
-    would resolve against the *mistyped* path's depth, not this file's
-    location. <base> pins every relative href/src below to the site root.
+    The host serves this file for any unmatched path without changing the
+    browser URL, so plain relative links/assets would resolve against the
+    *mistyped* path's depth, not this file's location. <base> pins every
+    relative href/src below to the site root (developer.mjhub.co.uk/).
   -->
-  <base href="/developer-profile/" />
+  <base href="/" />
   <link rel="icon" type="image/png" href="assets/cartoon_profile_photo.png" />
   <link rel="stylesheet" href="assets/css/base.css" />
   <link rel="stylesheet" href="assets/css/404.css" />
+  <link rel="stylesheet" href="assets/css/consent.css" />
   <link rel="stylesheet" href="assets/css/themes.css" />
   <script src="assets/js/theme.js"></script>
+  <script src="assets/js/consent.js"></script>
 </head>
 <body>
   <div class="page-shell">
@@ -69,6 +71,11 @@
 
       <div class="telemetry" data-telemetry aria-hidden="true"></div>
     </div>
+
+    <footer class="site-footer">
+      <a href="privacy/">Privacy and cookies</a>
+      <button type="button" data-cookie-settings>Cookie settings</button>
+    </footer>
   </div>
 
   <script src="assets/js/animated-background.js"></script>

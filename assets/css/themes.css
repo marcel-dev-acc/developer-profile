@@ -1269,7 +1269,8 @@ html[data-theme="graffiti"] .breakdown-compare strong {
   color: var(--g-lime);
 }
 
-html[data-theme="graffiti"] .estimator-header h1 {
+html[data-theme="graffiti"] .estimator-header h1,
+html[data-theme="graffiti"] .page-heading {
   font-family: var(--g-tag);
   font-weight: 400;
   background: none;
@@ -1282,6 +1283,7 @@ html[data-theme="graffiti"] .estimator-header h1 {
 }
 
 html[data-theme="graffiti"] .estimator-intro,
+html[data-theme="graffiti"] .page-intro,
 html[data-theme="graffiti"] .section-subtitle {
   color: var(--g-text);
 }
@@ -3005,7 +3007,8 @@ html[data-theme="blueprint"] .breakdown-compare strong {
   color: var(--b-pencil);
 }
 
-html[data-theme="blueprint"] .estimator-header h1 {
+html[data-theme="blueprint"] .estimator-header h1,
+html[data-theme="blueprint"] .page-heading {
   font-family: var(--b-hand);
   font-weight: 400;
   background: none;
@@ -3014,6 +3017,7 @@ html[data-theme="blueprint"] .estimator-header h1 {
 }
 
 html[data-theme="blueprint"] .estimator-intro,
+html[data-theme="blueprint"] .page-intro,
 html[data-theme="blueprint"] .section-subtitle {
   color: var(--b-body);
 }
@@ -3982,7 +3986,8 @@ html[data-theme="professional"] .breakdown-compare strong {
   color: var(--p-success);
 }
 
-html[data-theme="professional"] .estimator-header h1 {
+html[data-theme="professional"] .estimator-header h1,
+html[data-theme="professional"] .page-heading {
   background: none;
   color: #fff;
   -webkit-text-fill-color: currentColor;
@@ -3992,6 +3997,7 @@ html[data-theme="professional"] .estimator-header h1 {
 }
 
 html[data-theme="professional"] .estimator-intro,
+html[data-theme="professional"] .page-intro,
 html[data-theme="professional"] .section-subtitle {
   color: var(--p-muted);
 }
@@ -4131,6 +4137,7 @@ html[data-theme="professional"] .neon-subtitle,
 html[data-theme="professional"] .neon-subtitle.flicker,
 html[data-theme="professional"] .experience-badge .label,
 html[data-theme="professional"] .estimator-intro,
+html[data-theme="professional"] .page-intro,
 html[data-theme="professional"] .simple-contact-intro {
   color: var(--p-on-photo);
   text-shadow: var(--p-photo-shadow);
@@ -4532,4 +4539,129 @@ html[data-theme="blueprint"].fx .section-header.is-powering > span {
 html[data-theme="blueprint"].fx .section-header.is-powering .heading-char {
   animation: plot-letter 0.18s linear both;
   animation-delay: calc(0.35s + var(--i) * 0.035s);
+}
+
+/* ================================================================== */
+/* COOKIE CONSENT PANEL + FOOTER (consent.css)                          */
+/* Each theme sets the panel tokens; its buttons are already themed     */
+/* through btn-glow and btn-pill                                        */
+/* ================================================================== */
+html[data-theme="graffiti"] {
+  --cc-bg: var(--g-cream);
+  --cc-text: var(--g-ink);
+  --cc-muted: rgba(13, 13, 13, 0.75);
+  --cc-border: var(--g-ink);
+  --cc-card-bg: #fffaf0;
+  --cc-card-border: var(--g-ink);
+  --cc-accent: var(--g-pink);
+  --cc-knob: var(--g-cream);
+  --cc-radius: 14px;
+  --cc-card-radius: var(--g-rough-lg);
+  --cc-shadow: 0 -6px 0 var(--g-pink), 0 -10px 30px rgba(0, 0, 0, 0.5);
+  --cc-heading-font: var(--g-marker);
+  --cc-heading-weight: 400;
+  --cc-link: var(--g-cyan);
+}
+
+/* The panel is cream paper, so its link needs a darker ink than the cyan used on the wall */
+html[data-theme="graffiti"] .cc-policy {
+  color: #0b6e70;
+}
+
+html[data-theme="graffiti"] .cc-sheet {
+  border-top-width: 3px;
+}
+
+html[data-theme="graffiti"] .cc-card {
+  border-width: 2px;
+  box-shadow: 3px 3px 0 var(--g-ink);
+}
+
+html[data-theme="graffiti"] .site-footer {
+  font-family: var(--g-marker);
+}
+
+html[data-theme="blueprint"] {
+  --cc-bg: rgba(13, 53, 102, 0.98);
+  --cc-text: var(--b-text);
+  --cc-muted: var(--b-body);
+  --cc-border: var(--b-line);
+  --cc-card-bg: rgba(235, 244, 255, 0.05);
+  --cc-card-border: var(--b-line-soft);
+  --cc-accent: var(--b-pencil);
+  --cc-knob: var(--b-paper-deep);
+  --cc-radius: 0;
+  --cc-card-radius: 0;
+  --cc-shadow: 0 -8px 30px rgba(0, 10, 30, 0.5);
+  --cc-font: var(--b-sans);
+  --cc-heading-font: var(--b-mono);
+  --cc-heading-weight: 600;
+  --cc-link: var(--b-pencil);
+}
+
+html[data-theme="blueprint"] .cc-sheet {
+  border-top-width: 1.5px;
+}
+
+html[data-theme="blueprint"] .cc-title,
+html[data-theme="blueprint"] .site-footer {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+html[data-theme="blueprint"] .site-footer {
+  font-family: var(--b-mono);
+}
+
+html[data-theme="blueprint"] .cc-switch-track {
+  border-radius: 0;
+}
+
+html[data-theme="blueprint"] .cc-switch-track::after {
+  border-radius: 0;
+}
+
+html[data-theme="professional"] {
+  --cc-bg: rgba(12, 12, 12, 0.97);
+  --cc-text: #fff;
+  --cc-muted: var(--p-body);
+  --cc-border: rgba(255, 255, 255, 0.12);
+  --cc-card-bg: rgba(255, 255, 255, 0.03);
+  --cc-card-border: var(--p-line);
+  --cc-accent: #fff;
+  --cc-knob: #000;
+  --cc-radius: 1.5rem;
+  --cc-card-radius: 0;
+  --cc-shadow: 0 -24px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --cc-font: var(--p-font);
+  --cc-heading-font: var(--p-font);
+  --cc-heading-weight: 900;
+  --cc-link: var(--p-on-photo);
+}
+
+html[data-theme="professional"] .cc-title {
+  letter-spacing: -0.025em;
+}
+
+html[data-theme="professional"] .cc-card-title {
+  font-weight: 800;
+}
+
+html[data-theme="professional"] .cc-switch input:not(:checked) + .cc-switch-track::after {
+  background: var(--p-muted);
+}
+
+html[data-theme="professional"] .site-footer {
+  font-family: var(--p-alt-font);
+  text-shadow: var(--p-photo-shadow);
+}
+
+/* In the consent panel every graffiti button gets the same plain shadow, so the pink overspray
+   on btn-pill never makes "Accept all" stand out more than "Reject all" */
+html[data-theme="graffiti"] .cc-actions .cc-btn {
+  box-shadow: 5px 5px 0 var(--g-ink);
+}
+
+html[data-theme="graffiti"] .cc-actions .cc-btn:hover {
+  box-shadow: 7px 7px 0 var(--g-ink);
 }

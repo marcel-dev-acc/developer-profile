@@ -37,7 +37,7 @@
   animation: pulse 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-.hud-badge .hud-label { color: rgba(216, 180, 254, 0.6); }
+.hud-badge .hud-label { color: rgba(216, 180, 254, 0.82); }
 .hud-badge .hud-value { color: var(--red-400); font-weight: 600; }
 
 /* Orbit / radar scene */

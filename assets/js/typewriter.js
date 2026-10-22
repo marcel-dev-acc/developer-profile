@@ -95,7 +95,7 @@
 
   // Graffiti: each statement is tagged on in marker, then buffed out with grey paint
   // and the next goes up in a new colour
-  var GRAFFITI_PAINTS = ['var(--g-pink)', 'var(--g-yellow)', 'var(--g-cyan)', 'var(--g-lime)'];
+  var GRAFFITI_PAINTS = ['var(--g-pink-text)', 'var(--g-yellow)', 'var(--g-cyan)', 'var(--g-lime)'];
   var WORD_TIME = 110;
   var HOLD_TIME = 3500;
   var BUFF_TIME = 900;

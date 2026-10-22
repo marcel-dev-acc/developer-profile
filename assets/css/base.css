@@ -124,7 +124,7 @@ img {
   animation-delay: 2s;
 }
 
-/* Shared "back link" used on the contact + estimator pages */
+/* Shared back link used on standalone pages */
 .back-link {
   display: inline-flex;
   align-items: center;
@@ -139,7 +139,7 @@ img {
   color: var(--purple-100);
 }
 
-/* Shared glowing purple button, used for "Contact Me" / "Calculate Estimate" / send */
+/* Shared glowing purple button, used for contact actions and form submission */
 .btn-glow {
   display: inline-flex;
   align-items: center;
@@ -184,8 +184,7 @@ img {
   box-shadow: 0 0 25px rgba(168, 85, 247, 0.6);
 }
 
-/* Shared form fields + status banner, used by the contact page's plain form
-   and the cost estimator's lead form */
+/* Shared form fields + status banner, used by the contact page's plain form */
 .simple-field {
   margin-bottom: 1rem;
 }
@@ -312,8 +311,7 @@ img {
   animation: scanline 8s linear infinite;
 }
 
-/* Page heading and intro line for standalone pages (e.g. privacy). Themes style them alongside
-   the estimator's heading in themes.css */
+/* Page heading and intro line for standalone pages (e.g. privacy) */
 .page-heading {
   margin: 1.5rem 0 0.5rem;
   font-size: 1.9rem;

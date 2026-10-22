@@ -226,6 +226,7 @@
 /* ================================================================== */
 html[data-theme="graffiti"] {
   --g-pink: #ff2e88;
+  --g-pink-text: #ff5ca8; /* lighter pink for body-size text on the dark wall */
   --g-yellow: #ffe14d;
   --g-cyan: #2de2e6;
   --g-lime: #a3ff12;
@@ -1203,73 +1204,6 @@ html[data-theme="graffiti"] .simple-contact-intro {
   color: var(--g-text);
 }
 
-/* ---- Estimator ---- */
-html[data-theme="graffiti"] .estimate-bar {
-  background: rgba(13, 13, 13, 0.94);
-  border-bottom: 4px solid var(--g-yellow);
-}
-
-html[data-theme="graffiti"] .estimate-stat-label {
-  color: var(--g-cyan);
-  font-weight: 700;
-}
-
-html[data-theme="graffiti"] .estimate-stat-value {
-  font-family: var(--g-marker);
-  font-weight: 400;
-  color: var(--g-yellow);
-  text-shadow: 2px 2px 0 var(--g-pink);
-}
-
-html[data-theme="graffiti"] .breakdown-toggle {
-  border: 2px solid var(--g-cream);
-  border-radius: var(--g-rough-alt);
-  color: var(--g-cream);
-}
-
-html[data-theme="graffiti"] .breakdown-toggle:hover:not(:disabled) {
-  color: var(--g-ink);
-  border-color: var(--g-ink);
-  background: var(--g-yellow);
-}
-
-html[data-theme="graffiti"] .breakdown-toggle {
-  font-family: var(--g-marker);
-}
-
-html[data-theme="graffiti"] .estimate-breakdown {
-  border-top: 2px dashed rgba(244, 239, 230, 0.25);
-  background: rgba(13, 13, 13, 0.6);
-}
-
-html[data-theme="graffiti"] .breakdown-row {
-  color: var(--g-text);
-}
-
-html[data-theme="graffiti"] .breakdown-row-price {
-  font-family: var(--g-marker);
-  color: var(--g-cream);
-}
-
-html[data-theme="graffiti"] .breakdown-total {
-  border-top: 2px solid var(--g-pink);
-  font-family: var(--g-marker);
-  font-weight: 400;
-  font-size: 1.1rem;
-  color: var(--g-yellow);
-  text-shadow: 2px 2px 0 var(--g-ink);
-}
-
-html[data-theme="graffiti"] .breakdown-compare {
-  border-top: 2px dashed rgba(244, 239, 230, 0.25);
-  color: var(--g-muted);
-}
-
-html[data-theme="graffiti"] .breakdown-compare strong {
-  color: var(--g-lime);
-}
-
-html[data-theme="graffiti"] .estimator-header h1,
 html[data-theme="graffiti"] .page-heading {
   font-family: var(--g-tag);
   font-weight: 400;
@@ -1282,7 +1216,6 @@ html[data-theme="graffiti"] .page-heading {
   transform: rotate(-2deg);
 }
 
-html[data-theme="graffiti"] .estimator-intro,
 html[data-theme="graffiti"] .page-intro,
 html[data-theme="graffiti"] .section-subtitle {
   color: var(--g-text);
@@ -1292,55 +1225,6 @@ html[data-theme="graffiti"] .section-title {
   font-family: var(--g-marker);
   font-weight: 400;
   color: var(--g-cyan);
-}
-
-html[data-theme="graffiti"] .option-btn {
-  border: 2px solid rgba(244, 239, 230, 0.75);
-  border-radius: var(--g-rough-lg);
-  background: var(--g-panel);
-}
-
-html[data-theme="graffiti"] .option-btn:hover {
-  background: rgba(30, 24, 26, 0.95);
-  border-color: var(--g-cream);
-  transform: rotate(-0.6deg);
-}
-
-html[data-theme="graffiti"] .option-btn.selected {
-  border: 3px solid var(--g-ink);
-  background: var(--g-cream);
-  box-shadow: 6px 6px 0 var(--g-pink);
-}
-
-html[data-theme="graffiti"] .option-btn .option-label {
-  font-family: var(--g-marker);
-  font-weight: 400;
-  color: var(--g-cream);
-}
-
-html[data-theme="graffiti"] .option-btn .option-price {
-  color: var(--g-yellow);
-}
-
-html[data-theme="graffiti"] .option-btn .option-desc {
-  color: var(--g-text);
-}
-
-html[data-theme="graffiti"] .option-btn .option-market {
-  color: var(--g-muted);
-}
-
-html[data-theme="graffiti"] .option-btn.selected .option-label,
-html[data-theme="graffiti"] .option-btn.selected .option-desc {
-  color: var(--g-ink);
-}
-
-html[data-theme="graffiti"] .option-btn.selected .option-price {
-  color: var(--g-pink);
-}
-
-html[data-theme="graffiti"] .option-btn.selected .option-market {
-  color: rgba(13, 13, 13, 0.6);
 }
 
 /* ---- 404 ---- */
@@ -1522,6 +1406,16 @@ html[data-theme="graffiti"] .page-shell::after {
   }
 }
 
+/* Phones: the footer links sit centred over the floor, so the cans are left out there */
+@media (max-width: 767px) {
+  html[data-theme="graffiti"] .page-shell::after {
+    background:
+      radial-gradient(ellipse 30% 30% at 25% 70%, rgba(255, 46, 136, 0.28), transparent 70%),
+      radial-gradient(ellipse 30% 30% at 75% 75%, rgba(45, 226, 230, 0.22), transparent 70%),
+      linear-gradient(to bottom, transparent 0, rgba(30, 28, 30, 0.9) 6.2rem, #161416 6.4rem, #0d0c0d);
+  }
+}
+
 /* ---- Name: brush-lettered in every colour, with drips and a crown ---- */
 html[data-theme="graffiti"] .profile-name {
   position: relative;
@@ -1661,6 +1555,19 @@ html[data-theme="graffiti"] .neon-cta .glow-backdrop::before {
   opacity: 0.85;
   filter: none;
   animation: none;
+}
+
+/* Phones: smaller, fainter splatter kept clear of the tagline below the headline */
+@media (max-width: 767px) {
+  html[data-theme="graffiti"] .neon-cta .glow-backdrop::before {
+    top: 30%;
+    height: 14rem;
+    background:
+      var(--g-splat-pink) 2% 20% / 6rem auto no-repeat,
+      var(--g-splat-cyan) 98% 10% / 5rem auto no-repeat,
+      var(--g-splat-lime) 90% 72% / 3.5rem auto no-repeat;
+    opacity: 0.6;
+  }
 }
 
 /* A hand-drawn arrow pointing from the piece across to the offer flyer */
@@ -1994,7 +1901,7 @@ html[data-theme="blueprint"] {
   --b-body: rgba(232, 241, 255, 0.84);
   --b-muted: rgba(232, 241, 255, 0.66);
   --b-pencil: #ffd166;
-  --b-red: #ff8a80;
+  --b-red: #ffa69d;
   --b-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, Menlo, monospace;
   --b-sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --b-hand: "Architects Daughter", "Comic Sans MS", cursive;
@@ -2392,7 +2299,7 @@ html[data-theme="blueprint"] .profile-title {
   font-size: 1rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--b-muted);
+  color: var(--b-body);
 }
 
 html[data-theme="blueprint"] .profile-title::before {
@@ -2434,7 +2341,7 @@ html[data-theme="blueprint"] .neon-subtitle.flicker {
   font-size: 1rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--b-muted);
+  color: var(--b-body);
   text-shadow: none;
   animation: none;
 }
@@ -2951,63 +2858,6 @@ html[data-theme="blueprint"] .simple-contact-intro {
   color: var(--b-body);
 }
 
-/* ---- Estimator ---- */
-html[data-theme="blueprint"] .estimate-bar {
-  background: rgba(13, 53, 102, 0.95);
-  border-bottom: 1.5px solid var(--b-line);
-}
-
-html[data-theme="blueprint"] .estimate-stat-label {
-  font-family: var(--b-mono);
-  color: var(--b-pencil);
-}
-
-html[data-theme="blueprint"] .estimate-stat-value {
-  font-family: var(--b-mono);
-  color: var(--b-text);
-  text-shadow: none;
-}
-
-html[data-theme="blueprint"] .breakdown-toggle {
-  border: 1.5px solid var(--b-line-soft);
-  border-radius: 0;
-  font-family: var(--b-mono);
-  color: var(--b-text);
-}
-
-html[data-theme="blueprint"] .breakdown-toggle:hover:not(:disabled) {
-  color: var(--b-pencil);
-  border-color: var(--b-pencil);
-  background: transparent;
-}
-
-html[data-theme="blueprint"] .estimate-breakdown {
-  background: rgba(0, 20, 50, 0.3);
-}
-
-html[data-theme="blueprint"] .breakdown-row,
-html[data-theme="blueprint"] .breakdown-compare {
-  color: var(--b-body);
-}
-
-html[data-theme="blueprint"] .breakdown-row-price,
-html[data-theme="blueprint"] .breakdown-total {
-  font-family: var(--b-mono);
-  color: var(--b-text);
-}
-
-/* Breakdown dividers, which otherwise keep the neon purple */
-html[data-theme="blueprint"] .estimate-breakdown,
-html[data-theme="blueprint"] .breakdown-total,
-html[data-theme="blueprint"] .breakdown-compare {
-  border-top-color: var(--b-line-soft);
-}
-
-html[data-theme="blueprint"] .breakdown-compare strong {
-  color: var(--b-pencil);
-}
-
-html[data-theme="blueprint"] .estimator-header h1,
 html[data-theme="blueprint"] .page-heading {
   font-family: var(--b-hand);
   font-weight: 400;
@@ -3016,7 +2866,6 @@ html[data-theme="blueprint"] .page-heading {
   -webkit-text-fill-color: currentColor;
 }
 
-html[data-theme="blueprint"] .estimator-intro,
 html[data-theme="blueprint"] .page-intro,
 html[data-theme="blueprint"] .section-subtitle {
   color: var(--b-body);
@@ -3028,46 +2877,6 @@ html[data-theme="blueprint"] .section-title {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--b-text);
-}
-
-html[data-theme="blueprint"] .option-btn {
-  border: 1.5px solid var(--b-line-soft);
-  border-radius: 0;
-  background: var(--b-panel);
-}
-
-html[data-theme="blueprint"] .option-btn:hover {
-  border-color: var(--b-line);
-  background: rgba(25, 82, 145, 0.95);
-}
-
-html[data-theme="blueprint"] .option-btn.selected {
-  border-color: var(--b-pencil);
-  background: rgba(255, 209, 102, 0.1);
-  box-shadow: 0 0 0 4px rgba(255, 209, 102, 0.15);
-}
-
-html[data-theme="blueprint"] .option-btn .option-label {
-  color: var(--b-text);
-}
-
-html[data-theme="blueprint"] .option-btn .option-price {
-  font-family: var(--b-mono);
-  color: var(--b-pencil);
-}
-
-html[data-theme="blueprint"] .option-btn .option-desc {
-  color: var(--b-body);
-}
-
-html[data-theme="blueprint"] .option-btn .option-market {
-  color: var(--b-muted);
-}
-
-html[data-theme="blueprint"] .contact-section {
-  border: 1.5px solid var(--b-line);
-  border-radius: 0;
-  background: var(--b-panel);
 }
 
 /* ---- 404 ---- */
@@ -3082,6 +2891,11 @@ html[data-theme="blueprint"] .glitch-heading .code {
 html[data-theme="blueprint"] .glitch-heading .code::before,
 html[data-theme="blueprint"] .glitch-heading .code::after {
   display: none;
+}
+
+html[data-theme="blueprint"] .hud-badge .hud-value,
+html[data-theme="blueprint"] .boot-terminal .boot-line.is-error .line-text {
+  color: var(--b-red);
 }
 
 html[data-theme="blueprint"] .error-subtitle {
@@ -3194,7 +3008,6 @@ html[data-theme="professional"] .theme-picker-heading,
 html[data-theme="professional"] .switch-offer-includes-label,
 html[data-theme="professional"] .offer-progress-label,
 html[data-theme="professional"] .timeline-date,
-html[data-theme="professional"] .estimate-stat-label,
 html[data-theme="professional"] .terminal-suggestions .box-label {
   font-family: var(--p-alt-font);
   font-size: 0.75rem;
@@ -3933,60 +3746,6 @@ html[data-theme="professional"] .simple-contact-intro {
   color: var(--p-muted);
 }
 
-/* ---- Estimator ---- */
-html[data-theme="professional"] .estimate-bar {
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(16px) saturate(1.4);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: none;
-}
-
-html[data-theme="professional"] .estimate-stat-value {
-  color: #fff;
-  font-weight: 900;
-  letter-spacing: -0.025em;
-  text-shadow: none;
-}
-
-html[data-theme="professional"] .breakdown-toggle {
-  border: 1px solid var(--p-line-strong);
-  border-radius: 9999px;
-  color: var(--p-fg);
-}
-
-html[data-theme="professional"] .breakdown-toggle:hover:not(:disabled) {
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.1);
-}
-
-html[data-theme="professional"] .estimate-breakdown {
-  background: var(--p-surface);
-}
-
-html[data-theme="professional"] .breakdown-row,
-html[data-theme="professional"] .breakdown-compare {
-  color: var(--p-body);
-}
-
-html[data-theme="professional"] .breakdown-row-price,
-html[data-theme="professional"] .breakdown-total {
-  color: #fff;
-}
-
-/* Breakdown dividers, which otherwise keep the neon purple */
-html[data-theme="professional"] .estimate-breakdown,
-html[data-theme="professional"] .breakdown-total,
-html[data-theme="professional"] .breakdown-compare {
-  border-top-color: var(--p-line);
-}
-
-html[data-theme="professional"] .breakdown-compare strong {
-  color: var(--p-success);
-}
-
-html[data-theme="professional"] .estimator-header h1,
 html[data-theme="professional"] .page-heading {
   background: none;
   color: #fff;
@@ -3996,7 +3755,6 @@ html[data-theme="professional"] .page-heading {
   letter-spacing: -0.025em;
 }
 
-html[data-theme="professional"] .estimator-intro,
 html[data-theme="professional"] .page-intro,
 html[data-theme="professional"] .section-subtitle {
   color: var(--p-muted);
@@ -4006,52 +3764,6 @@ html[data-theme="professional"] .section-title {
   color: #fff;
   font-weight: 900;
   letter-spacing: -0.025em;
-}
-
-html[data-theme="professional"] .option-btn {
-  border: 1px solid var(--p-line);
-  border-radius: 0;
-  background: var(--p-surface);
-  box-shadow: none;
-  transition: background 0.3s, border-color 0.2s;
-}
-
-html[data-theme="professional"] .option-btn:hover {
-  border-color: var(--p-line-strong);
-  background: var(--p-surface-2);
-  box-shadow: none;
-}
-
-html[data-theme="professional"] .option-btn.selected {
-  border-color: rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: none;
-}
-
-html[data-theme="professional"] .option-btn .option-label {
-  color: #fff;
-  font-weight: 800;
-}
-
-html[data-theme="professional"] .option-btn .option-price {
-  color: #fff;
-  font-weight: 600;
-}
-
-html[data-theme="professional"] .option-btn .option-desc {
-  color: var(--p-body);
-}
-
-html[data-theme="professional"] .option-btn .option-market {
-  font-family: var(--p-alt-font);
-  color: var(--p-muted);
-}
-
-html[data-theme="professional"] .contact-section {
-  border: 1px solid var(--p-line);
-  border-radius: 0;
-  background: var(--p-surface);
-  box-shadow: none;
 }
 
 /* ---- 404 ---- */
@@ -4136,7 +3848,6 @@ html[data-theme="professional"] .profile-title,
 html[data-theme="professional"] .neon-subtitle,
 html[data-theme="professional"] .neon-subtitle.flicker,
 html[data-theme="professional"] .experience-badge .label,
-html[data-theme="professional"] .estimator-intro,
 html[data-theme="professional"] .page-intro,
 html[data-theme="professional"] .simple-contact-intro {
   color: var(--p-on-photo);
@@ -4321,7 +4032,7 @@ html[data-theme="graffiti"] .terminal-box[data-bio="graffiti"] {
   font-size: 1.2rem;
   line-height: 1.6;
   letter-spacing: 0.02em;
-  color: var(--paint, var(--g-pink));
+  color: var(--paint, var(--g-pink-text));
   text-shadow: 2px 2px 0 var(--g-ink);
 }
 

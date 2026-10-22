@@ -2,10 +2,9 @@
   var CONTACT_ENDPOINT = window.SITE_CONFIG.CONTACT_ENDPOINT;
   var ORGANISATION_ID = window.SITE_CONFIG.ORGANISATION_ID;
 
-  // Shared by the contact page (terminal + plain form) and the cost
-  // estimator: validates, checks the Turnstile token, POSTs to the worker,
-  // and reports outcomes via callbacks so each UI can render feedback its
-  // own way (terminal log lines vs a status banner).
+  // Shared by the contact page's terminal and plain forms: validates, checks
+  // the Turnstile token, POSTs to the worker, and reports outcomes via
+  // callbacks so each UI can render feedback in its own way.
   function submitLead(fields, handlers) {
     var missingFields = [
       ['First name', fields.firstName],

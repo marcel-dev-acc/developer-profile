@@ -192,9 +192,9 @@
 
     var cards = el('div', 'cc-cards');
     var necessary = category('cc-necessary', 'Necessary',
-      'Cloudflare protects the site and checks that the contact and estimate forms are sent by a person ' +
-      '(Cloudflare Turnstile, on those pages only). Your browser also keeps your theme, your estimate ' +
-      'selections and this choice.', { checked: true, locked: true });
+      'Cloudflare protects the site and checks that the contact form is sent by a person ' +
+      '(Cloudflare Turnstile, on that page only). Your browser also keeps your theme and this choice.',
+      { checked: true, locked: true });
     var analytics = category('cc-analytics', 'Statistics and analytics',
       'Google Analytics counts visits and the pages people view, so we can see what’s useful. ' +
       'It sets the _ga cookies and only loads if you switch this on.', { checked: analyticsAllowed() });

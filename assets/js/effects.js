@@ -175,7 +175,7 @@
     }, { threshold: 0.6 });
   }
 
-  // 5. Count-up for the experience badge and the offer progress
+  // 5. Count-up for the experience badge
   function animateValue(duration, onFrame) {
     var start = null;
     function frame(now) {
@@ -197,31 +197,6 @@
         experienceEl.textContent = Math.floor(months / 12) + ' years ' + (months % 12) + ' months';
       });
     }
-
-    var progress = document.querySelector('[data-offer-progress]');
-    if (!progress) return;
-    var claimedEl = progress.querySelector('[data-offer-claimed]');
-    var fillEl = progress.querySelector('[data-offer-fill]');
-    var target = claimedEl ? parseInt(claimedEl.textContent, 10) : 0;
-    var targetWidth = fillEl ? fillEl.style.width : '';
-
-    if (claimedEl) claimedEl.textContent = '0';
-    if (fillEl) fillEl.style.width = '0%';
-
-    inView([progress], function () {
-      if (fillEl) {
-        fillEl.classList.add('is-counting');
-        // Next frame so the 0% width is committed before transitioning
-        window.requestAnimationFrame(function () {
-          window.requestAnimationFrame(function () { fillEl.style.width = targetWidth; });
-        });
-      }
-      if (claimedEl) {
-        animateValue(1400, function (p) {
-          claimedEl.textContent = Math.round(target * p);
-        });
-      }
-    }, { threshold: 0.5 });
   }
 
   // 6. Screenshots tilt toward the pointer with a moving glare (mouse/trackpad only)

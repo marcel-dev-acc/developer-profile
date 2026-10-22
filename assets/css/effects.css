@@ -69,9 +69,7 @@
 .fx-boot .switch-offer::before,
 .fx-hold .switch-offer::before,
 .fx-boot .switch-offer-text strong,
-.fx-hold .switch-offer-text strong,
-.fx-boot .offer-progress-fill,
-.fx-hold .offer-progress-fill {
+.fx-hold .switch-offer-text strong {
   animation-play-state: paused !important;
 }
 
@@ -95,11 +93,6 @@
 @keyframes text-sweep {
   0% { background-position: 100% 0; }
   55%, 100% { background-position: 0% 0; }
-}
-
-/* Count-up: the progress fill grows alongside the number */
-.offer-progress-fill.is-counting {
-  transition: width 1.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Screenshot tilt: perspective transform set from JS, glare follows the pointer */

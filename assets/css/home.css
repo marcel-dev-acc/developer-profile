@@ -1030,54 +1030,11 @@ html {
   box-shadow: 0 0 20px rgba(168, 85, 247, 0.9);
 }
 
-.offer-progress {
-  margin-top: 1.25rem;
-  text-align: left;
-}
-
-.offer-progress-label {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.4rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--purple-300);
-}
-
-.offer-progress-count strong {
-  color: var(--green-300);
-  text-shadow: 0 0 8px rgba(74, 222, 128, 0.6);
-}
-
-.offer-progress-track {
-  height: 0.6rem;
-  border: 1px solid rgba(74, 222, 128, 0.5);
-  border-radius: 9999px;
-  background: rgba(74, 222, 128, 0.08);
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.6), 0 0 8px rgba(74, 222, 128, 0.25);
-  overflow: hidden;
-}
-
-.offer-progress-fill {
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--green-600), var(--green-400), var(--green-300));
-  box-shadow: 0 0 10px var(--green-400), 0 0 20px rgba(74, 222, 128, 0.6);
-  animation: progress-glow 2s ease-in-out infinite alternate;
-}
-
-.offer-progress-note {
-  margin: 0.5rem 0 0;
+.switch-offer-note {
+  margin: 1.25rem 0 0;
   font-size: 0.8rem;
   text-align: center;
   color: rgba(233, 213, 255, 0.7);
-}
-
-@keyframes progress-glow {
-  from { box-shadow: 0 0 6px var(--green-400), 0 0 12px rgba(74, 222, 128, 0.4); }
-  to { box-shadow: 0 0 12px var(--green-400), 0 0 24px rgba(74, 222, 128, 0.8); }
 }
 
 @keyframes card-shimmer {
@@ -1087,7 +1044,6 @@ html {
 
 @media (prefers-reduced-motion: reduce) {
   .switch-offer::before { animation: none; opacity: 0; }
-  .offer-progress-fill { animation: none; }
   .switch-btn:hover,
   .switch-btn:focus-visible { transform: none; }
 }

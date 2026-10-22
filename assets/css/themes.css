@@ -769,43 +769,11 @@ html[data-theme="graffiti"].fx .switch-offer-text strong {
   animation: none;
 }
 
-html[data-theme="graffiti"] .switch-offer-includes-label,
-html[data-theme="graffiti"] .offer-progress-label {
+html[data-theme="graffiti"] .switch-offer-includes-label {
   color: rgba(13, 13, 13, 0.75);
 }
 
-html[data-theme="graffiti"] .offer-progress-count strong {
-  color: var(--g-pink);
-  text-shadow: none;
-}
-
-html[data-theme="graffiti"] .offer-progress-track {
-  height: 0.85rem;
-  border: 2px solid var(--g-ink);
-  background: rgba(13, 13, 13, 0.1);
-  box-shadow: none;
-}
-
-/* Hazard-tape fill. Built from a square tile holding exactly two stripe pairs, so the stripes
-   repeat without a seam however wide the fill is, and crawl by one tile per loop. */
-html[data-theme="graffiti"] .offer-progress-fill {
-  --hazard-tile: 22.63px; /* 8px stripes: 4 x 8px / sin(45deg) */
-  background:
-    linear-gradient(-45deg, var(--g-yellow) 25%, var(--g-ink) 25% 50%, var(--g-yellow) 50% 75%, var(--g-ink) 75%)
-    0 0 / var(--hazard-tile) var(--hazard-tile);
-  box-shadow: none;
-  animation: none;
-}
-
-html[data-theme="graffiti"].fx .offer-progress-fill {
-  animation: hazard-crawl 1.2s linear infinite;
-}
-
-@keyframes hazard-crawl {
-  to { background-position: var(--hazard-tile) 0; }
-}
-
-html[data-theme="graffiti"] .offer-progress-note {
+html[data-theme="graffiti"] .switch-offer-note {
   color: rgba(13, 13, 13, 0.65);
 }
 
@@ -1495,6 +1463,15 @@ html[data-theme="graffiti"] .neon-subtitle.flicker {
   margin-left: auto;
   margin-right: auto;
   background-image: var(--g-brush-cyan);
+}
+
+html[data-theme="graffiti"] .neon-cta-external-note {
+  font-family: var(--g-marker);
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  color: var(--g-cream);
+  text-shadow: 2px 2px 0 var(--g-ink);
+  transform: rotate(-1.5deg);
 }
 
 @media (min-width: 768px) {
@@ -2346,6 +2323,13 @@ html[data-theme="blueprint"] .neon-subtitle.flicker {
   animation: none;
 }
 
+html[data-theme="blueprint"] .neon-cta-external-note {
+  font-family: var(--b-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--b-muted);
+}
+
 /* ---- Switch offer: a revision note pinned to the drawing ---- */
 html[data-theme="blueprint"] .switch-offer {
   overflow: visible;
@@ -2410,32 +2394,12 @@ html[data-theme="blueprint"].fx .switch-offer-text strong {
   animation: none;
 }
 
-html[data-theme="blueprint"] .switch-offer-includes-label,
-html[data-theme="blueprint"] .offer-progress-label {
+html[data-theme="blueprint"] .switch-offer-includes-label {
   font-family: var(--b-mono);
   color: var(--b-muted);
 }
 
-html[data-theme="blueprint"] .offer-progress-count strong {
-  color: var(--b-pencil);
-  text-shadow: none;
-}
-
-html[data-theme="blueprint"] .offer-progress-track {
-  border: 1.5px solid var(--b-line-soft);
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-}
-
-html[data-theme="blueprint"] .offer-progress-fill {
-  border-radius: 0;
-  background: repeating-linear-gradient(-45deg, var(--b-line) 0 2px, transparent 2px 6px);
-  box-shadow: none;
-  animation: none;
-}
-
-html[data-theme="blueprint"] .offer-progress-note {
+html[data-theme="blueprint"] .switch-offer-note {
   color: var(--b-muted);
 }
 
@@ -3006,7 +2970,6 @@ html[data-theme="professional"] .experience-badge .label,
 html[data-theme="professional"] .section-header,
 html[data-theme="professional"] .theme-picker-heading,
 html[data-theme="professional"] .switch-offer-includes-label,
-html[data-theme="professional"] .offer-progress-label,
 html[data-theme="professional"] .timeline-date,
 html[data-theme="professional"] .terminal-suggestions .box-label {
   font-family: var(--p-alt-font);
@@ -3312,6 +3275,11 @@ html[data-theme="professional"] .neon-subtitle.flicker {
   animation: none;
 }
 
+html[data-theme="professional"] .neon-cta-external-note {
+  font-family: var(--p-alt-font);
+  color: var(--p-muted);
+}
+
 /* ---- Switch offer card ---- */
 html[data-theme="professional"] .switch-offer {
   background: var(--p-panel);
@@ -3363,32 +3331,7 @@ html[data-theme="professional"].fx .switch-offer-text strong {
   animation: none;
 }
 
-html[data-theme="professional"] .offer-progress-count strong {
-  color: #fff;
-  font-weight: 900;
-  text-shadow: none;
-}
-
-html[data-theme="professional"] .offer-progress-track {
-  border: none;
-  border-radius: 0;
-  height: 1px;
-  background: var(--p-line-strong);
-  box-shadow: none;
-}
-
-html[data-theme="professional"] .offer-progress-fill {
-  border-radius: 0;
-  background: #fff;
-  box-shadow: none;
-  animation: none;
-}
-
-html[data-theme="professional"] .offer-progress-fill.is-counting {
-  transition: width 1.4s var(--p-ease-wipe);
-}
-
-html[data-theme="professional"] .offer-progress-note {
+html[data-theme="professional"] .switch-offer-note {
   font-family: var(--p-alt-font);
   color: var(--p-muted);
 }
@@ -3847,6 +3790,7 @@ html[data-theme="professional"] .bio-statement {
 html[data-theme="professional"] .profile-title,
 html[data-theme="professional"] .neon-subtitle,
 html[data-theme="professional"] .neon-subtitle.flicker,
+html[data-theme="professional"] .neon-cta-external-note,
 html[data-theme="professional"] .experience-badge .label,
 html[data-theme="professional"] .page-intro,
 html[data-theme="professional"] .simple-contact-intro {
